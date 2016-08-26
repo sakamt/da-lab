@@ -136,3 +136,10 @@ def Neff(ws):
 def weight(cs):
     ws = np.exp(-cs)
     return ws / np.sum(ws)
+
+
+def bending(xs):
+    """ calc bending using 3rd order moment """
+    dxs = xs - average(xs)
+    J = np.linalg.inv(covar(xs))
+    return np.einsum("ij,ti,tj,tk->k", J, dxs, dxs, dxs) / len(dxs)
