@@ -2,6 +2,7 @@
 
 import numpy as np
 from scipy.linalg import solve_triangular
+from . import linalg
 
 
 def Jacobi(F, x, alpha=1e-7):
@@ -116,3 +117,34 @@ def CLV(U, x0, T, T_pre=None, T_post=None):
         T_post = T // 2
     tl = _clv_forward(U, x0.copy(), T_pre+T+T_post)
     return _clv_backward(tl)[T_pre:T+T_pre]
+
+
+def solve_riccati(tl, Omega, tau, n, drop_transient=None):
+    """
+    Calculate information matrix by solving Riccati equation
+
+    Parameters
+    -----------
+    tl : [dict]
+        What returned from :py:func:`CLV`
+    Omega : np.array(2d)
+        Information gain :math:`H^T R^{-1} H`
+    tau : Int
+        interval of observation
+    n : Int
+        Dimension of information matrix
+    drop_transient : Int, optional
+        steps dropped for removing initial transient
+    """
+    J = np.identity(n)
+    for t, info in enumerate(tl):
+        if t % tau == 0:
+            O = linalg.bracket(Omega, info["V"])
+            J += O[:n, :n]
+        D = info["D"][:n]
+        J = linalg.bracket_diag(J, D)
+        info["J"] = J.copy()
+    if drop_transient is None:
+        return tl
+    else:
+        return tl[drop_transient:]
