@@ -146,8 +146,8 @@ def weight(cs):
     return ws / np.sum(ws)
 
 
-def bias(xs):
-    """ bias vector using 3rd order moment """
+def skewness(xs):
+    """ skewness vector using 3rd order moment """
     dxs = xs - average(xs)
     try:
         J = np.linalg.inv(covar(xs))
