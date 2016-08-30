@@ -75,3 +75,7 @@ class TestLyapunov(TestCase):
         assert_equal(len(tl), T)
         e = -100*sum(np.log(info["D"]) for info in tl) / len(tl)
         assert_allclose(e, np.array([0.9, 0, -14]), rtol=1e-1, atol=1e-1)
+
+    def test_solve_riccati(self):
+        # TODO write test
+        pass
