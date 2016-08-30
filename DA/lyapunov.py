@@ -2,6 +2,7 @@
 
 import numpy as np
 from scipy.linalg import solve_triangular
+from . import linalg
 
 
 def Jacobi(F, x, alpha=1e-7):
@@ -116,3 +117,20 @@ def CLV(U, x0, T, T_pre=None, T_post=None):
         T_post = T // 2
     tl = _clv_forward(U, x0.copy(), T_pre+T+T_post)
     return _clv_backward(tl)[T_pre:T+T_pre]
+
+
+def fill_curvature(tl):
+    """
+    fill curvature of trajectory
+
+    Parameters
+    -----------
+    tl : [dict]
+        What returned from :py:func:`CLV`
+    """
+    for t in range(1, len(tl)-1):
+        x_pre = tl[t-1]["x"]
+        x_now = tl[t]["x"]
+        x_nex = tl[t+1]["x"]
+        tl[t]["k"] = linalg.curvature(x_pre, x_now, x_nex)
+    return tl[1:-1]
