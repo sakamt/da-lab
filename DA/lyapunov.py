@@ -151,3 +151,20 @@ def solve_riccati(tl, Omega, tau, n, J0=None, drop_transient=None):
         return tl
     else:
         return tl[drop_transient:]
+
+
+def fill_curvature(tl):
+    """
+    fill curvature of trajectory
+
+    Parameters
+    -----------
+    tl : [dict]
+        What returned from :py:func:`CLV`
+    """
+    for t in range(1, len(tl)-1):
+        x_pre = tl[t-1]["x"]
+        x_now = tl[t]["x"]
+        x_nex = tl[t+1]["x"]
+        tl[t]["k"] = linalg.curvature(x_pre, x_now, x_nex)
+    return tl[1:-1]
