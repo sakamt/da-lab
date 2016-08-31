@@ -84,6 +84,11 @@ def importance_sampling(ws, xs):
     xs : ndarray (2d)
         particles
     """
+    if len(ws) != len(xs):
+        raise RuntimeError(
+            "Number of weights and particles mismatches: "
+            "#ws={}, #xs={}".format(len(ws), len(xs))
+        )
     cws = np.cumsum(ws)
     return np.array([_sampling(cws, xs) for _ in range(len(xs))])
 
@@ -121,7 +126,10 @@ def merge_resampling(ws, xs, n=3):
         particles
     """
     if n < 2:
-        raise RuntimeError("Too small n for merge resampling: n={}".format(n))
+        raise RuntimeError(
+            "Too small n for merge resampling: "
+            "n={}".format(n)
+        )
     cws = np.cumsum(ws)
     a = _gen_weight(n)
     return np.array([np.dot(a, [_sampling(cws, xs) for _ in range(n)])
@@ -136,3 +144,13 @@ def Neff(ws):
 def weight(cs):
     ws = np.exp(-cs)
     return ws / np.sum(ws)
+
+
+def skewness(xs):
+    """ skewness vector using 3rd order moment """
+    dxs = xs - average(xs)
+    try:
+        J = np.linalg.inv(covar(xs))
+    except np.linalg.LinAlgError:
+        return np.zeros_like(xs[0])
+    return np.einsum("ij,ti,tj,tk->k", J, dxs, dxs, dxs) / len(dxs)
