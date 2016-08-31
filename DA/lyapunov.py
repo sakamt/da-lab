@@ -119,7 +119,7 @@ def CLV(U, x0, T, T_pre=None, T_post=None):
     return _clv_backward(tl)[T_pre:T+T_pre]
 
 
-def solve_riccati(tl, Omega, tau, n, drop_transient=None):
+def solve_riccati(tl, Omega, tau, n, J0=None, drop_transient=None):
     """
     Calculate information matrix by solving Riccati equation
 
@@ -136,14 +136,17 @@ def solve_riccati(tl, Omega, tau, n, drop_transient=None):
     drop_transient : Int, optional
         steps dropped for removing initial transient
     """
-    J = np.identity(n)
+    if J0 is None:
+        J = np.identity(n)
+    else:
+        J = J0.copy()
     for t, info in enumerate(tl):
+        info["J"] = J.copy()
         if t % tau == 0:
             O = linalg.bracket(Omega, info["V"])
             J += O[:n, :n]
         D = info["D"][:n]
         J = linalg.bracket_diag(J, D)
-        info["J"] = J.copy()
     if drop_transient is None:
         return tl
     else:
