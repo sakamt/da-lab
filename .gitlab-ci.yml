@@ -1,0 +1,4 @@
+build:
+  image: fpco/stack-build:lts-6.15
+  script:
+    - stack build
