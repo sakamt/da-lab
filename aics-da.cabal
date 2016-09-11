@@ -16,12 +16,12 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Lib
-  build-depends:       base >= 4.7 && < 5, repa-odeint, repa
+  build-depends:       base >= 4.7 && < 5
   default-language:    Haskell2010
 
-executable aics-da-exe
+executable main
   hs-source-dirs:      app
   main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
-  build-depends:       base, aics-da
+  ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base, aics-da, repa-odeint, repa, msgpack, bytestring
   default-language:    Haskell2010
