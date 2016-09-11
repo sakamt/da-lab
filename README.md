@@ -9,7 +9,9 @@ Data Management
 Data will be saved in two ways:
 
 - Raw data: saved as a binary file (msgpack format) on local filesystem.
-- Analysis (statistical) data: saved in elasticsearch server
+- Analysis (statistical) data: saved in elasticsearch (ES) server
+
+Data format is shared in this project.
 
 Components
 -----------
@@ -36,13 +38,28 @@ Study for data-assimilation includes several components:
 Development
 ------------
 
+- I/O for msgpack
+  - [ ] in Haskell: This code defines exact format
+
+- I/O for ES
+  - [ ] in Haskell
+  - [ ] in Python
+
 - Simulation
   - use repa-odeint (my public repository)
-  - [ ] I/O for msgpack
+
 - Data Assimilation
   - Implement several algorithms:
     - [ ] Ensemble Kalman Filter (EnKF)
     - [ ] Localized Ensemble Transform Kalman Filter (LETKF)
     - [ ] Merging Particle Filter (MPF)
-  - [ ] I/O for msgpack
-  - [ ] Split Assimilation part as a public repository
+
+  - [ ] Split Assimilation part (w/o data I/O) as a public repository
+
+- Data Analysis
+  - Lyapunov Analysis
+    - [ ] Covariant Lyapunov Vector (CLV)
+    - [ ] Riccati equation
+
+- Visualization
+  - [ ] Data Browser (JavaScript)
