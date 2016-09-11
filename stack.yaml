@@ -37,7 +37,9 @@ resolver: lts-6.15
 # will not be run. This is useful for tweaking upstream packages.
 packages:
 - '.'
-- location: https://github.com/termoshtt/odeint.git
+- location:
+   git: https://github.com/termoshtt/odeint.git
+   commit: 535ed87741f6670940929b4cf490c7fca8d819d2
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
 extra-deps: []
