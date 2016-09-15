@@ -21,15 +21,15 @@ Study for data-assimilation includes several components:
 - Simulation (Lorenz 63 model, etc.)
   - Input Data: N/A
   - Output Data: Raw
-  - Language: Haskell, (Python)
+  - Language: Rust, (Python)
 - Data Assimilation (EnKF, LETKF, etc.)
   - Input Data: Raw
   - Output Data: Raw
-  - Language: Haskell, (Python)
+  - Language: Rust, (Python)
 - Data Analysis
   - Input Data: Raw
   - Output Data: Analysis
-  - Language: Haskell, Python (Jupyter)
+  - Language: Rust, Python (Jupyter)
 - Visualization, browsing data
   - Input Data: Analysis
   - Output Data: N/A
@@ -38,15 +38,8 @@ Study for data-assimilation includes several components:
 Development
 ------------
 
-- I/O for msgpack
-  - [ ] in Haskell: This code defines exact format
-
-- I/O for ES
-  - [ ] in Haskell
-  - [ ] in Python
-
 - Simulation
-  - use repa-odeint (my public repository)
+  - use ndarray-odeint (my private repository)
 
 - Data Assimilation
   - Implement several algorithms:
