@@ -9,18 +9,21 @@ use rustc_serialize::Encodable;
 use rmp_serialize::Encoder;
 use std::fs::File;
 
-fn main() {
-    let val = (42u8, "the Answer");
-    let mut buf = File::create("foo.msg").ok().unwrap();
+fn save_as_msg<T: Encodable>(val: &T, filename: &str) -> Result<(), &'static str> {
+    let mut buf = File::create(filename).ok().unwrap();
     let mut enc = Encoder::new(&mut buf);
-    let res = val.encode(&mut enc);
-    println!("{:?}", res);
+    val.encode(&mut enc).map_err(|_| "Faild to encode")
+}
 
+fn main() {
     let mut x = arr1(&[1.0, 0.0, 0.0]);
     let l = |y| ndarray_odeint::lorenz63(10., 28., 8.0 / 3.0, y);
     let teo = |y| ndarray_odeint::rk4(&l, 0.01, y);
-    for _ in 0..1000000 {
+    let mut ts = vec![];
+    let T = 1000000; // 1M
+    for _ in 0..T {
         x = teo(x);
+        ts.push(x.clone());
     }
-    println!("{:?}", x);
+    save_as_msg(&ts, "ts.msg");
 }
