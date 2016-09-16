@@ -4,10 +4,14 @@ version = "0.1.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
 [dependencies]
-ndarray = "*"
 rmp = "*"
 rustc-serialize = "*"
 rmp-serialize = "*"
+
+[dependencies.ndarray]
+version = "*"
+default-features = false
+features = ["blas", "rustc-serialize"]
 
 [dependencies.ndarray-odeint]
 git = "http://github.com/termoshtt/ndarray-odeint.git"

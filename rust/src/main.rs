@@ -16,12 +16,13 @@ fn save_as_msg<T: Encodable>(val: &T, filename: &str) -> Result<(), &'static str
 }
 
 fn main() {
-    let mut x = arr1(&[1.0, 0.0, 0.0]);
     let l = |y| ndarray_odeint::lorenz63(10., 28., 8.0 / 3.0, y);
     let teo = |y| ndarray_odeint::rk4(&l, 0.01, y);
+
     let mut ts = vec![];
-    let T = 1000000; // 1M
-    for _ in 0..T {
+    let time = 1000000; // 1M
+    let mut x = arr1(&[1.0, 0.0, 0.0]);
+    for _ in 0..time {
         x = teo(x);
         ts.push(x.clone());
     }

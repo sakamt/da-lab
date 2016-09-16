@@ -10,6 +10,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "blas-sys"
+version = "0.6.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "libc 0.2.16 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "byteorder"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -34,10 +42,12 @@ name = "ndarray"
 version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
+ "blas-sys 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "itertools 0.4.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "matrixmultiply 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-complex 0.1.35 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.1.35 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
