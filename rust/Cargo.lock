@@ -2,6 +2,7 @@
 name = "aics-da"
 version = "0.1.0"
 dependencies = [
+ "ndarray 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray-odeint 0.1.0 (git+http://github.com/termoshtt/ndarray-odeint.git)",
  "rmp 0.7.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "rmp-serialize 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
