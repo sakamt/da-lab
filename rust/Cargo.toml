@@ -7,3 +7,6 @@ authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 rmp = "*"
 rustc-serialize = "*"
 rmp-serialize = "*"
+
+[dependencies.ndarray-odeint]
+git = "http://github.com/termoshtt/ndarray-odeint.git"
