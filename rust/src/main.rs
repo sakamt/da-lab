@@ -20,11 +20,14 @@ fn main() {
     let teo = |y| ndarray_odeint::rk4(&l, 0.01, y);
 
     let mut ts = vec![];
-    let time = 1000000; // 1M
+    let time = 100000; // 100k
     let mut x = arr1(&[1.0, 0.0, 0.0]);
     for _ in 0..time {
         x = teo(x);
         ts.push(x.clone());
     }
-    save_as_msg(&ts, "ts.msg");
+    match save_as_msg(&ts, "ts.msg") {
+        Ok(()) => println!("Saved."),
+        Err(s) => println!("Error: {}", s),
+    }
 }
