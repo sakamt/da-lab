@@ -15,6 +15,22 @@ fn save_as_msg<T: Encodable>(val: &T, filename: &str) -> Result<(), &'static str
     val.encode(&mut enc).map_err(|_| "Faild to encode")
 }
 
+type V = Array<f64, Ix>;
+
+struct TimeSeris<T: Fn(V) -> V> {
+    teo: T,
+    state: V,
+}
+
+impl<T: Fn(V) -> V> Iterator for TimeSeris<T> {
+    type Item = V;
+    fn next(&mut self) -> Option<V> {
+        let v = self.state.clone();
+        self.state = (self.teo)(self.state.clone());
+        Some(v)
+    }
+}
+
 fn main() {
     let l = |y| ndarray_odeint::lorenz63(10., 28., 8.0 / 3.0, y);
     let teo = |y| ndarray_odeint::rk4(&l, 0.01, y);
