@@ -8,6 +8,7 @@ use ndarray::prelude::*;
 use rustc_serialize::Encodable;
 use rmp_serialize::Encoder;
 use std::fs::File;
+use std::iter::FromIterator;
 
 fn save_as_msg<T: Encodable>(val: &T, filename: &str) -> Result<(), &'static str> {
     let mut buf = File::create(filename).ok().unwrap();
@@ -17,12 +18,12 @@ fn save_as_msg<T: Encodable>(val: &T, filename: &str) -> Result<(), &'static str
 
 type V = Array<f64, Ix>;
 
-struct TimeSeris<T: Fn(V) -> V> {
+struct TimeSeries<T: Fn(V) -> V> {
     teo: T,
     state: V,
 }
 
-impl<T: Fn(V) -> V> Iterator for TimeSeris<T> {
+impl<T: Fn(V) -> V> Iterator for TimeSeries<T> {
     type Item = V;
     fn next(&mut self) -> Option<V> {
         let v = self.state.clone();
@@ -34,15 +35,13 @@ impl<T: Fn(V) -> V> Iterator for TimeSeris<T> {
 fn main() {
     let l = |y| ndarray_odeint::lorenz63(10., 28., 8.0 / 3.0, y);
     let teo = |y| ndarray_odeint::rk4(&l, 0.01, y);
+    let ts = TimeSeries {
+        teo: teo,
+        state: arr1(&[1.0, 0.0, 0.0]),
+    };
 
-    let mut ts = vec![];
-    let time = 100000; // 100k
-    let mut x = arr1(&[1.0, 0.0, 0.0]);
-    for _ in 0..time {
-        x = teo(x);
-        ts.push(x.clone());
-    }
-    match save_as_msg(&ts, "ts.msg") {
+    let ts_vec = Vec::from_iter(ts.take(10000));
+    match save_as_msg(&ts_vec, "ts.msg") {
         Ok(()) => println!("Saved."),
         Err(s) => println!("Error: {}", s),
     }
