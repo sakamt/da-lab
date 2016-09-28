@@ -2,7 +2,7 @@
 name = "aics-da"
 version = "0.1.0"
 dependencies = [
- "ndarray 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ndarray 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray-odeint 0.1.0 (git+http://github.com/termoshtt/ndarray-odeint.git)",
  "rmp 0.7.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "rmp-serialize 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -34,17 +34,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "matrixmultiply"
-version = "0.1.9"
+version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "ndarray"
-version = "0.6.3"
+version = "0.6.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "blas-sys 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "itertools 0.4.19 (registry+https://github.com/rust-lang/crates.io-index)",
- "matrixmultiply 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "matrixmultiply 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-complex 0.1.35 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.1.35 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -53,9 +53,9 @@ dependencies = [
 [[package]]
 name = "ndarray-odeint"
 version = "0.1.0"
-source = "git+http://github.com/termoshtt/ndarray-odeint.git#c044c26ce29993fe7f1b101a8a7246a8587685e9"
+source = "git+http://github.com/termoshtt/ndarray-odeint.git#b8eb037fb38a3d7e7ef5279887bf30c36c2871de"
 dependencies = [
- "ndarray 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ndarray 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray-rand 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "num 0.1.35 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -66,7 +66,7 @@ name = "ndarray-rand"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "ndarray 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ndarray 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
