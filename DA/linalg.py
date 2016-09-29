@@ -10,6 +10,10 @@ def quad(r, A):
     return np.dot(r, np.dot(A, r))
 
 
+def rmse(x, y):
+    return np.linalg.norm(x-y) / np.sqrt(x.size)
+
+
 def dot3(A, B, C):
     return np.einsum("ij,jk,kl->il", A, B, C)
 

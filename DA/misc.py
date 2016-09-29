@@ -2,7 +2,7 @@
 
 import numpy as np
 from .model import RK4, Lorenz96, Lorenz63
-from . import ensemble
+from . import ensemble, linalg
 from unittest import TestCase
 
 
@@ -40,7 +40,7 @@ class _TestEnsembleDA(TestCase):
             pass  # remove initial transit
         for x, xs in da:
             xa = np.average(xs, axis=0)
-            rms_sum += np.linalg.norm(x-xa) / np.sqrt(len(x))
+            rms_sum += linalg.rmse(x, xa)
         return rms_sum / self.T
 
 
