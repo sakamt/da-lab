@@ -1,32 +1,28 @@
 
 extern crate ndarray;
 extern crate ndarray_odeint;
-extern crate rmp_serialize;
-extern crate rustc_serialize;
+extern crate aics_da;
 
 use ndarray::prelude::*;
-use rustc_serialize::Encodable;
-use rmp_serialize::Encoder;
-use std::fs::File;
-use std::iter::FromIterator;
 
-fn save_as_msg<T: Encodable>(val: &T, filename: &str) -> Result<(), &'static str> {
-    let mut buf = File::create(filename).ok().unwrap();
-    let mut enc = Encoder::new(&mut buf);
-    val.encode(&mut enc).map_err(|_| "Faild to encode")
+type V = Array<f64, Ix>;
+type Ensemble = Vec<V>;
+
+fn teo(dt: f64, step: u32, mut x: V) -> V {
+    let l = |y| ndarray_odeint::lorenz63(10., 28., 8.0 / 3.0, y);
+    let u = |y| ndarray_odeint::rk4(&l, dt, y);
+    for _ in 0..step {
+        x = u(x);
+    }
+    x
+}
+
+fn forcast(xs: Ensemble, dt: f64, step: u32) -> Ensemble {
+    xs.into_iter().map(|y| teo(dt, step, y)).collect()
 }
 
 fn main() {
-    let l = |y| ndarray_odeint::lorenz63(10., 28., 8.0 / 3.0, y);
-    let teo = |y| ndarray_odeint::rk4(&l, 0.01, y);
-    let ts = ndarray_odeint::TimeSeries {
-        teo: teo,
-        state: arr1(&[1.0, 0.0, 0.0]),
-    };
-
-    let ts_vec = Vec::from_iter(ts.take(10000));
-    match save_as_msg(&ts_vec, "ts.msg") {
-        Ok(()) => println!("Saved."),
-        Err(s) => println!("Error: {}", s),
-    }
+    let mut xs = vec![Array::range(1., 4., 1.); 5];
+    xs = forcast(xs, 0.01, 10);
+    aics_da::save_as_msg(&xs, "test.msg");
 }
