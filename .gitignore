@@ -1,1 +1,3 @@
 *.msg
+*.ipynb
+.ipynb_checkpoints/
