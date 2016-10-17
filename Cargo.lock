@@ -5,6 +5,8 @@ dependencies = [
  "ndarray 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray-linalg 0.1.0 (git+http://github.com/termoshtt/ndarray-linalg.git)",
  "ndarray-odeint 0.1.0 (git+http://github.com/termoshtt/ndarray-odeint.git)",
+ "ndarray-rand 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rand 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "rmp 0.7.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "rmp-serialize 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
