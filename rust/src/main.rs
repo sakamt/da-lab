@@ -20,9 +20,10 @@ fn main() {
     let mut xs = vec![Array::range(1., 4., 1.); setting.k ];
     fs::create_dir_all("data").unwrap();
     for t in 0..setting.count {
-        xs = da::forcast(xs, setting.dt, setting.tau);
+        xs = da::forcast(xs, setting.dt, 1);
         let fname = format!("data/{:05}.msg", t);
         if t % setting.tau == 0 {
+            // TODO analysis
             io::save_as_msg(&xs, fname);
         }
     }
