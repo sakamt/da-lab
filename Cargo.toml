@@ -15,3 +15,6 @@ features = ["blas", "rustc-serialize"]
 
 [dependencies.ndarray-odeint]
 git = "http://github.com/termoshtt/ndarray-odeint.git"
+
+[dependencies.ndarray-linalg]
+git = "http://github.com/termoshtt/ndarray-linalg.git"
