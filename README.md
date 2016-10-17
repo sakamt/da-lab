@@ -39,7 +39,7 @@ Development
 ------------
 
 - Simulation
-  - use ndarray-odeint (my private repository)
+  - use [ndarray-odeint](https://github.com/termoshtt/ndarray-odeint)
 
 - Data Assimilation
   - Implement several algorithms:
