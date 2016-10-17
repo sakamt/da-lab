@@ -19,6 +19,10 @@ fn teo(dt: f64, step: usize, mut x: V) -> V {
     x
 }
 
+pub fn forcast(xs: Ensemble, dt: f64, step: usize) -> Ensemble {
+    xs.into_iter().map(|y| teo(dt, step, y)).collect()
+}
+
 /// calc mean and covariance matrix
 pub fn stat2(xs: &Ensemble) -> (V, M) {
     let k = xs.len();
@@ -35,8 +39,4 @@ pub fn stat2(xs: &Ensemble) -> (V, M) {
     }
     m /= k as f64 - 1.0;
     (v, m)
-}
-
-pub fn forcast(xs: Ensemble, dt: f64, step: usize) -> Ensemble {
-    xs.into_iter().map(|y| teo(dt, step, y)).collect()
 }
