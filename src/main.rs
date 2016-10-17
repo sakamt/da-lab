@@ -18,6 +18,7 @@ struct Setting {
     tau: usize,
     save_count: usize,
     dt: f64,
+    r: f64,
 }
 
 fn main() {
@@ -30,10 +31,12 @@ fn main() {
     for _ in 0..setting.k {
         xs.push(0.01 * Array::random(3, dist) + &x);
     }
+    let h = Array::<f64, _>::eye(3);
+    let r = setting.r * Array::<f64, _>::eye(3);
     for t in 0..setting.count {
         x = da::teo(setting.dt, setting.tau, x);
         xs = da::forcast(xs, setting.dt, setting.tau);
-        // TODO analysis
+        xs = da::enkf(xs, &x, &h, &r);
         if t % setting.save_count == 0 {
             let tt = t / setting.save_count;
             let xs_fname = format!("data/xs{:05}.msg", tt);
