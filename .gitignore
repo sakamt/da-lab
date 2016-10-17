@@ -1,1 +1,4 @@
 *.msg
+*.json
+*.ipynb
+.ipynb_checkpoints/
