@@ -6,6 +6,7 @@ use self::ndarray::prelude::*;
 use self::ndarray_odeint::*;
 
 pub type V = Array<f64, Ix>;
+pub type M = Array<f64, (Ix, Ix)>;
 pub type Ensemble = Vec<V>;
 
 fn teo(dt: f64, step: usize, mut x: V) -> V {
@@ -15,6 +16,20 @@ fn teo(dt: f64, step: usize, mut x: V) -> V {
         x = u(x);
     }
     x
+}
+
+/// calc mean and covariance matrix
+pub fn stat2(xs: &Ensemble) -> (V, M) {
+    let k = xs.len();
+    let n = xs[0].len();
+    let mut v = Array::zeros(n);
+    for x in xs.iter() {
+        v = v + x;
+    }
+    v /= k as f64;
+    let m = Array::zeros((n, n));
+    // TODO calc m
+    (v, m)
 }
 
 pub fn forcast(xs: Ensemble, dt: f64, step: usize) -> Ensemble {
