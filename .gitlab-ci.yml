@@ -1,11 +1,4 @@
-build-haskell:
-  image: fpco/stack-build:lts-6.15
+build:
+  image: termoshtt/rust
   script:
-    - cd haskell/
-    - stack build
-
-build-rust:
-  image: jimmycuadra/rust
-  script:
-    - cd rust/
     - cargo build
