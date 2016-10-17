@@ -4,6 +4,7 @@ extern crate ndarray_odeint;
 
 use self::ndarray::prelude::*;
 use self::ndarray_odeint::*;
+use einsum;
 
 pub type V = Array<f64, Ix>;
 pub type M = Array<f64, (Ix, Ix)>;
@@ -27,8 +28,12 @@ pub fn stat2(xs: &Ensemble) -> (V, M) {
         v = v + x;
     }
     v /= k as f64;
-    let m = Array::zeros((n, n));
-    // TODO calc m
+    let mut m = Array::zeros((n, n));
+    for x in xs.iter() {
+        let dx = x - &v;
+        m = m + einsum::a_b__ab(&dx, &dx);
+    }
+    m /= k as f64 - 1.0;
     (v, m)
 }
 
