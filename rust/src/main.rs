@@ -4,6 +4,7 @@ extern crate ndarray_odeint;
 extern crate aics_da;
 
 use ndarray::prelude::*;
+use std::fs;
 
 type V = Array<f64, Ix>;
 type Ensemble = Vec<V>;
@@ -23,6 +24,10 @@ fn forcast(xs: Ensemble, dt: f64, step: u32) -> Ensemble {
 
 fn main() {
     let mut xs = vec![Array::range(1., 4., 1.); 5];
-    xs = forcast(xs, 0.01, 10);
-    aics_da::save_as_msg(&xs, "test.msg");
+    fs::create_dir_all("data").unwrap();
+    for t in 0..1000 {
+        xs = forcast(xs, 0.01, 10);
+        let fname = format!("data/{:04}.msg", t);
+        aics_da::save_as_msg(&xs, fname);
+    }
 }
