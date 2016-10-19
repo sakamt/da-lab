@@ -39,7 +39,7 @@ pub fn enkf(xs: Ensemble, y: &V, h: &M, r: &M) -> Ensemble {
     let k = p.dot(&h.t()).dot(&vinv);
     xs.into_iter()
         .map(|x| {
-            let err = y + &h.dot(&x);
+            let err = y - &h.dot(&x);
             x + k.dot(&err)
         })
         .collect()
