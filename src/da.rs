@@ -1,10 +1,8 @@
 
 extern crate ndarray;
-extern crate ndarray_odeint;
 extern crate ndarray_linalg;
 
 use self::ndarray::prelude::*;
-use self::ndarray_odeint::*;
 use self::ndarray_linalg::*;
 use einsum;
 
@@ -12,17 +10,8 @@ pub type V = Array<f64, Ix>;
 pub type M = Array<f64, (Ix, Ix)>;
 pub type Ensemble = Vec<V>;
 
-pub fn teo(dt: f64, step: usize, mut x: V) -> V {
-    let l = |y| lorenz63(10., 28., 8.0 / 3.0, y);
-    let u = |y| rk4(&l, dt, y);
-    for _ in 0..step {
-        x = u(x);
-    }
-    x
-}
-
-pub fn forcast(xs: Ensemble, dt: f64, step: usize) -> Ensemble {
-    xs.into_iter().map(|y| teo(dt, step, y)).collect()
+pub fn forcast(teo: &Fn(V) -> V, xs: Ensemble) -> Ensemble {
+    xs.into_iter().map(teo).collect()
 }
 
 /// calc mean and covariance matrix
