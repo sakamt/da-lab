@@ -56,12 +56,14 @@ fn main() {
     let f = |xs| da::forcast(&u, xs);
 
     // data assimilation
+    println!("time,dev,std");
     for t in 0..setting.count {
         x = u(x);
         xs = f(xs);
         xs = da::enkf(xs, &x, &h, &r);
         let (xm, p) = da::stat2(&xs);
-        println!("|x-xm| = {:?}, sqrt(TrP) = {:?}",
+        println!("{:.05},{:.05},{:.05}",
+                 t as f64 * setting.dt,
                  (xm - &x).norm(),
                  p.trace().unwrap().sqrt());
         if t % setting.save_count == 0 {
