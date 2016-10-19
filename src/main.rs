@@ -2,6 +2,7 @@
 extern crate rand;
 extern crate ndarray;
 extern crate ndarray_odeint;
+extern crate ndarray_linalg;
 extern crate ndarray_rand;
 extern crate rustc_serialize;
 extern crate aics_da;
@@ -10,6 +11,7 @@ use std::fs;
 use rand::distributions::*;
 use ndarray::prelude::*;
 use ndarray_rand::RandomExt;
+use ndarray_linalg::*;
 use ndarray_odeint::*;
 use aics_da::*;
 use aics_da::da::V;
@@ -58,6 +60,10 @@ fn main() {
         x = u(x);
         xs = f(xs);
         xs = da::enkf(xs, &x, &h, &r);
+        let (xm, p) = da::stat2(&xs);
+        println!("|x-xm| = {:?}, sqrt(TrP) = {:?}",
+                 (xm - &x).norm(),
+                 p.trace().unwrap().sqrt());
         if t % setting.save_count == 0 {
             let tt = t / setting.save_count;
             let xs_fname = format!("data/xs{:05}.msg", tt);
