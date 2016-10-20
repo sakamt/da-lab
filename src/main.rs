@@ -55,7 +55,7 @@ fn main() {
         xs = da::enkf(xs, &x, &h, &r);
         let (xm, p) = ensemble::stat2(&xs);
         println!("{:.05},{:.05},{:.05}",
-                 t as f64 * setting.dt,
+                 (t * setting.tau) as f64 * setting.dt,
                  (xm - &x).norm().sqrt(),
                  p.trace().unwrap().sqrt());
         if t % setting.save_count == 0 {

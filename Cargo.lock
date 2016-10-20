@@ -75,7 +75,7 @@ dependencies = [
 [[package]]
 name = "ndarray-linalg"
 version = "0.1.0"
-source = "git+http://github.com/termoshtt/ndarray-linalg.git#e2e8c854d63f76da576e60d322832504c299b74a"
+source = "git+http://github.com/termoshtt/ndarray-linalg.git#be765cb15954d18c147a3c94f64d28b9b4aa8e1c"
 dependencies = [
  "lapack 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
