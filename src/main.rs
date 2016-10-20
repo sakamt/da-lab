@@ -1,20 +1,16 @@
 
-extern crate rand;
 extern crate ndarray;
 extern crate ndarray_odeint;
 extern crate ndarray_linalg;
-extern crate ndarray_rand;
 extern crate rustc_serialize;
 extern crate aics_da;
 
 use std::fs;
-use rand::distributions::*;
 use ndarray::prelude::*;
-use ndarray_rand::RandomExt;
 use ndarray_linalg::*;
 use ndarray_odeint::*;
 use aics_da::*;
-use aics_da::da::V;
+use aics_da::ensemble::V;
 
 #[derive(RustcDecodable)]
 struct Setting {
@@ -41,11 +37,7 @@ fn main() {
 
     // init data
     let mut x = arr1(&[1., 0., 0.]);
-    let mut xs: Vec<da::V> = Vec::new();
-    let dist = Normal::new(0.0, 1.0);
-    for _ in 0..setting.k {
-        xs.push(0.01 * Array::random(3, dist) + &x);
-    }
+    let mut xs = ensemble::replica(&x, 0.01, setting.k);
 
     // observation settings
     let h = Array::<f64, _>::eye(3);
@@ -61,7 +53,7 @@ fn main() {
         x = u(x);
         xs = f(xs);
         xs = da::enkf(xs, &x, &h, &r);
-        let (xm, p) = da::stat2(&xs);
+        let (xm, p) = ensemble::stat2(&xs);
         println!("{:.05},{:.05},{:.05}",
                  t as f64 * setting.dt,
                  (xm - &x).norm(),
