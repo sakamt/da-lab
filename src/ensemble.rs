@@ -15,12 +15,8 @@ pub type Ensemble = Vec<V>;
 
 pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {
     let n = x.len();
-    let mut xs = Vec::new();
     let dist = Normal::new(0.0, 1.0);
-    for _ in 0..k {
-        xs.push(r * Array::random(n, dist) + x);
-    }
-    xs
+    (0..k).map(|_| r * Array::random(n, dist) + x).collect()
 }
 
 /// calc mean and covariance matrix

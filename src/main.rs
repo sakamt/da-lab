@@ -56,7 +56,7 @@ fn main() {
         let (xm, p) = ensemble::stat2(&xs);
         println!("{:.05},{:.05},{:.05}",
                  t as f64 * setting.dt,
-                 (xm - &x).norm(),
+                 (xm - &x).norm().sqrt(),
                  p.trace().unwrap().sqrt());
         if t % setting.save_count == 0 {
             let tt = t / setting.save_count;
