@@ -1,42 +1,31 @@
 
+extern crate rand;
 extern crate ndarray;
-extern crate ndarray_odeint;
+extern crate ndarray_linalg;
+extern crate ndarray_rand;
 
+use self::ndarray_linalg::SquareMatrix;
 use self::ndarray::prelude::*;
-use self::ndarray_odeint::*;
-use einsum;
+use self::rand::distributions::*;
+use self::ndarray_rand::RandomExt;
+use ensemble::*;
 
-pub type V = Array<f64, Ix>;
-pub type M = Array<f64, (Ix, Ix)>;
-pub type Ensemble = Vec<V>;
-
-fn teo(dt: f64, step: usize, mut x: V) -> V {
-    let l = |y| lorenz63(10., 28., 8.0 / 3.0, y);
-    let u = |y| rk4(&l, dt, y);
-    for _ in 0..step {
-        x = u(x);
-    }
-    x
+pub fn forcast(teo: &Fn(V) -> V, xs: Ensemble) -> Ensemble {
+    xs.into_iter().map(teo).collect()
 }
 
-pub fn forcast(xs: Ensemble, dt: f64, step: usize) -> Ensemble {
-    xs.into_iter().map(|y| teo(dt, step, y)).collect()
-}
-
-/// calc mean and covariance matrix
-pub fn stat2(xs: &Ensemble) -> (V, M) {
-    let k = xs.len();
-    let n = xs[0].len();
-    let mut v = Array::zeros(n);
-    for x in xs.iter() {
-        v = v + x;
-    }
-    v /= k as f64;
-    let mut m = Array::zeros((n, n));
-    for x in xs.iter() {
-        let dx = x - &v;
-        m = m + einsum::a_b__ab(&dx, &dx);
-    }
-    m /= k as f64 - 1.0;
-    (v, m)
+pub fn enkf(xs: Ensemble, y: &V, h: &M, r: &M) -> Ensemble {
+    let (_, p) = stat2(&xs);
+    let v = h.dot(&p).dot(&h.t()) + r;
+    let vinv = v.inv().unwrap();
+    let k = p.dot(&h.t()).dot(&vinv);
+    let rs = r.clone().ssqrt().unwrap();
+    let dist = Normal::new(0., 1.0);
+    let n = y.len();
+    xs.into_iter()
+        .map(|x| {
+            let err = y - &h.dot(&x) + rs.dot(&Array::random(n, dist));
+            x + k.dot(&err)
+        })
+        .collect()
 }
