@@ -52,12 +52,6 @@ fn main() {
     for t in 0..setting.count {
         x = u(x);
         xs = f(xs);
-        xs = da::enkf(xs, &x, &h, &r);
-        let (xm, p) = ensemble::stat2(&xs);
-        println!("{:.05},{:.05},{:.05}",
-                 (t * setting.tau) as f64 * setting.dt,
-                 (xm - &x).norm().sqrt(),
-                 p.trace().unwrap().sqrt());
         if t % setting.save_count == 0 {
             let tt = t / setting.save_count;
             let xs_fname = format!("data/xs{:05}.msg", tt);
@@ -65,5 +59,11 @@ fn main() {
             let x_fname = format!("data/x{:05}.msg", tt);
             io::save_as_msg(&x, x_fname);
         }
+        xs = da::enkf(xs, &x, &h, &r);
+        let (xm, p) = ensemble::stat2(&xs);
+        println!("{:.05},{:.05},{:.05}",
+                 (t * setting.tau) as f64 * setting.dt,
+                 (xm - &x).norm().sqrt(),
+                 p.trace().unwrap().sqrt());
     }
 }
