@@ -1,6 +1,8 @@
 *.msg
 *.json
 *.csv
+*.png
+*.svg
 *.ipynb
 .ipynb_checkpoints/
 target/
