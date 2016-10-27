@@ -9,6 +9,7 @@ rustc-serialize = "*"
 rmp-serialize = "*"
 rand = "*"
 ndarray-rand = "*"
+num-traits = "*"
 
 [dependencies.ndarray]
 version = "*"
