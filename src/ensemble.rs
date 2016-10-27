@@ -5,7 +5,6 @@ extern crate ndarray_linalg;
 extern crate ndarray_rand;
 
 use self::ndarray::prelude::*;
-use self::ndarray_linalg::*;
 use self::rand::distributions::*;
 use self::ndarray_rand::RandomExt;
 use einsum;
