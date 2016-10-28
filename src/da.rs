@@ -78,9 +78,9 @@ impl<'a, TEO, Iter> Iterator for EnKF<'a, TEO, Iter>
             Some(y) => y,
             None => return None,
         };
-        let xs_b = forcast(&self.teo, self.states.clone());
-        let xs_a = self.analysis(xs_b.clone(), &y);
-        let xs_a_pre = mem::replace(&mut self.states, xs_a);
-        Some((xs_a_pre, xs_b))
+        let xs_a = self.analysis(self.states.clone(), y);
+        let xs_b = forcast(&self.teo, xs_a.clone());
+        let xs_b_pre = mem::replace(&mut self.states, xs_b);
+        Some((xs_b_pre, xs_a))
     }
 }

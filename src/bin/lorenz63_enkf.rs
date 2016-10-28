@@ -2,7 +2,6 @@
 extern crate ndarray;
 extern crate ndarray_odeint;
 extern crate ndarray_linalg;
-extern crate num_traits;
 extern crate rustc_serialize;
 extern crate aics_da;
 
@@ -10,7 +9,6 @@ use std::fs;
 use ndarray::prelude::*;
 use ndarray_linalg::*;
 use ndarray_odeint::*;
-use num_traits::float::Float;
 use aics_da::*;
 use aics_da::ensemble::V;
 
@@ -54,7 +52,17 @@ fn main() {
 
     let enkf = da::EnKF::new(h, rs, xs, |x| teo(&setting, x), y_tl.iter());
 
-    for (xs_a, xs_b) in enkf {
-        //
+    for (t, ((xs_b, xs_a), x)) in enkf.zip(x_tl.iter()).enumerate() {
+        let time = (t * setting.tau) as f64 * setting.dt;
+        let xm_a = ensemble::mean(&xs_a);
+        let rmse = ((x - &xm_a).norm() / 3.0).sqrt();
+        println!("time:{:.05}\trmse:{:.03e}", time, rmse);
+        if t % setting.save_count == 0 {
+            let tt = t / setting.save_count;
+            let xs_fname = format!("data/pre{:05}.msg", tt);
+            io::save_as_msg(&xs_b, xs_fname);
+            let xs_fname = format!("data/post{:05}.msg", tt);
+            io::save_as_msg(&xs_a, xs_fname);
+        }
     }
 }
