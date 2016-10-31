@@ -18,7 +18,7 @@ pub fn forcast(teo: &Fn(V) -> V, xs: Ensemble) -> Ensemble {
 
 pub fn rmse(mean: &V, truth: &V) -> f64 {
     let n = mean.len() as f64;
-    ((mean - truth).norm() / n).sqrt()
+    (mean - truth).norm() / n.sqrt()
 }
 
 pub fn noise(rs: &M) -> V {
