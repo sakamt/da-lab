@@ -48,21 +48,26 @@ fn main() {
     };
     let x_tl: Vec<V> = ts.skip(setting.count / 2).take(setting.count).collect();
     let y_tl: Vec<V> = x_tl.iter().map(|x| da::noise(&rs) + x).collect();
-    let xs = ensemble::replica(&x_tl[0], 0.01, setting.k);
+    let xs = ensemble::replica(&x_tl[0], setting.r.sqrt(), setting.k);
 
     let enkf = da::EnKF::new(h, rs, xs, |x| teo(&setting, x), y_tl.iter());
 
-    for (t, ((xs_b, xs_a), x)) in enkf.zip(x_tl.iter()).enumerate() {
+    println!("time,rmse");
+    for (t, ((xs_b, xs_a), (x, y))) in enkf.zip(x_tl.iter().zip(y_tl.iter())).enumerate() {
         let time = (t * setting.tau) as f64 * setting.dt;
         let xm_a = ensemble::mean(&xs_a);
-        let rmse = ((x - &xm_a).norm() / 3.0).sqrt();
-        println!("time:{:.05}\trmse:{:.03e}", time, rmse);
+        let rmse = da::rmse(x, &xm_a);
+        println!("{:.05},{:.05e}", time, rmse);
         if t % setting.save_count == 0 {
             let tt = t / setting.save_count;
             let xs_fname = format!("data/pre{:05}.msg", tt);
             io::save_as_msg(&xs_b, xs_fname);
             let xs_fname = format!("data/post{:05}.msg", tt);
             io::save_as_msg(&xs_a, xs_fname);
+            let xs_fname = format!("data/truth{:05}.msg", tt);
+            io::save_as_msg(&x, xs_fname);
+            let xs_fname = format!("data/obs{:05}.msg", tt);
+            io::save_as_msg(&y, xs_fname);
         }
     }
 }

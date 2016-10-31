@@ -16,6 +16,11 @@ pub fn forcast(teo: &Fn(V) -> V, xs: Ensemble) -> Ensemble {
     xs.into_iter().map(teo).collect()
 }
 
+pub fn rmse(mean: &V, truth: &V) -> f64 {
+    let n = mean.len() as f64;
+    ((mean - truth).norm() / n).sqrt()
+}
+
 pub fn noise(rs: &M) -> V {
     let (n, _) = rs.size();
     let dist = Normal::new(0., 1.0);
