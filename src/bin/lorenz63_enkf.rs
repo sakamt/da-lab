@@ -44,7 +44,7 @@ fn main() {
         state: arr1(&[1.0, 0.0, 0.0]),
     };
     let x_tl: Vec<V> = ts.skip(setting.count / 2).take(setting.count).collect();
-    let y_tl: Vec<V> = x_tl.iter().map(|x| da::noise(&rs) + x).collect();
+    let y_tl: Vec<V> = x_tl.iter().map(|x| da::noise(&rs) + h.dot(x)).collect();
     let xs = ensemble::replica(&x_tl[0], setting.r.sqrt(), setting.k);
 
     let enkf = da::EnKF::new(h, rs, xs, |x| teo(&setting, x), y_tl.iter());

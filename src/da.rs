@@ -28,12 +28,6 @@ pub fn noise(rs: &M) -> V {
     rs.dot(&d)
 }
 
-pub fn kalman_gain(p: &M, h: &M, r: &M) -> M {
-    let v = h.dot(p).dot(&h.t()) + r;
-    let vinv = v.inv().unwrap();
-    p.dot(&h.t()).dot(&vinv)
-}
-
 /// execute Ensemble Kalman filter (EnKF)
 pub struct EnKF<'a, TEO, Iter>
     where TEO: Fn(V) -> V,
