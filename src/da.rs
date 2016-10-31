@@ -28,13 +28,18 @@ pub fn noise(rs: &M) -> V {
     rs.dot(&d)
 }
 
+pub fn kalman_gain(p: &M, h: &M, r: &M) -> M {
+    let v = h.dot(p).dot(&h.t()) + r;
+    let vinv = v.inv().unwrap();
+    p.dot(&h.t()).dot(&vinv)
+}
+
 /// execute Ensemble Kalman filter (EnKF)
 pub struct EnKF<'a, TEO, Iter>
     where TEO: Fn(V) -> V,
           Iter: Iterator<Item = &'a V>
 {
     h: M,
-    r: M,
     rs: M,
     states: Ensemble,
     teo: TEO,
@@ -49,7 +54,6 @@ impl<'a, TEO, Iter> EnKF<'a, TEO, Iter>
     pub fn new(h: M, rs: M, states: Ensemble, teo: TEO, obs_iter: Iter) -> Self {
         EnKF {
             h: h,
-            r: rs.dot(&rs),
             rs: rs,
             states: states,
             teo: teo,
@@ -60,10 +64,10 @@ impl<'a, TEO, Iter> EnKF<'a, TEO, Iter>
 
     /// execute analysis step
     fn analysis(&self, xs: Ensemble, y: &V) -> Ensemble {
-        let (_, p) = stat2(&xs);
-        let v = &self.h.dot(&p).dot(&self.h.t()) + &self.r;
-        let vinv = v.inv().unwrap();
-        let k = p.dot(&self.h.t()).dot(&vinv);
+        let ys = xs.iter().map(|x| self.h.dot(x) + noise(&self.rs)).collect();
+        let v = covar(&ys, &ys);
+        let u = covar(&xs, &ys);
+        let k = u.dot(&v.inv().unwrap());
         xs.into_iter()
             .map(|x| {
                 let err = y - &self.h.dot(&x) + noise(&self.rs);

@@ -1,13 +1,11 @@
 
 extern crate ndarray;
 extern crate ndarray_odeint;
-extern crate ndarray_linalg;
 extern crate rustc_serialize;
 extern crate aics_da;
 
 use std::fs;
 use ndarray::prelude::*;
-use ndarray_linalg::*;
 use ndarray_odeint::*;
 use aics_da::*;
 use aics_da::ensemble::V;
@@ -39,8 +37,7 @@ fn main() {
 
     // observation settings
     let h = Array::<f64, _>::eye(3);
-    let r = setting.r * Array::<f64, _>::eye(3);
-    let rs = r.clone().ssqrt().unwrap();
+    let rs = setting.r.sqrt() * Array::<f64, _>::eye(3);
 
     let ts = TimeSeries {
         teo: |x| teo(&setting, x),

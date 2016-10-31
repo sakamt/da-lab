@@ -29,6 +29,20 @@ pub fn mean(xs: &Ensemble) -> V {
     v / k as f64
 }
 
+pub fn covar(xs: &Ensemble, ys: &Ensemble) -> M {
+    let xs_m = mean(xs);
+    let ys_m = mean(ys);
+    let n = xs_m.len();
+    let m = ys_m.len();
+    let mut c = Array::zeros((n, m));
+    for (x, y) in xs.iter().zip(ys.iter()) {
+        let dx = x - &xs_m;
+        let dy = y - &ys_m;
+        c = c + einsum::a_b__ab(&dx, &dy);
+    }
+    c / (xs.len() - 1) as f64
+}
+
 /// calc mean and covariance matrix
 pub fn stat2(xs: &Ensemble) -> (V, M) {
     let k = xs.len();
