@@ -54,7 +54,7 @@ fn main() {
         let time = (t * setting.tau) as f64 * setting.dt;
         let xm_a = ensemble::mean(&xs_a);
         let rmse = da::rmse(x, &xm_a);
-        let (k2, k3, k4) = ensemble::kstats4(&xs_b);
+        let (k2, k3, k4) = ensemble::kstat4(&xs_b);
         println!("{:.05},{:.05e},{:.05e},{:.05e},{:.05e},{:.05e},{:.05e},{:.05e}",
                  time,
                  x[0],

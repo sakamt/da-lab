@@ -63,7 +63,7 @@ pub fn stat2(xs: &Ensemble) -> (V, M) {
 
 /// calc unbiased estimator for cumulant of each components.
 /// (i.e. ignore geometrical information)
-pub fn kstats4(xs: &Ensemble) -> (V, V, V) {
+pub fn kstat4(xs: &Ensemble) -> (V, V, V) {
     let xm = mean(xs);
     let n = xm.len();
     let mut m2 = Array::zeros(n);
