@@ -61,19 +61,25 @@ pub fn stat2(xs: &Ensemble) -> (V, M) {
     (v, m)
 }
 
-pub fn skewness(xs: &Ensemble) -> V {
-    let k = xs.len() as f64;
-    let n = xs[0].len();
-    let mut mu = Array::zeros(n);
-    for x in xs.iter() {
-        mu += x;
-    }
-    mu /= k;
-
+/// calc unbiased estimator for cumulant of each components.
+/// (i.e. ignore geometrical information)
+pub fn kstat4(xs: &Ensemble) -> (V, V, V) {
+    let xm = mean(xs);
+    let n = xm.len();
+    let mut m2 = Array::zeros(n);
     let mut m3 = Array::zeros(n);
+    let mut m4 = Array::zeros(n);
     for x in xs.iter() {
-        let dx = x - &mu;
+        let dx = x - &xm;
+        m2 = m2 + dx.mapv(|a| a * a);
         m3 = m3 + dx.mapv(|a| a * a * a);
+        m4 = m4 + dx.mapv(|a| a * a * a * a);
     }
-    m3 * (k / ((k - 1.0) * (k - 2.0)))
+    let k = xs.len() as f64;
+    m2 /= k;
+    m3 /= k;
+    m4 /= k;
+    m4 = (k * k * ((k + 1.0) * m4 - 3.0 * (k - 1.0) * &m2 * &m2)) /
+         ((k - 1.0) * (k - 2.0) * (k - 3.0));
+    (m2 * (k / (k - 1.0)), m3 * ((k * k) / ((k - 1.0) * (k - 2.0))), m4)
 }
