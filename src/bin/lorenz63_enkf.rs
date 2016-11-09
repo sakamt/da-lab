@@ -49,13 +49,14 @@ fn main() {
 
     let enkf = da::EnKF::new(h, rs, xs, |x| teo(&setting, x), y_tl.iter());
 
-    println!("time,x,y,z,rmse,k2,k3,k4");
+    println!("time,x,y,z,rmse,k2_1,k3_1,k4_1,k2_2,k3_2,k4_2");
     for (t, ((xs_b, xs_a), (x, y))) in enkf.zip(x_tl.iter().zip(y_tl.iter())).enumerate() {
         let time = (t * setting.tau) as f64 * setting.dt;
         let xm_a = ensemble::mean(&xs_a);
         let rmse = da::rmse(x, &xm_a);
-        let (k2, k3, k4) = ensemble::kstat4(&xs_b);
-        println!("{:.05},{:.05e},{:.05e},{:.05e},{:.05e},{:.05e},{:.05e},{:.05e}",
+        let (k2, k3, k4) = ensemble::pca_kstat4(&xs_b);
+        println!("{:.05},{:.05e},{:.05e},{:.05e},{:.05e},{:.05e},{:.05e},{:.05e},{:.05e},{:.05e},\
+                  {:.05e}",
                  time,
                  x[0],
                  x[1],
@@ -63,7 +64,10 @@ fn main() {
                  rmse,
                  k2[0],
                  k3[0],
-                 k4[0]);
+                 k4[0],
+                 k2[1],
+                 k3[1],
+                 k4[1]);
         if t % setting.save_count == 0 {
             let tt = t / setting.save_count;
             let xs_fname = format!("data/pre{:05}.msg", tt);

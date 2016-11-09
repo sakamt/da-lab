@@ -5,6 +5,7 @@ extern crate ndarray_linalg;
 extern crate ndarray_rand;
 
 use self::ndarray::prelude::*;
+use self::ndarray_linalg::*;
 use self::rand::distributions::*;
 use self::ndarray_rand::RandomExt;
 use einsum;
@@ -61,6 +62,12 @@ pub fn stat2(xs: &Ensemble) -> (V, M) {
     (v, m)
 }
 
+pub fn pca(xs: &Ensemble) -> Ensemble {
+    let (xm, p) = stat2(xs);
+    let (_, u) = p.eigh().unwrap();
+    xs.iter().map(|x| u.t().dot(&(x - &xm))).collect()
+}
+
 /// calc unbiased estimator for cumulant of each components.
 /// (i.e. ignore geometrical information)
 pub fn kstat4(xs: &Ensemble) -> (V, V, V) {
@@ -82,4 +89,8 @@ pub fn kstat4(xs: &Ensemble) -> (V, V, V) {
     m4 = (k * k * ((k + 1.0) * m4 - 3.0 * (k - 1.0) * &m2 * &m2)) /
          ((k - 1.0) * (k - 2.0) * (k - 3.0));
     (m2 * (k / (k - 1.0)), m3 * ((k * k) / ((k - 1.0) * (k - 2.0))), m4)
+}
+
+pub fn pca_kstat4(xs: &Ensemble) -> (V, V, V) {
+    kstat4(&pca(xs))
 }
