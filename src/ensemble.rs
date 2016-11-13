@@ -1,13 +1,8 @@
 
-extern crate rand;
-extern crate ndarray;
-extern crate ndarray_linalg;
-extern crate ndarray_rand;
-
-use self::ndarray::prelude::*;
-use self::ndarray_linalg::*;
-use self::rand::distributions::*;
-use self::ndarray_rand::RandomExt;
+use ndarray::prelude::*;
+use ndarray_linalg::prelude::*;
+use rand::distributions::*;
+use ndarray_rand::RandomExt;
 use einsum;
 
 pub type V = Array<f64, Ix>;
