@@ -1,7 +1,6 @@
 #![allow(non_snake_case)]
 
-extern crate ndarray;
-use self::ndarray::prelude::*;
+use ndarray::prelude::*;
 
 pub fn a_b__ab(va: &Array<f64, Ix>, vb: &Array<f64, Ix>) -> Array<f64, (Ix, Ix)> {
     let na = va.len();

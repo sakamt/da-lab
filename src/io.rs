@@ -1,10 +1,6 @@
 
-extern crate ndarray;
-extern crate rmp_serialize;
-extern crate rustc_serialize;
-
-use self::rustc_serialize::{Encodable, Decodable, json};
-use self::rmp_serialize::Encoder;
+use rustc_serialize::{Encodable, Decodable, json};
+use rmp_serialize::Encoder;
 use std::fs::File;
 use std::io::Read;
 use std::string::String;
