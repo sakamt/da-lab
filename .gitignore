@@ -1,4 +1,3 @@
-.*.rustfmt
 *.msg
 *.json
 *.csv
@@ -7,3 +6,7 @@
 *.ipynb
 .ipynb_checkpoints/
 target/
+
+# cargo fmt
+*.bk
+.*.rustfmt
