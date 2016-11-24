@@ -2,6 +2,7 @@
 name = "aics-da"
 version = "0.1.0"
 dependencies = [
+ "itertools 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray-linalg 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray-odeint 0.1.0 (git+http://github.com/termoshtt/ndarray-odeint.git)",
