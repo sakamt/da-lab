@@ -5,8 +5,8 @@ use rand::distributions::*;
 use ndarray_rand::RandomExt;
 use einsum;
 
-pub type V = Array<f64, Ix>;
-pub type M = Array<f64, (Ix, Ix)>;
+pub type V = Array<f64, Ix1>;
+pub type M = Array<f64, Ix2>;
 pub type Ensemble = Vec<V>;
 
 pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {

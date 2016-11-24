@@ -2,6 +2,7 @@
 extern crate ndarray;
 extern crate ndarray_odeint;
 extern crate rustc_serialize;
+extern crate itertools;
 extern crate aics_da;
 
 use std::fs;
@@ -9,6 +10,7 @@ use ndarray::prelude::*;
 use ndarray_odeint::*;
 use aics_da::*;
 use aics_da::ensemble::V;
+use itertools::iterate;
 
 #[derive(RustcDecodable)]
 struct Setting {
@@ -38,11 +40,8 @@ fn main() {
     // observation settings
     let h = Array::<f64, _>::eye(3);
     let rs = setting.r.sqrt() * Array::<f64, _>::eye(3);
+    let ts = iterate(arr1(&[1.0, 0.0, 0.0]), |x| teo(&setting, x.clone()));
 
-    let ts = TimeSeries {
-        teo: |x| teo(&setting, x),
-        state: arr1(&[1.0, 0.0, 0.0]),
-    };
     let x_tl: Vec<V> = ts.skip(setting.count / 2).take(setting.count).collect();
     let y_tl: Vec<V> = x_tl.iter().map(|x| da::noise(&rs) + h.dot(x)).collect();
     let xs = ensemble::replica(&x_tl[0], setting.r.sqrt(), setting.k);
