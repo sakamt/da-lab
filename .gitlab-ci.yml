@@ -1,4 +1,8 @@
-build:
+test-rust:
   image: termoshtt/rust
+  cache:
+    paths:
+      - rust/target/
   script:
-    - cargo build
+    - cd rust/
+    - cargo test -vv
