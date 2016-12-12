@@ -6,3 +6,9 @@ test-rust:
   script:
     - cd rust/
     - cargo test -vv
+
+test-python:
+  image: termoshtt/scipy:3.5
+  script:
+    - cd python
+    - nosetests --with-doctest -v
