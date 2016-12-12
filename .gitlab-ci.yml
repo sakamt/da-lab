@@ -1,4 +1,14 @@
-build:
+test-rust:
   image: termoshtt/rust
+  cache:
+    paths:
+      - rust/target/
   script:
-    - cargo build
+    - cd rust/
+    - cargo test -vv
+
+test-python:
+  image: termoshtt/scipy:3.5
+  script:
+    - cd python
+    - nosetests --with-doctest -v
