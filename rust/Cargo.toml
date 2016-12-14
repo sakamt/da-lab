@@ -13,6 +13,7 @@ num-traits = "*"
 ndarray-linalg = "0.1.4"
 itertools = "*"
 docopt = "*"
+pbr = "*"
 
 [dependencies.ndarray]
 version = "*"

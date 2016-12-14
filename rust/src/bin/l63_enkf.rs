@@ -5,12 +5,14 @@ extern crate ndarray_odeint;
 extern crate rustc_serialize;
 extern crate aics_da;
 extern crate docopt;
+extern crate pbr;
 
 use docopt::Docopt;
 use ndarray::prelude::*;
 use ndarray_odeint::*;
 use aics_da::*;
 use aics_da::ensemble::V;
+use pbr::ProgressBar;
 
 #[derive(RustcDecodable)]
 struct Setting {
@@ -78,12 +80,14 @@ fn main() {
     let xs = ensemble::replica(&x0, setting.r.sqrt(), setting.k);
     let enkf = da::EnKF::new(h, rs, xs, |x| teo(&setting, x), y_tl.iter());
 
+    let mut pb = ProgressBar::new(T as u64);
     for (t, (xs_b, xs_a)) in enkf.enumerate() {
-        let time = (t * setting.tau) as f64 * setting.dt;
+        pb.inc();
         if t % setting.save_count == 0 {
             let tt = t / setting.save_count;
             io::save_msg(&xs_b, &format!("{}/b{:05}.msg", args.arg_output, tt));
             io::save_msg(&xs_a, &format!("{}/a{:05}.msg", args.arg_output, tt));
         }
     }
+    pb.finish_print("done!\n");
 }
