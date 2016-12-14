@@ -4,7 +4,9 @@ extern crate ndarray_odeint;
 extern crate rustc_serialize;
 extern crate itertools;
 extern crate aics_da;
+extern crate docopt;
 
+use docopt::Docopt;
 use std::fs;
 use ndarray::prelude::*;
 use ndarray_odeint::*;
@@ -22,6 +24,18 @@ struct Setting {
     r: f64,
 }
 
+const USAGE: &'static str = "
+EnKF for Lorenz63 model
+
+Usage:
+  l63_enkf <setting>
+";
+
+#[derive(Debug, RustcDecodable)]
+struct Args {
+    arg_setting: String,
+}
+
 fn teo(setting: &Setting, mut x: V) -> V {
     let dt = setting.dt;
     let step = setting.tau;
@@ -34,7 +48,8 @@ fn teo(setting: &Setting, mut x: V) -> V {
 }
 
 fn main() {
-    let setting: Setting = io::read_json("setting.json");
+    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
+    let setting: Setting = io::read_json(&args.arg_setting);
     fs::create_dir_all("data").unwrap();
 
     // observation settings
