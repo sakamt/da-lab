@@ -1,4 +1,3 @@
-#![allow(non_snake_case)]
 
 extern crate ndarray;
 extern crate ndarray_odeint;
@@ -32,6 +31,7 @@ struct Args {
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     println!("[Arguments]");
+    println!("- executable  : l63_init");
     println!("- setting JSON: {}", args.arg_setting);
     let setting: Setting = io::read_json(&args.arg_setting);
     let output = "init.msg";
