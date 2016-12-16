@@ -52,6 +52,7 @@ fn teo(setting: &Setting, mut x: V) -> V {
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     println!("[Arguments]");
+    println!("- executable   : l63_enkf");
     println!("- setting JSON : {}", args.arg_setting);
     println!("- initial state: {}", args.arg_init);
     println!("- observations : {}", args.arg_observation);
