@@ -1,6 +1,6 @@
 
 import numpy as np
-import scipy
+import scipy.stats
 import msgpack
 
 
@@ -16,7 +16,7 @@ def save_msg(a, filename):
         msgpack.dump(data, f)
 
 
-def non_gaussianity(xs, l, plot=False):
+def non_gaussianity(xs, l):
     xm = np.average(xs, axis=1)
     P = np.cov(xs)
     kernel = scipy.stats.gaussian_kde(xs)
