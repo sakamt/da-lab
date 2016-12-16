@@ -13,3 +13,9 @@ test-python:
     - cd python
     - pip install -r requirements.txt
     - nosetests --with-doctest -v
+
+install-python:
+  image: termoshtt/scipy:3.5
+  script:
+    - cd python
+    - python setup.py install
