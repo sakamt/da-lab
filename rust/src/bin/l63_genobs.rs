@@ -39,19 +39,25 @@ fn main() {
     println!("- setting JSON : {}", args.arg_setting);
     println!("- initial state: {}", args.arg_init);
     let setting: Setting = io::read_json(&args.arg_setting);
-    let output = "obs.msg";
+    let truth_output = "truth.msg";
+    let obs_output = "obs.msg";
     println!("[Settings]");
-    println!("- dt    : {}", setting.dt);
-    println!("- tau   : {}", setting.tau);
-    println!("- r     : {}", setting.r);
-    println!("- count : {}", setting.count);
-    println!("- output: {}", output);
+    println!("- dt         : {}", setting.dt);
+    println!("- tau        : {}", setting.tau);
+    println!("- r          : {}", setting.r);
+    println!("- count      : {}", setting.count);
+    println!("[Outputs]");
+    println!("- truth      : {}", truth_output);
+    println!("- observation: {}", obs_output);
 
     let rs = setting.r.sqrt() * Array::<f64, _>::eye(3);
     let x0: V = io::load_msg(&args.arg_init);
-    let obs: Vec<V> = iterate(x0, |x| l63::teo(setting.dt, setting.tau, x.clone()))
-        .map(|x| x + da::noise(&rs))
+    let truth: Vec<V> = iterate(x0, |x| l63::teo(setting.dt, setting.tau, x.clone()))
         .take(setting.count)
         .collect();
-    io::save_msg(&obs, output);
+    let obs: Vec<V> = truth.iter()
+        .map(|x| x + &da::noise(&rs))
+        .collect();
+    io::save_msg(&truth, truth_output);
+    io::save_msg(&obs, obs_output);
 }
