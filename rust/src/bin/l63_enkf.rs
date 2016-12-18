@@ -1,7 +1,6 @@
 #![allow(non_snake_case)]
 
 extern crate ndarray;
-extern crate ndarray_odeint;
 extern crate rustc_serialize;
 extern crate aics_da;
 extern crate docopt;
@@ -9,19 +8,9 @@ extern crate pbr;
 
 use docopt::Docopt;
 use ndarray::prelude::*;
-use ndarray_odeint::*;
 use aics_da::*;
 use aics_da::ensemble::V;
 use pbr::ProgressBar;
-
-#[derive(RustcDecodable)]
-struct Setting {
-    k: usize,
-    tau: usize,
-    save_count: usize,
-    dt: f64,
-    r: f64,
-}
 
 const USAGE: &'static str = "
 EnKF for Lorenz63 model
@@ -30,7 +19,7 @@ Usage:
   l63_enkf <setting> <observation> <init> <output>
 ";
 
-#[derive(Debug, RustcDecodable)]
+#[derive(RustcDecodable)]
 struct Args {
     arg_setting: String,
     arg_observation: String,
@@ -38,15 +27,13 @@ struct Args {
     arg_output: String,
 }
 
-fn teo(setting: &Setting, mut x: V) -> V {
-    let dt = setting.dt;
-    let step = setting.tau;
-    let l = |y| lorenz63(10., 28., 8.0 / 3.0, y);
-    let u = |y| rk4(&l, dt, y);
-    for _ in 0..step {
-        x = u(x);
-    }
-    x
+#[derive(RustcDecodable)]
+struct Setting {
+    k: usize,
+    tau: usize,
+    save_count: usize,
+    dt: f64,
+    r: f64,
 }
 
 fn main() {
@@ -79,7 +66,11 @@ fn main() {
 
     let y_tl: Vec<V> = obs.axis_iter(Axis(0)).map(|x| x.to_owned()).collect();
     let xs = ensemble::replica(&x0, setting.r.sqrt(), setting.k);
-    let enkf = da::EnKF::new(h, rs, xs, |x| teo(&setting, x), y_tl.iter());
+    let enkf = da::EnKF::new(h,
+                             rs,
+                             xs,
+                             |x| l63::teo(setting.dt, setting.tau, x),
+                             y_tl.iter());
 
     let mut pb = ProgressBar::new(T as u64);
     for (t, (xs_b, xs_a)) in enkf.enumerate() {

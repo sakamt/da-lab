@@ -1,6 +1,5 @@
 
 extern crate ndarray;
-extern crate ndarray_odeint;
 extern crate rustc_serialize;
 extern crate docopt;
 extern crate aics_da;
@@ -8,7 +7,6 @@ extern crate itertools;
 
 use docopt::Docopt;
 use ndarray::prelude::*;
-use ndarray_odeint::*;
 use aics_da::*;
 use aics_da::ensemble::V;
 use itertools::iterate;
@@ -34,15 +32,6 @@ struct Setting {
     count: usize,
 }
 
-fn teo(dt: f64, step: usize, mut x: V) -> V {
-    let l = |y| lorenz63(10., 28., 8.0 / 3.0, y);
-    let u = |y| rk4(&l, dt, y);
-    for _ in 0..step {
-        x = u(x);
-    }
-    x
-}
-
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     println!("[Arguments]");
@@ -60,7 +49,7 @@ fn main() {
 
     let rs = setting.r.sqrt() * Array::<f64, _>::eye(3);
     let x0: V = io::load_msg(&args.arg_init);
-    let obs: Vec<V> = iterate(x0, |x| teo(setting.dt, setting.tau, x.clone()))
+    let obs: Vec<V> = iterate(x0, |x| l63::teo(setting.dt, setting.tau, x.clone()))
         .map(|x| x + da::noise(&rs))
         .take(setting.count)
         .collect();
