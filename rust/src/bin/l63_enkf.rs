@@ -47,9 +47,9 @@ fn main() {
     std::fs::create_dir_all(&args.arg_output).unwrap();
     let setting: Setting = io::read_json(&args.arg_setting);
     let x0: V = io::load_msg(&args.arg_init);
-    let obs: Array<f64, Ix2> = io::load_msg(&args.arg_observation);
-    let T = obs.shape()[0];
-    let N = obs.shape()[1];
+    let obs: Vec<V> = io::load_msg(&args.arg_observation);
+    let T = obs.len();
+    let N = obs[0].len();
     let duration = (T * setting.tau) as f64 * setting.dt;
     assert_eq!(N, 3);
     println!("[Settings]");
@@ -64,13 +64,12 @@ fn main() {
     let h = Array::<f64, _>::eye(3);
     let rs = setting.r.sqrt() * Array::<f64, _>::eye(3);
 
-    let y_tl: Vec<V> = obs.axis_iter(Axis(0)).map(|x| x.to_owned()).collect();
     let xs = ensemble::replica(&x0, setting.r.sqrt(), setting.k);
     let enkf = da::EnKF::new(h,
                              rs,
                              xs,
                              |x| l63::teo(setting.dt, setting.tau, x),
-                             y_tl.iter());
+                             obs.iter());
 
     let mut pb = ProgressBar::new(T as u64);
     for (t, (xs_b, xs_a)) in enkf.enumerate() {
