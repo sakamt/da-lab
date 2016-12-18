@@ -1,5 +1,4 @@
-#!/bin/zsh
-
+#!/usr/bin/env zsh
 set -x
 time cargo run --release --bin=l63_init $1
 time cargo run --release --bin=l63_genobs $1 init.msg
