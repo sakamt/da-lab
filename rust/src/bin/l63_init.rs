@@ -1,20 +1,12 @@
 
 extern crate ndarray;
-extern crate ndarray_odeint;
 extern crate rustc_serialize;
 extern crate docopt;
 extern crate aics_da;
 
 use docopt::Docopt;
 use ndarray::prelude::*;
-use ndarray_odeint::*;
 use aics_da::*;
-
-#[derive(RustcDecodable)]
-struct Setting {
-    dt: f64,
-    init_count: usize,
-}
 
 const USAGE: &'static str = "
 Generate inital state of Lorenz63 model
@@ -23,9 +15,15 @@ Usage:
   l63_init <setting>
 ";
 
-#[derive(Debug, RustcDecodable)]
+#[derive(RustcDecodable)]
 struct Args {
     arg_setting: String,
+}
+
+#[derive(RustcDecodable)]
+struct Setting {
+    dt: f64,
+    init_count: usize,
 }
 
 fn main() {
@@ -40,9 +38,7 @@ fn main() {
     println!("- count : {}", setting.init_count);
     println!("- output: {}", output);
 
-    // ODE solver
-    let l = |y| lorenz63(10., 28., 8.0 / 3.0, y);
-    let u = |y| rk4(&l, setting.dt, y);
+    let u = |y| l63::teo(setting.dt, 1, y);
 
     // generate initial state
     let mut x = arr1(&[1.0, 0.0, 0.0]);
