@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+from . import linalg
 
 
 def new(N, K):
@@ -139,6 +140,11 @@ def merge_resampling(ws, xs, n=3):
 def Neff(ws):
     """ effective number of ensembles """
     return 1. / np.sum(ws**2)
+
+
+def calc_weight(xs, y, H, Rinv):
+    cs = np.array([linalg.quad(y-np.dot(H, x), Rinv)/2 for x in xs])
+    return weight(cs)
 
 
 def weight(cs):
