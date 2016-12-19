@@ -6,5 +6,9 @@ from setuptools import setup
 
 setup(name="aics_da",
       version="0.1.0",
-      scripts=["scripts/catmsg"],
+      description="data assimilation",
+      author="Toshiki Teramura",
+      author_email="toshiki.teramura@gmail.com",
+      license="GPLv3",
+      keywords="science",
       packages=["aics_da"])
