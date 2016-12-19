@@ -12,7 +12,7 @@ test-python:
   script:
     - cd python
     - pip install -r requirements.txt
-    - nosetests --with-doctest -v
+    - nosetests --with-doctest -v --with-coverage --cover-package=aics_da
 
 install-python:
   image: termoshtt/scipy:3.5
