@@ -11,4 +11,5 @@ setup(name="aics_da",
       author_email="toshiki.teramura@gmail.com",
       license="GPLv3",
       keywords="science",
+      scripts=["scripts/catmsg"],
       packages=["aics_da"])
