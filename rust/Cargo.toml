@@ -10,7 +10,8 @@ rmp-serialize = "*"
 rand = "*"
 ndarray-rand = "*"
 num-traits = "*"
-ndarray-linalg = "0.1.4"
+ndarray-linalg = "*"
+ndarray-odeint = "*"
 itertools = "*"
 docopt = "*"
 pbr = "*"
@@ -19,6 +20,3 @@ pbr = "*"
 version = "*"
 default-features = false
 features = ["blas", "rustc-serialize"]
-
-[dependencies.ndarray-odeint]
-git = "http://github.com/termoshtt/ndarray-odeint.git"
