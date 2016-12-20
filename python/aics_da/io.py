@@ -13,7 +13,7 @@ def load_array(filename):
 def load_arrays(filename):
     with open(filename, "rb") as f:
         data = msgpack.load(f)
-    return [np.array(d[2]).reshape(d[1]) for d in data]
+    return np.array([np.array(d[2]).reshape(d[1]) for d in data])
 
 
 def save_array(a, filename):
