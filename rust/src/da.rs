@@ -1,11 +1,11 @@
 
-use ndarray::prelude::*;
 use ndarray_linalg::prelude::*;
-use rand::distributions::*;
-use ndarray_rand::RandomExt;
-use ensemble::*;
 use std::mem;
 use std::marker::PhantomData;
+
+use observation::*;
+use ensemble::*;
+
 
 pub fn forcast(teo: &Fn(V) -> V, xs: Ensemble) -> Ensemble {
     xs.into_iter().map(teo).collect()
@@ -14,13 +14,6 @@ pub fn forcast(teo: &Fn(V) -> V, xs: Ensemble) -> Ensemble {
 pub fn rmse(mean: &V, truth: &V) -> f64 {
     let n = mean.len() as f64;
     (mean - truth).norm() / n.sqrt()
-}
-
-pub fn noise(rs: &M) -> V {
-    let (n, _) = rs.size();
-    let dist = Normal::new(0., 1.0);
-    let d = Array::random(n, dist);
-    rs.dot(&d)
 }
 
 /// execute Ensemble Kalman filter (EnKF)

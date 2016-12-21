@@ -56,7 +56,7 @@ fn main() {
         .take(setting.count)
         .collect();
     let obs: Vec<V> = truth.iter()
-        .map(|x| x + &da::noise(&rs))
+        .map(|x| x + &observation::noise(&rs))
         .collect();
     io::save_msg(&truth, truth_output);
     io::save_msg(&obs, obs_output);

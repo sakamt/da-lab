@@ -11,5 +11,6 @@ pub mod io;
 pub mod da;
 pub mod einsum;
 pub mod ensemble;
+pub mod observation;
 pub mod analysis;
 pub mod l63;
