@@ -10,15 +10,11 @@ pub type Ensemble = Vec<V>;
 
 #[derive(Clone, Debug)]
 pub struct Weight(Vec<f64>);
-#[derive(Clone, Debug)]
-pub struct LogWeight(Vec<f64>);
-
-impl Into<LogWeight> for Weight {
-    fn into(self) -> LogWeight {
-        LogWeight(self.0.into_iter().map(|x| x.ln()).collect())
+impl From<Vec<f64>> for Weight {
+    fn from(w: Vec<f64>) -> Weight {
+        Weight(w)
     }
 }
-
 impl Weight {
     pub fn mean(&self, xs: &Ensemble) -> V {
         let n = xs[0].len();
@@ -32,6 +28,20 @@ impl Weight {
             a + *w * einsum::a_b__ab(&dx, &dx)
         });
         (xm, cov)
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct LogWeight(Vec<f64>);
+impl From<Vec<f64>> for LogWeight {
+    fn from(w: Vec<f64>) -> LogWeight {
+        LogWeight(w)
+    }
+}
+
+impl Into<LogWeight> for Weight {
+    fn into(self) -> LogWeight {
+        LogWeight(self.0.into_iter().map(|x| x.ln()).collect())
     }
 }
 
@@ -73,7 +83,7 @@ pub fn covar(xs: &Ensemble, ys: &Ensemble) -> M {
     c / (xs.len() - 1) as f64
 }
 
-/// calc mean and covariance matrix
+/// mean and covariance
 pub fn stat2(xs: &Ensemble) -> (V, M) {
     let k = xs.len();
     let n = xs[0].len();
