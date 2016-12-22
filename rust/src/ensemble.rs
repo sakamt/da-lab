@@ -8,51 +8,6 @@ pub type V = Array<f64, Ix1>;
 pub type M = Array<f64, Ix2>;
 pub type Ensemble = Vec<V>;
 
-#[derive(Clone, Debug)]
-pub struct Weight(Vec<f64>);
-impl From<Vec<f64>> for Weight {
-    fn from(w: Vec<f64>) -> Weight {
-        Weight(w)
-    }
-}
-impl Weight {
-    pub fn mean(&self, xs: &Ensemble) -> V {
-        let n = xs[0].len();
-        xs.iter().zip(self.0.iter()).fold(Array::zeros(n), |a, (b, w)| a + b * *w)
-    }
-    pub fn stat2(&self, xs: &Ensemble) -> (V, M) {
-        let n = xs[0].len();
-        let xm = self.mean(xs);
-        let cov = xs.iter().zip(self.0.iter()).fold(Array::zeros((n, n)), |a, (b, w)| {
-            let dx = b - &xm;
-            a + *w * einsum::a_b__ab(&dx, &dx)
-        });
-        (xm, cov)
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct LogWeight(Vec<f64>);
-impl From<Vec<f64>> for LogWeight {
-    fn from(w: Vec<f64>) -> LogWeight {
-        LogWeight(w)
-    }
-}
-
-impl Into<LogWeight> for Weight {
-    fn into(self) -> LogWeight {
-        LogWeight(self.0.into_iter().map(|x| x.ln()).collect())
-    }
-}
-
-impl Into<Weight> for LogWeight {
-    fn into(self) -> Weight {
-        let ws: Vec<f64> = self.0.into_iter().map(|x| x.exp()).collect();
-        let total: f64 = ws.iter().sum();
-        Weight(ws.into_iter().map(|x| x / total).collect())
-    }
-}
-
 pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {
     let n = x.len();
     let dist = Normal::new(0.0, 1.0);

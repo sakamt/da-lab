@@ -5,6 +5,7 @@ use rand::distributions::*;
 use ndarray_rand::RandomExt;
 
 use ensemble::*;
+use weight::*;
 
 
 pub fn noise(rs: &M) -> V {
