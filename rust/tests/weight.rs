@@ -1,8 +1,10 @@
 
+extern crate rand;
 extern crate aics_da;
 extern crate ndarray_numtest ;
 
 use std::f64::consts::E;
+use rand::distributions::IndependentSample;
 use ndarray_numtest::prelude::*;
 use aics_da::weight::*;
 
@@ -39,4 +41,22 @@ fn logweight() {
     let w: Weight = lw.into();
     let raw = w.get_raw_weight();
     (raw[1] / raw[0]).assert_close(E, 1e-7);
+}
+
+#[test]
+fn dist() {
+    let n = 3;
+    let w = Weight::random(n);
+    let mut count: Vec<u64> = vec![0; n];
+    let mut rng = rand::thread_rng();
+    let dist = w.to_dist();
+    let k = 10000;
+    for _ in 0..k {
+        let idx = dist.ind_sample(&mut rng);
+        count[idx] += 1;
+    }
+    let w_eff: Vec<f64> = count.into_iter().map(|x| x as f64 / k as f64).collect();
+    println!("weight = {:?}", w);
+    println!("observed = {:?}", w_eff);
+    w_eff.assert_allclose(&w.get_raw_weight(), 0.5);
 }
