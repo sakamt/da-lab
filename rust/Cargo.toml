@@ -22,4 +22,4 @@ default-features = false
 features = ["blas", "rustc-serialize"]
 
 [dev-dependencies]
-ndarray-numtest = "0.1.1"
+ndarray-numtest = "0.1.2"
