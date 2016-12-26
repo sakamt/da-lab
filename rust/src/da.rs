@@ -5,23 +5,7 @@ use std::marker::PhantomData;
 
 use observation::*;
 use ensemble::*;
-
-
-pub trait EnsembleForecaster {
-    fn forecast(&self, xs: Ensemble) -> Ensemble;
-}
-
-impl<TEO> EnsembleForecaster for TEO
-    where TEO: Fn(V) -> V
-{
-    fn forecast(&self, xs: Ensemble) -> Ensemble {
-        xs.into_iter().map(self).collect()
-    }
-}
-
-pub trait EnsebleAnalyzer {
-    fn analysis(&self, xs: Ensemble, obs: V) -> Ensemble;
-}
+use stat::*;
 
 pub fn rmse(mean: &V, truth: &V) -> f64 {
     let n = mean.len() as f64;

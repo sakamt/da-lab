@@ -1,7 +1,50 @@
 
 use ndarray::prelude::*;
 use ndarray_linalg::prelude::*;
+use einsum;
 use ensemble::*;
+
+pub fn mean(xs: &Ensemble) -> V {
+    let k = xs.len();
+    let n = xs[0].len();
+    let mut v = Array::zeros(n);
+    for x in xs.iter() {
+        v = v + x;
+    }
+    v / k as f64
+}
+
+pub fn covar(xs: &Ensemble, ys: &Ensemble) -> M {
+    let xs_m = mean(xs);
+    let ys_m = mean(ys);
+    let n = xs_m.len();
+    let m = ys_m.len();
+    let mut c = Array::zeros((n, m));
+    for (x, y) in xs.iter().zip(ys.iter()) {
+        let dx = x - &xs_m;
+        let dy = y - &ys_m;
+        c = c + einsum::a_b__ab(&dx, &dy);
+    }
+    c / (xs.len() - 1) as f64
+}
+
+/// mean and covariance
+pub fn stat2(xs: &Ensemble) -> (V, M) {
+    let k = xs.len();
+    let n = xs[0].len();
+    let mut v = Array::zeros(n);
+    for x in xs.iter() {
+        v = v + x;
+    }
+    v /= k as f64;
+    let mut m = Array::zeros((n, n));
+    for x in xs.iter() {
+        let dx = x - &v;
+        m = m + einsum::a_b__ab(&dx, &dx);
+    }
+    m /= k as f64 - 1.0;
+    (v, m)
+}
 
 pub fn pca(xs: &Ensemble) -> Ensemble {
     let (xm, p) = stat2(xs);

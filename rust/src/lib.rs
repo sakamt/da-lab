@@ -10,9 +10,9 @@ extern crate num_traits;
 
 pub mod einsum;
 pub mod io;
+pub mod stat;
 pub mod ensemble;
 pub mod observation;
-pub mod analysis;
 pub mod weight;
 
 // data assimilation
