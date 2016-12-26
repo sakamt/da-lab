@@ -6,6 +6,8 @@ use stat::*;
 use observation::*;
 use da::EnsembleAnalyzer;
 
+/// Ensemble Kalman Filter with perturbed observation implementation
+#[derive(Clone, Debug)]
 pub struct EnKF {
     obs: ObsOperator,
 }

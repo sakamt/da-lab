@@ -41,7 +41,7 @@ impl MergeResampler {
     }
 }
 
-/// merging partigle filter
+/// merging particle filter
 #[derive(Clone, Debug)]
 pub struct MPF {
     resampler: MergeResampler,
