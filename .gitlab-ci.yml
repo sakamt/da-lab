@@ -1,8 +1,7 @@
 test-rust:
   image: termoshtt/rust
   cache:
-    paths:
-      - rust/target/
+    untracked: true
   script:
     - cd rust/
     - cargo test -v
