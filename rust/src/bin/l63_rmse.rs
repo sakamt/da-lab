@@ -10,7 +10,7 @@ use num_traits::float::Float;
 use docopt::Docopt;
 use ndarray_linalg::prelude::*;
 use aics_da::*;
-use aics_da::ensemble::V;
+use aics_da::types::V;
 use pbr::ProgressBar;
 
 const USAGE: &'static str = "
@@ -50,7 +50,7 @@ fn main() {
         .map(|(t, x)| {
             pb.inc();
             let xs_a: Vec<V> = io::load_msg(&format!("{}/a{:05}.msg", args.arg_datadir, t));
-            let xm = ensemble::mean(&xs_a);
+            let xm = stat::mean(&xs_a);
             (x - &xm).norm() / 3.0.sqrt()
         })
         .collect();

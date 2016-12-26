@@ -8,7 +8,7 @@ extern crate itertools;
 use docopt::Docopt;
 use ndarray::prelude::*;
 use aics_da::*;
-use aics_da::ensemble::V;
+use aics_da::types::V;
 use itertools::iterate;
 
 const USAGE: &'static str = "
@@ -56,7 +56,7 @@ fn main() {
         .take(setting.count)
         .collect();
     let obs: Vec<V> = truth.iter()
-        .map(|x| x + &da::noise(&rs))
+        .map(|x| x + &observation::noise(&rs))
         .collect();
     io::save_msg(&truth, truth_output);
     io::save_msg(&obs, obs_output);

@@ -1,11 +1,10 @@
 test-rust:
   image: termoshtt/rust
   cache:
-    paths:
-      - rust/target/
+    untracked: true
   script:
     - cd rust/
-    - cargo test -vv
+    - cargo test -v
 
 test-python:
   image: termoshtt/scipy:3.5

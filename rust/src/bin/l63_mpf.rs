@@ -13,10 +13,10 @@ use aics_da::types::V;
 use pbr::ProgressBar;
 
 const USAGE: &'static str = "
-EnKF for Lorenz63 model
+MPF for Lorenz63 model
 
 Usage:
-  l63_enkf <setting> <observation> <init> <output>
+  l63_mpf <setting> <observation> <init> <output>
 ";
 
 #[derive(RustcDecodable)]
@@ -39,7 +39,7 @@ struct Setting {
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     println!("[Arguments]");
-    println!("- executable   : l63_enkf");
+    println!("- executable   : l63_mpf");
     println!("- setting JSON : {}", args.arg_setting);
     println!("- initial state: {}", args.arg_init);
     println!("- observations : {}", args.arg_observation);
@@ -66,12 +66,12 @@ fn main() {
     let obs_op = observation::ObsOperator::new(h, rs);
 
     let xs0 = da::replica(&x0, setting.r.sqrt(), setting.k);
-    let analyzer = enkf::EnKF::new(obs_op);
+    let analyzer = mpf::MPF::new(obs_op, 3);
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
-    let enkf = obs.iter().scan(xs0, |xs, y| Some(da::iterate(&teo, &analyzer, xs, y)));
+    let mpf = obs.iter().scan(xs0, |xs, y| Some(da::iterate(&teo, &analyzer, xs, y)));
 
     let mut pb = ProgressBar::new(T as u64);
-    for (t, (xs_b, xs_a)) in enkf.enumerate() {
+    for (t, (xs_b, xs_a)) in mpf.enumerate() {
         pb.inc();
         if t % setting.save_count == 0 {
             let tt = t / setting.save_count;

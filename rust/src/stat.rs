@@ -1,18 +1,13 @@
 
 use ndarray::prelude::*;
 use ndarray_linalg::prelude::*;
-use rand::distributions::*;
-use ndarray_rand::RandomExt;
+
+use types::*;
 use einsum;
 
-pub type V = Array<f64, Ix1>;
-pub type M = Array<f64, Ix2>;
-pub type Ensemble = Vec<V>;
-
-pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {
-    let n = x.len();
-    let dist = Normal::new(0.0, 1.0);
-    (0..k).map(|_| r * Array::random(n, dist) + x).collect()
+pub fn rmse(mean: &V, truth: &V) -> f64 {
+    let n = mean.len() as f64;
+    (mean - truth).norm() / n.sqrt()
 }
 
 pub fn mean(xs: &Ensemble) -> V {
@@ -39,7 +34,7 @@ pub fn covar(xs: &Ensemble, ys: &Ensemble) -> M {
     c / (xs.len() - 1) as f64
 }
 
-/// calc mean and covariance matrix
+/// mean and covariance
 pub fn stat2(xs: &Ensemble) -> (V, M) {
     let k = xs.len();
     let n = xs[0].len();

@@ -5,6 +5,7 @@ use std::fs::File;
 use std::io::Read;
 use std::string::String;
 
+
 pub fn save_msg<T: Encodable>(val: &T, filename: &str) {
     let mut buf = File::create(filename).ok().unwrap();
     let mut enc = Encoder::new(&mut buf);
