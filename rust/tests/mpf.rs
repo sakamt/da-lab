@@ -6,7 +6,7 @@ extern crate ndarray_numtest;
 
 use aics_da::mpf::*;
 use aics_da::weight::*;
-use aics_da::ensemble::*;
+use aics_da::stat::*;
 use ndarray::prelude::*;
 use ndarray_rand::*;
 use ndarray_numtest::prelude::*;
