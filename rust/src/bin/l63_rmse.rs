@@ -10,7 +10,7 @@ use num_traits::float::Float;
 use docopt::Docopt;
 use ndarray_linalg::prelude::*;
 use aics_da::*;
-use aics_da::ensemble::V;
+use aics_da::types::V;
 use pbr::ProgressBar;
 
 const USAGE: &'static str = "

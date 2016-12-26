@@ -1,8 +1,14 @@
 
 use ndarray::prelude::*;
 use ndarray_linalg::prelude::*;
+
+use types::*;
 use einsum;
-use ensemble::*;
+
+pub fn rmse(mean: &V, truth: &V) -> f64 {
+    let n = mean.len() as f64;
+    (mean - truth).norm() / n.sqrt()
+}
 
 pub fn mean(xs: &Ensemble) -> V {
     let k = xs.len();

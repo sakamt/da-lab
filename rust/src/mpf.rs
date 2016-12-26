@@ -4,9 +4,10 @@ use rand::distributions::IndependentSample;
 use num_traits::float::Float;
 use ndarray::prelude::*;
 
-use ensemble::*;
+use types::*;
 use weight::*;
 use observation::*;
+use da::EnsembleAnalyzer;
 
 /// Coefficient for merge resampling
 #[derive(Clone, Debug)]

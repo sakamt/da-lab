@@ -9,7 +9,7 @@ extern crate pbr;
 use docopt::Docopt;
 use ndarray::prelude::*;
 use aics_da::*;
-use aics_da::ensemble::V;
+use aics_da::types::V;
 use pbr::ProgressBar;
 
 const USAGE: &'static str = "
@@ -63,13 +63,12 @@ fn main() {
 
     let h = Array::<f64, _>::eye(3);
     let rs = setting.r.sqrt() * Array::<f64, _>::eye(3);
+    let obs_op = observation::ObsOperator::new(h, rs);
 
-    let xs = ensemble::replica(&x0, setting.r.sqrt(), setting.k);
-    let enkf = da::EnKF::new(h,
-                             rs,
-                             xs,
-                             |x| l63::teo(setting.dt, setting.tau, x),
-                             obs.iter());
+    let xs0 = da::replica(&x0, setting.r.sqrt(), setting.k);
+    let analyzer = enkf::EnKF::new(obs_op);
+    let teo = |x| l63::teo(setting.dt, setting.tau, x);
+    let enkf = obs.iter().scan(xs0, |xs, y| Some(da::iterate(&teo, &analyzer, xs, y)));
 
     let mut pb = ProgressBar::new(T as u64);
     for (t, (xs_b, xs_a)) in enkf.enumerate() {

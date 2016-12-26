@@ -4,7 +4,7 @@ use ndarray_linalg::prelude::*;
 use rand::distributions::*;
 use ndarray_rand::RandomExt;
 
-use ensemble::*;
+use types::*;
 use weight::*;
 
 

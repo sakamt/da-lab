@@ -1,9 +1,10 @@
 
-use ndarray::prelude::*;
-use ensemble::*;
-use einsum::a_b__ab;
 use rand::*;
 use rand::distributions::*;
+use ndarray::prelude::*;
+
+use types::*;
+use einsum::a_b__ab;
 
 #[derive(Clone, Debug)]
 pub struct Weight {

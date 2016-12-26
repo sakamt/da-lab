@@ -1,73 +1,39 @@
 
-use ndarray_linalg::prelude::*;
 use std::mem;
-use std::marker::PhantomData;
+use rand::distributions::*;
+use ndarray::prelude::*;
+use ndarray_rand::RandomExt;
 
-use observation::*;
-use ensemble::*;
-use stat::*;
+use types::*;
 
-pub fn rmse(mean: &V, truth: &V) -> f64 {
-    let n = mean.len() as f64;
-    (mean - truth).norm() / n.sqrt()
+pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {
+    let n = x.len();
+    let dist = Normal::new(0.0, 1.0);
+    (0..k).map(|_| r * Array::random(n, dist) + x).collect()
 }
 
-/// execute Ensemble Kalman filter (EnKF)
-pub struct EnKF<'a, TEO, Iter>
-    where TEO: Fn(V) -> V,
-          Iter: Iterator<Item = &'a V>
-{
-    h: M,
-    rs: M,
-    states: Ensemble,
-    teo: TEO,
-    obs_iter: Iter,
-    phantom: PhantomData<&'a V>,
+pub trait EnsembleForecaster {
+    fn forecast(&self, xs: Ensemble) -> Ensemble;
 }
 
-impl<'a, TEO, Iter> EnKF<'a, TEO, Iter>
-    where TEO: Fn(V) -> V,
-          Iter: Iterator<Item = &'a V>
+impl<TEO> EnsembleForecaster for TEO
+    where TEO: Fn(V) -> V
 {
-    pub fn new(h: M, rs: M, states: Ensemble, teo: TEO, obs_iter: Iter) -> Self {
-        EnKF {
-            h: h,
-            rs: rs,
-            states: states,
-            teo: teo,
-            obs_iter: obs_iter,
-            phantom: PhantomData,
-        }
-    }
-
-    /// execute analysis step
-    fn analysis(&self, xs: Ensemble, y: &V) -> Ensemble {
-        let ys = xs.iter().map(|x| self.h.dot(x) + noise(&self.rs)).collect();
-        let v = covar(&ys, &ys);
-        let u = covar(&xs, &ys);
-        let k = u.dot(&v.inv().unwrap());
-        xs.into_iter()
-            .map(|x| {
-                let err = y - &self.h.dot(&x) + noise(&self.rs);
-                x + k.dot(&err)
-            })
-            .collect()
+    fn forecast(&self, xs: Ensemble) -> Ensemble {
+        xs.into_iter().map(self).collect()
     }
 }
 
-impl<'a, TEO, Iter> Iterator for EnKF<'a, TEO, Iter>
-    where TEO: Fn(V) -> V,
-          Iter: Iterator<Item = &'a V>
+pub trait EnsembleAnalyzer {
+    fn analysis(&self, xs: Ensemble, obs: &V) -> Ensemble;
+}
+
+pub fn iterate<F, A>(forecaster: &F, analyzer: &A, mut state: &mut Ensemble, obs: &V) -> (Ensemble, Ensemble)
+    where F: EnsembleForecaster,
+          A: EnsembleAnalyzer
 {
-    type Item = (Ensemble, Ensemble);
-    fn next(&mut self) -> Option<Self::Item> {
-        let y = match self.obs_iter.next() {
-            Some(y) => y,
-            None => return None,
-        };
-        let xs_a = self.analysis(self.states.clone(), y);
-        let xs_b = self.teo.forecast(xs_a.clone());
-        let xs_b_pre = mem::replace(&mut self.states, xs_b);
-        Some((xs_b_pre, xs_a))
-    }
+    let xs_a = analyzer.analysis(state.clone(), obs);
+    let xs_b = forecaster.forecast(xs_a.clone());
+    let xs_b_pre: Ensemble = mem::replace(&mut state, xs_b);
+    (xs_b_pre, xs_a)
 }

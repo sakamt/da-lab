@@ -8,7 +8,7 @@ extern crate itertools;
 use docopt::Docopt;
 use ndarray::prelude::*;
 use aics_da::*;
-use aics_da::ensemble::V;
+use aics_da::types::V;
 use itertools::iterate;
 
 const USAGE: &'static str = "

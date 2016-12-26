@@ -1,6 +1,6 @@
 
 use ndarray_odeint::*;
-use ensemble::V;
+use types::V;
 
 pub fn teo(dt: f64, step: usize, mut x: V) -> V {
     let p = lorenz63::Parameter::default();
