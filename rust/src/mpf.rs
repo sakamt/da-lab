@@ -6,6 +6,7 @@ use ndarray::prelude::*;
 
 use ensemble::*;
 use weight::*;
+use observation::*;
 
 /// Coefficient for merge resampling
 #[derive(Clone, Debug)]
@@ -36,5 +37,31 @@ impl MergeResampler {
                     .fold(Array::zeros(n), |sum, x| sum + x)
             })
             .collect()
+    }
+}
+
+/// merging partigle filter
+#[derive(Clone, Debug)]
+pub struct MPF {
+    resampler: MergeResampler,
+    obs: ObsOperator,
+}
+
+impl MPF {
+    pub fn new(obs: ObsOperator, n: usize) -> Self {
+        if n != 3 {
+            panic!("MPF: only n=3 is supported now.");
+        }
+        MPF {
+            resampler: MergeResampler::default(),
+            obs: obs,
+        }
+    }
+}
+
+impl EnsembleAnalyzer for MPF {
+    fn analysis(&self, xs: Ensemble, y: &V) -> Ensemble {
+        let w: Weight = self.obs.log_weight(&xs, y).into();
+        self.resampler.resampling(&w, &xs)
     }
 }

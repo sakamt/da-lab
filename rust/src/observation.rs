@@ -18,6 +18,7 @@ pub fn noise(rs: &M) -> V {
 /// Observation Operator
 /// - Linear operator (and expressed as a matrix)
 /// - Gaussian noise
+#[derive(Clone, Debug)]
 pub struct ObsOperator {
     h: M,
     rs: M,

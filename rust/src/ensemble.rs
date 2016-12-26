@@ -25,6 +25,6 @@ impl<TEO> EnsembleForecaster for TEO
     }
 }
 
-pub trait EnsebleAnalyzer {
-    fn analysis(&self, xs: Ensemble, obs: V) -> Ensemble;
+pub trait EnsembleAnalyzer {
+    fn analysis(&self, xs: Ensemble, obs: &V) -> Ensemble;
 }
