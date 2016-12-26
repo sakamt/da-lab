@@ -4,7 +4,7 @@ test-rust:
     untracked: true
   script:
     - cd rust/
-    - cargo test -v
+    - cargo test
 
 test-python:
   image: termoshtt/scipy:3.5
