@@ -7,8 +7,20 @@ use observation::*;
 use ensemble::*;
 
 
-pub fn forcast(teo: &Fn(V) -> V, xs: Ensemble) -> Ensemble {
-    xs.into_iter().map(teo).collect()
+pub trait EnsembleForecaster {
+    fn forecast(&self, xs: Ensemble) -> Ensemble;
+}
+
+impl<TEO> EnsembleForecaster for TEO
+    where TEO: Fn(V) -> V
+{
+    fn forecast(&self, xs: Ensemble) -> Ensemble {
+        xs.into_iter().map(self).collect()
+    }
+}
+
+pub trait EnsebleAnalyzer {
+    fn analysis(&self, xs: Ensemble, obs: V) -> Ensemble;
 }
 
 pub fn rmse(mean: &V, truth: &V) -> f64 {
@@ -70,7 +82,7 @@ impl<'a, TEO, Iter> Iterator for EnKF<'a, TEO, Iter>
             None => return None,
         };
         let xs_a = self.analysis(self.states.clone(), y);
-        let xs_b = forcast(&self.teo, xs_a.clone());
+        let xs_b = self.teo.forecast(xs_a.clone());
         let xs_b_pre = mem::replace(&mut self.states, xs_b);
         Some((xs_b_pre, xs_a))
     }
