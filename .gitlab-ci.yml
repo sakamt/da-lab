@@ -5,7 +5,7 @@ test-rust:
       - rust/target/
   script:
     - cd rust/
-    - cargo test -vv
+    - cargo test -v
 
 test-python:
   image: termoshtt/scipy:3.5
