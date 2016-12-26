@@ -1,6 +1,7 @@
 
-use ndarray::prelude::*;
+use std::mem;
 use rand::distributions::*;
+use ndarray::prelude::*;
 use ndarray_rand::RandomExt;
 
 pub type V = Array<f64, Ix1>;
@@ -27,4 +28,14 @@ impl<TEO> EnsembleForecaster for TEO
 
 pub trait EnsembleAnalyzer {
     fn analysis(&self, xs: Ensemble, obs: &V) -> Ensemble;
+}
+
+pub fn iterate<F, A>(forecaster: &F, analyzer: &A, mut state: &mut Ensemble, obs: &V) -> (Ensemble, Ensemble)
+    where F: EnsembleForecaster,
+          A: EnsembleAnalyzer
+{
+    let xs_a = analyzer.analysis(state.clone(), obs);
+    let xs_b = forecaster.forecast(xs_a.clone());
+    let xs_b_pre: Ensemble = mem::replace(&mut state, xs_b);
+    (xs_b_pre, xs_a)
 }
