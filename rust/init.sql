@@ -5,13 +5,13 @@ CREATE TABLE state (
   Z REAL NOT NULL
 );
 
-CREATE TABLE ensemble_info (
+CREATE TABLE ensemble (
   id INTERGER PRIMARY KEY,
   table_name TEXT NOT NULL,
   size INTERGER NOT NULL
 );
 
-CREATE TABLE timeseries_info (
+CREATE TABLE timeseries (
   id INTERGER PRIMARY KEY,
   table_name TEXT NOT NULL,
   dt REAL NOT NULL,
