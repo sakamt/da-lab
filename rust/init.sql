@@ -1,20 +1,22 @@
-CREATE TABLE state (
-  id INTERGER PRIMARY KEY,
-  X REAL NOT NULL,
-  Y REAL NOT NULL,
-  Z REAL NOT NULL
-);
-
-CREATE TABLE ensemble (
-  id INTERGER PRIMARY KEY,
-  table_name TEXT NOT NULL,
-  size INTERGER NOT NULL
-);
-
-CREATE TABLE timeseries (
-  id INTERGER PRIMARY KEY,
-  table_name TEXT NOT NULL,
+CREATE TABLE enkf (
+  K INTEGER NOT NULL,
+  T INTEGER NOT NULL,
+  r REAL NOT NULL,
   dt REAL NOT NULL,
   tau REAL NOT NULL,
-  observable BOOL NOT NULL
+  ensemble TEXT,
+  truth TEXT,
+  observable TEXT
+);
+
+CREATE TABLE mpf (
+  K INTEGER NOT NULL,
+  T INTEGER NOT NULL,
+  M INTEGER NOT NULL,
+  r REAL NOT NULL,
+  dt REAL NOT NULL,
+  tau REAL NOT NULL,
+  ensemble TEXT,
+  truth TEXT,
+  observable TEXT
 );

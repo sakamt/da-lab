@@ -11,6 +11,9 @@ fn main() {
     let x0 = arr1(&[1.0, 0.0, 0.0]);
     let xs0 = da::replica(&x0, 1.0, 10000);
     let mut conn = Connection::open("test.db").unwrap();
-    let tb_name = aics_da::sql::save_ensemble(&xs0, &mut conn);
+    let tx = conn.transaction().unwrap();
+    let now = aics_da::sql::now_str();
+    let tb_name = aics_da::sql::save_ensemble(&xs0, &tx, &now);
     println!("table name = {:?}", &tb_name);
+    tx.commit().unwrap();
 }
