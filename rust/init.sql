@@ -1,0 +1,20 @@
+CREATE TABLE state (
+  id INTERGER PRIMARY KEY,
+  X REAL NOT NULL,
+  Y REAL NOT NULL,
+  Z REAL NOT NULL
+);
+
+CREATE TABLE ensemble_info (
+  id INTERGER PRIMARY KEY,
+  table_name TEXT NOT NULL,
+  size INTERGER NOT NULL
+);
+
+CREATE TABLE timeseries_info (
+  id INTERGER PRIMARY KEY,
+  table_name TEXT NOT NULL,
+  dt REAL NOT NULL,
+  tau REAL NOT NULL,
+  observable BOOL NOT NULL
+);
