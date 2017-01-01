@@ -1,12 +1,16 @@
 
 extern crate aics_da;
+extern crate ndarray;
 extern crate rusqlite;
 
+use aics_da::*;
 use rusqlite::Connection;
+use ndarray::prelude::*;
 
 fn main() {
-    let date = aics_da::sql::now_str();
-    println!("date = {:?}", &date);
-    let conn = Connection::open("test.db").unwrap();
-    aics_da::sql::create_ensemble_table(&conn, &date);
+    let x0 = arr1(&[1.0, 0.0, 0.0]);
+    let xs0 = da::replica(&x0, 1.0, 10000);
+    let mut conn = Connection::open("test.db").unwrap();
+    let tb_name = aics_da::sql::save_ensemble(&xs0, &mut conn);
+    println!("table name = {:?}", &tb_name);
 }
