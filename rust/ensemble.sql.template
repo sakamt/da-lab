@@ -1,6 +1,0 @@
-CREATE TABLE ensemble_{{postfix}} (
-  id INTERGER PRIMARY KEY,
-  X REAL NOT NULL,
-  Y REAL NOT NULL,
-  Z REAL NOT NULL
-);

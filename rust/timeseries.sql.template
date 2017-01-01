@@ -1,8 +1,0 @@
-CREATE TABLE timeseries_{{postfix}} (
-  id INTERGER PRIMARY KEY,
-  time REAL NOT NULL,
-  truth INTERGER,
-  observed INTERGER,
-  forecasted INTERGER,
-  analysized INTERGER,
-);
