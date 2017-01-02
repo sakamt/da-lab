@@ -3,16 +3,17 @@ use rusqlite::Connection;
 use super::super::types::Ensemble;
 
 pub fn save_ensemble(xs: &Ensemble, conn: &Connection, postfix: &str) -> String {
-    let table_name = create_ensemble_table(conn, postfix);
-    let sql = format!("INSERT INTO {} values (?1, ?2, ?3);", &table_name);
-    for x in xs.iter() {
-        conn.execute(&sql, &[&x[0], &x[1], &x[2]]).expect("missing insert");
-    }
+    let table_name = generate_table_name(postfix);
+    create_table(conn, &table_name);
+    insert(xs, conn, &table_name);
     table_name
 }
 
-pub fn create_ensemble_table(conn: &Connection, postfix: &str) -> String {
-    let table_name = format!("_ensemble_{}", postfix);
+pub fn generate_table_name(postfix: &str) -> String {
+    format!("_ensemble_{}", postfix)
+}
+
+pub fn create_table(conn: &Connection, table_name: &str) {
     let sql = format!(r#"CREATE TABLE {} (
                            X REAL NOT NULL,
                            Y REAL NOT NULL,
@@ -20,30 +21,11 @@ pub fn create_ensemble_table(conn: &Connection, postfix: &str) -> String {
                          );"#,
                       table_name);
     conn.execute(&sql, &[]).expect("Fail to create ensemble table");
-    table_name
 }
 
-pub fn create_timeseries_table(conn: &Connection, postfix: &str) -> String {
-    let table_name = format!("_ts_{}", postfix);
-    let sql = format!(r#"CREATE TABLE {} (
-                           time REAL NOT NULL,
-                           X REAL NOT NULL,
-                           Y REAL NOT NULL,
-                           Z REAL NOT NULL
-                         );"#,
-                      table_name);
-    conn.execute(&sql, &[]).expect("Fail to create timeseries table");
-    table_name
-}
-
-pub fn create_ensemble_timeseries_table(conn: &Connection, postfix: &str) -> String {
-    let table_name = format!("_ensemble_ts_{}", postfix);
-    let sql = format!(r#"CREATE TABLE {} (
-                           time REAL NOT NULL,
-                           forecasted TEXT NOT NULL,
-                           analysized TEXT NOT NULL,
-                         );"#,
-                      table_name);
-    conn.execute(&sql, &[]).expect("Fail to create ensemble timeserise table");
-    table_name
+pub fn insert(xs: &Ensemble, conn: &Connection, table_name: &str) {
+    let sql = format!("INSERT INTO {} values (?1, ?2, ?3);", &table_name);
+    for x in xs.iter() {
+        conn.execute(&sql, &[&x[0], &x[1], &x[2]]).expect("miss to insert ensmble member");
+    }
 }
