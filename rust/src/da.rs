@@ -10,6 +10,7 @@ use types::*;
 pub struct Setting {
     pub k: usize,
     pub tau: usize,
+    pub count: usize,
     pub everyn: Option<usize>,
     pub dt: f64,
     pub r: f64,

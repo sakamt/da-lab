@@ -9,7 +9,7 @@ pub fn create_table(conn: &Connection, table_name: &str) {
     let sql = format!(r#"CREATE TABLE {} (
                            time REAL NOT NULL,
                            forecasted TEXT NOT NULL,
-                           analysized TEXT NOT NULL,
+                           analysized TEXT NOT NULL
                          );"#,
                       table_name);
     conn.execute(&sql, &[]).expect("Fail to create ensemble timeserise table");

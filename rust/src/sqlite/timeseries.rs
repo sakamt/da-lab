@@ -2,6 +2,15 @@
 use rusqlite::Connection;
 use super::super::types::V;
 
+pub fn save_timeseries(dt: f64, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> String {
+    let table_name = generate_table_name(postfix);
+    create_table(conn, &table_name);
+    for (t, x) in x_tl.iter().enumerate() {
+        insert(t as f64 * dt, x, conn, &table_name);
+    }
+    table_name
+}
+
 pub fn generate_table_name(postfix: &str) -> String {
     format!("_ts_{}", postfix)
 }
