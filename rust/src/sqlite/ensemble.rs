@@ -1,12 +1,6 @@
 
-use time;
 use rusqlite::Connection;
-use super::types::Ensemble;
-
-pub fn now_str() -> String {
-    let tm = time::now();
-    time::strftime("%Y%m%d_%H%M%S", &tm).unwrap()
-}
+use super::super::types::Ensemble;
 
 pub fn save_ensemble(xs: &Ensemble, conn: &Connection, postfix: &str) -> String {
     let table_name = create_ensemble_table(conn, postfix);
