@@ -6,6 +6,15 @@ use ndarray_rand::RandomExt;
 
 use types::*;
 
+#[derive(RustcDecodable)]
+pub struct Setting {
+    pub k: usize,
+    pub tau: usize,
+    pub everyn: Option<usize>,
+    pub dt: f64,
+    pub r: f64,
+}
+
 pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {
     let n = x.len();
     let dist = Normal::new(0.0, 1.0);
