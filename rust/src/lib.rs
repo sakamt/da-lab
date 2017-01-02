@@ -7,10 +7,13 @@ extern crate ndarray_rand;
 extern crate rmp_serialize;
 extern crate rustc_serialize;
 extern crate num_traits;
+extern crate rusqlite;
+extern crate time;
 
 pub mod types;
 pub mod einsum;
 pub mod io;
+pub mod sqlite;
 pub mod stat;
 pub mod observation;
 pub mod weight;

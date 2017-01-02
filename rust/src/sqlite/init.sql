@@ -1,0 +1,10 @@
+CREATE TABLE enkf (
+  K INTEGER NOT NULL,
+  tau INTEGER NOT NULL,
+  count INTEGER NOT NULL,
+  r REAL NOT NULL,
+  dt REAL NOT NULL,
+  ensemble TEXT NOT NULL,
+  truth TEXT NOT NULL,
+  observable TEXT NOT NULL
+);

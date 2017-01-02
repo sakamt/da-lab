@@ -11,3 +11,4 @@ target/
 # cargo fmt
 *.bk
 .*.rustfmt
+*.db
