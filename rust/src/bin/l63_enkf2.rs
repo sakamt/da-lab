@@ -52,10 +52,18 @@ fn main() {
     let tb_obs;
     {
         let tx = conn.transaction().unwrap();
-        tb_truth = sql::save_ensemble(&truth, &tx, &format!("truth_{}", postfix));
-        tb_obs = sql::save_ensemble(&obs, &tx, &format!("obs_{}", postfix));
+        tb_truth = sql::save_timeseries(setting.dt * setting.tau as f64,
+                                        &truth,
+                                        &tx,
+                                        &format!("truth_{}", postfix));
+        tb_obs = sql::save_timeseries(setting.dt * setting.tau as f64,
+                                      &obs,
+                                      &tx,
+                                      &format!("obs_{}", postfix));
         tx.commit().unwrap();
     }
+    println!("truth       = {}", &tb_truth);
+    println!("observation = {}", &tb_obs);
 
     let obs_op = observation::ObsOperator::new(h, rs);
     let analyzer = enkf::EnKF::new(obs_op);
@@ -66,9 +74,9 @@ fn main() {
 
     let mut pb = ProgressBar::new(setting.count as u64);
     let everyn = setting.everyn.unwrap_or(1);
-    let tb_ensemble = sql::ensemble_ts::generate_table_name(&postfix);
-    sql::ensemble_ts::create_table(&conn, &tb_ensemble);
     let tx = conn.transaction().unwrap();
+    let tb_ensemble = sql::ensemble_ts::generate_table_name(&postfix);
+    sql::ensemble_ts::create_table(&tx, &tb_ensemble);
     for (t, (xs_b, xs_a)) in enkf.enumerate() {
         pb.inc();
         if t % everyn == 0 {
@@ -80,5 +88,5 @@ fn main() {
     }
     sql::da::insert_enkf(&setting, &tb_ensemble, &tb_truth, &tb_obs, &tx);
     tx.commit().unwrap();
-    pb.finish_print("done!\n");
+    pb.finish_print("Done!\n");
 }
