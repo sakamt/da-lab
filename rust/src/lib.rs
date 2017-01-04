@@ -17,6 +17,7 @@ pub mod sqlite;
 pub mod stat;
 pub mod observation;
 pub mod weight;
+pub mod lyapunov;
 
 // data assimilation
 pub mod da;
