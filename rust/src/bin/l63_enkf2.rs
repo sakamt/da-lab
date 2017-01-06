@@ -8,6 +8,7 @@ extern crate docopt;
 extern crate pbr;
 extern crate itertools;
 
+use std::io::stderr;
 use docopt::Docopt;
 use ndarray::prelude::*;
 use aics_da::*;
@@ -66,7 +67,7 @@ fn main() {
     let xs0 = da::replica(&truth[0], setting.r.sqrt(), setting.k);
     let enkf = obs.iter().scan(xs0, |xs, y| Some(da::iterate(&teo, &analyzer, xs, y)));
 
-    let mut pb = ProgressBar::new(setting.count as u64);
+    let mut pb = ProgressBar::on(stderr(), setting.count as u64);
     let everyn = setting.everyn.unwrap_or(1);
     let tx = conn.transaction().unwrap();
     {
