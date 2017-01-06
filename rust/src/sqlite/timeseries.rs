@@ -1,6 +1,17 @@
 
+use ndarray::prelude::*;
 use rusqlite::Connection;
 use super::super::types::V;
+
+pub fn get_truth(id: i64, conn: &Connection) -> (f64, Vec<V>) {
+    let mut st = conn.prepare("SELECT * WHERE id=?1 FROM truth").unwrap();
+    let mut rows = st.query(&[&id]).unwrap();
+    let row = rows.next().unwrap().unwrap();
+    let table_name: String = row.get(1);
+    let dt = row.get(2);
+    let data = load_table(&table_name, conn);
+    (dt, data.into_iter().map(|(_, v)| v).collect())
+}
 
 pub fn save_truth(dt: f64, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> i64 {
     let table_name = save_timeseries(dt, x_tl, conn, postfix);
@@ -19,6 +30,17 @@ fn save_timeseries(dt: f64, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> 
         insert(t as f64 * dt, x, conn, &table_name);
     }
     table_name
+}
+
+pub fn load_table(table_name: &str, conn: &Connection) -> Vec<(f64, V)> {
+    let sql = format!("SELECT * ORDER BY time FROM {}", table_name);
+    let mut st = conn.prepare(&sql).unwrap();
+    let data = st.query_map(&[],
+                   |row| (row.get(0), arr1(&[row.get(1), row.get(2), row.get(3)])))
+        .unwrap()
+        .map(|v: Result<(f64, _), _>| v.unwrap())
+        .collect();
+    data
 }
 
 fn generate_table_name(postfix: &str) -> String {
