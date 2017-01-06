@@ -33,6 +33,8 @@ fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     let setting: da::Setting = io::read_json(&args.arg_setting);
 
+    let step = setting.dt * setting.tau as f64;
+
     let mut conn = rusqlite::Connection::open(args.arg_db).unwrap();
     let postfix = sql::util::now_str();
 
@@ -52,18 +54,10 @@ fn main() {
     let tb_obs;
     {
         let tx = conn.transaction().unwrap();
-        tb_truth = sql::save_timeseries(setting.dt * setting.tau as f64,
-                                        &truth,
-                                        &tx,
-                                        &format!("truth_{}", postfix));
-        tb_obs = sql::save_timeseries(setting.dt * setting.tau as f64,
-                                      &obs,
-                                      &tx,
-                                      &format!("obs_{}", postfix));
+        tb_truth = sql::save_truth(step, &truth, &tx, &format!("truth_{}", postfix));
+        tb_obs = sql::save_observation(step, &obs, tb_truth, &tx, &format!("obs_{}", postfix));
         tx.commit().unwrap();
     }
-    println!("truth       = {}", &tb_truth);
-    println!("observation = {}", &tb_obs);
 
     let obs_op = observation::ObsOperator::new(h, rs);
     let analyzer = enkf::EnKF::new(obs_op);
@@ -75,18 +69,20 @@ fn main() {
     let mut pb = ProgressBar::new(setting.count as u64);
     let everyn = setting.everyn.unwrap_or(1);
     let tx = conn.transaction().unwrap();
-    let tb_ensemble = sql::ensemble_ts::generate_table_name(&postfix);
-    sql::ensemble_ts::create_table(&tx, &tb_ensemble);
-    for (t, (xs_b, xs_a)) in enkf.enumerate() {
-        pb.inc();
-        if t % everyn == 0 {
-            let time = setting.dt * (setting.tau * t) as f64;
-            let tb_xsb = sql::save_ensemble(&xs_b, &tx, &format!("{}_b{:05}", postfix, t / everyn));
-            let tb_xsa = sql::save_ensemble(&xs_a, &tx, &format!("{}_a{:05}", postfix, t / everyn));
-            sql::ensemble_ts::insert(time, &tb_xsb, &tb_xsa, &tx, &tb_ensemble);
+    {
+        let ents = sql::EnsembleTS::new(&tx, &postfix);
+        for (t, (xs_b, xs_a)) in enkf.enumerate() {
+            pb.inc();
+            if t % everyn == 0 {
+                let time = step * (t as f64);
+                let tb_xsb = sql::save_ensemble(&xs_b, &tx, &format!("{}_b{:05}", postfix, t / everyn));
+                let tb_xsa = sql::save_ensemble(&xs_a, &tx, &format!("{}_a{:05}", postfix, t / everyn));
+                ents.insert(time, &tb_xsb, &tb_xsa);
+            }
         }
+        let tb_ensemble = ents.register(step, setting.k, tb_truth, tb_obs);
+        sql::da::insert_enkf(&setting, tb_truth, tb_obs, tb_ensemble, &tx);
     }
-    sql::da::insert_enkf(&setting, &tb_ensemble, &tb_truth, &tb_obs, &tx);
     tx.commit().unwrap();
     pb.finish_print("Done!\n");
 }
