@@ -34,7 +34,7 @@ fn register_truth(dt: f64, table_name: &str, conn: &Connection) -> i64 {
 
 fn register_observation(dt: f64, truth_id: i64, table_name: &str, conn: &Connection) -> i64 {
     conn.execute("INSERT INTO observation(table_name, dt, truth_id) VALUES (?1, ?2, ?3);",
-                 &[&table_name, &truth_id, &dt])
+                 &[&table_name, &dt, &truth_id])
         .expect("Failed to register observation");
     conn.last_insert_rowid()
 }
