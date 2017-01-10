@@ -3,3 +3,4 @@ scipy
 msgpack-python
 nose
 coverage
+pandas
