@@ -28,6 +28,6 @@ CREATE TABLE IF NOT EXISTS ensemble (
   table_name TEXT NOT NULL,
   dt REAL NOT NULL,
   K INTEGER NOT NULL,
-  truth_id INTEGER,
-  observation_id INTEGER
+  truth_id INTEGER NOT NULL,
+  observation_id INTEGER NOT NULL
 );
