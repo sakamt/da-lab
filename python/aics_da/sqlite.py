@@ -30,3 +30,11 @@ class Handler(object):
     def get_observation(self, id):
         tbname = self.observation().ix[id]["table_name"]
         return self.read_table(tbname).set_index("time")
+
+    def get_ensemble(self, id):
+        tbname = self.ensemble().ix[id]["table_name"]
+        df = self.read_table(tbname).set_index("time").sort_index()
+        for t, row in df.iterrows():
+            b = self.read_table(row["forecasted"])
+            a = self.read_table(row["analysized"])
+            yield (t, b, a)
