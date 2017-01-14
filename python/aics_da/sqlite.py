@@ -31,7 +31,7 @@ class Handler(object):
         tbname = self.observation().ix[id]["table_name"]
         return self._read_table(tbname).set_index("time")
 
-    def get_ensemble(self, id):
+    def ensemble_iter(self, id):
         tbname = self.ensemble().ix[id]["table_name"]
         df = self._read_table(tbname).set_index("time").sort_index()
         for t, row in df.iterrows():
