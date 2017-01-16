@@ -3,16 +3,6 @@ use ndarray::prelude::*;
 use rusqlite::Connection;
 use super::super::types::V;
 
-pub fn get_truth(id: i64, conn: &Connection) -> (f64, Vec<V>) {
-    let mut st = conn.prepare("SELECT * WHERE id=?1 FROM truth").unwrap();
-    let mut rows = st.query(&[&id]).unwrap();
-    let row = rows.next().unwrap().unwrap();
-    let table_name: String = row.get(1);
-    let dt = row.get(2);
-    let data = load_table(&table_name, conn);
-    (dt, data.into_iter().map(|(_, v)| v).collect())
-}
-
 pub fn save_truth(dt: f64, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> i64 {
     let table_name = save_timeseries(dt, x_tl, conn, postfix);
     register_truth(dt, &table_name, conn)
@@ -32,22 +22,19 @@ fn save_timeseries(dt: f64, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> 
     table_name
 }
 
-pub fn load_truth(truth_id: i64, conn: &Connection) -> (f64, Vec<V>) {
-    let mut st = conn.prepare("SELECT dt,table_name FROM truth WHERE id=?").unwrap();
-    let (dt, tbname) = st.query_map(&[&truth_id], |row| {
-            let dt: f64 = row.get(0);
-            let tbname: String = row.get(1);
-            (dt, tbname)
-        })
-        .unwrap()
-        .next()
-        .unwrap()
-        .unwrap();
+pub fn get_truth(id: i64, conn: &Connection) -> (f64, Vec<V>) {
+    let (dt, tbname) = lookup(id, "truth", conn);
     let v: Vec<_> = load_table(&tbname, conn).into_iter().map(|v| v.1).collect();
     (dt, v)
 }
 
-pub fn load_table(table_name: &str, conn: &Connection) -> Vec<(f64, V)> {
+pub fn get_observation(id: i64, conn: &Connection) -> (f64, Vec<V>) {
+    let (dt, tbname) = lookup(id, "observation", conn);
+    let v: Vec<_> = load_table(&tbname, conn).into_iter().map(|v| v.1).collect();
+    (dt, v)
+}
+
+fn load_table(table_name: &str, conn: &Connection) -> Vec<(f64, V)> {
     let sql = format!("SELECT * FROM {} ORDER BY time", table_name);
     let mut st = conn.prepare(&sql).unwrap();
     let data = st.query_map(&[],
@@ -60,6 +47,21 @@ pub fn load_table(table_name: &str, conn: &Connection) -> Vec<(f64, V)> {
 
 fn generate_table_name(postfix: &str) -> String {
     format!("_ts_{}", postfix)
+}
+
+fn lookup(id: i64, table_name: &str, conn: &Connection) -> (f64, String) {
+    let sql = format!("SELECT dt,table_name FROM {} WHERE id=?", table_name);
+    let mut st = conn.prepare(&sql).unwrap();
+    let (dt, tbname) = st.query_map(&[&id], |row| {
+            let dt: f64 = row.get(0);
+            let tbname: String = row.get(1);
+            (dt, tbname)
+        })
+        .unwrap()
+        .next()
+        .unwrap()
+        .unwrap();
+    (dt, tbname)
 }
 
 fn register_truth(dt: f64, table_name: &str, conn: &Connection) -> i64 {
