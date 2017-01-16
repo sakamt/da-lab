@@ -33,7 +33,7 @@ fn save_timeseries(dt: f64, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> 
 }
 
 pub fn load_table(table_name: &str, conn: &Connection) -> Vec<(f64, V)> {
-    let sql = format!("SELECT * ORDER BY time FROM {}", table_name);
+    let sql = format!("SELECT * FROM {} ORDER BY time", table_name);
     let mut st = conn.prepare(&sql).unwrap();
     let data = st.query_map(&[],
                    |row| (row.get(0), arr1(&[row.get(1), row.get(2), row.get(3)])))
