@@ -32,6 +32,21 @@ fn save_timeseries(dt: f64, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> 
     table_name
 }
 
+pub fn load_truth(truth_id: i64, conn: &Connection) -> (f64, Vec<V>) {
+    let mut st = conn.prepare("SELECT dt,table_name FROM truth WHERE id=?").unwrap();
+    let (dt, tbname) = st.query_map(&[&truth_id], |row| {
+            let dt: f64 = row.get(0);
+            let tbname: String = row.get(1);
+            (dt, tbname)
+        })
+        .unwrap()
+        .next()
+        .unwrap()
+        .unwrap();
+    let v: Vec<_> = load_table(&tbname, conn).into_iter().map(|v| v.1).collect();
+    (dt, v)
+}
+
 pub fn load_table(table_name: &str, conn: &Connection) -> Vec<(f64, V)> {
     let sql = format!("SELECT * FROM {} ORDER BY time", table_name);
     let mut st = conn.prepare(&sql).unwrap();
