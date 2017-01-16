@@ -56,7 +56,12 @@ fn main() {
     {
         let tx = conn.transaction().unwrap();
         tb_truth = sql::save_truth(step, &truth, &tx, &format!("truth_{}", postfix));
-        tb_obs = sql::save_observation(step, &obs, tb_truth, &tx, &format!("obs_{}", postfix));
+        tb_obs = sql::save_observation(step,
+                                       setting.r,
+                                       &obs,
+                                       tb_truth,
+                                       &tx,
+                                       &format!("obs_{}", postfix));
         tx.commit().unwrap();
     }
 

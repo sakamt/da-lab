@@ -8,9 +8,9 @@ pub fn save_truth(dt: f64, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> i
     register_truth(dt, &table_name, conn)
 }
 
-pub fn save_observation(dt: f64, x_tl: &Vec<V>, truth_id: i64, conn: &Connection, postfix: &str) -> i64 {
+pub fn save_observation(dt: f64, r: f64, x_tl: &Vec<V>, truth_id: i64, conn: &Connection, postfix: &str) -> i64 {
     let table_name = save_timeseries(dt, x_tl, conn, postfix);
-    register_observation(dt, truth_id, &table_name, conn)
+    register_observation(dt, r, truth_id, &table_name, conn)
 }
 
 fn save_timeseries(dt: f64, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> String {
@@ -85,9 +85,9 @@ fn register_truth(dt: f64, table_name: &str, conn: &Connection) -> i64 {
     conn.last_insert_rowid()
 }
 
-fn register_observation(dt: f64, truth_id: i64, table_name: &str, conn: &Connection) -> i64 {
-    conn.execute("INSERT INTO observation(table_name, dt, truth_id) VALUES (?1, ?2, ?3);",
-                 &[&table_name, &dt, &truth_id])
+fn register_observation(dt: f64, r: f64, truth_id: i64, table_name: &str, conn: &Connection) -> i64 {
+    conn.execute("INSERT INTO observation(table_name, dt, r, truth_id) VALUES (?1, ?2, ?3, ?4);",
+                 &[&table_name, &dt, &r, &truth_id])
         .expect("Failed to register observation");
     conn.last_insert_rowid()
 }
