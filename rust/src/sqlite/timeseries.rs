@@ -1,4 +1,5 @@
 
+use ndarray::prelude::*;
 use rusqlite::Connection;
 use super::super::types::V;
 
@@ -21,8 +22,60 @@ fn save_timeseries(dt: f64, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> 
     table_name
 }
 
+pub fn get_truth(id: i64, conn: &Connection) -> (f64, Vec<V>) {
+    let (dt, tbname) = lookup_truth(id, conn);
+    let v: Vec<_> = load_table(&tbname, conn).into_iter().map(|v| v.1).collect();
+    (dt, v)
+}
+
+pub fn get_observation(id: i64, conn: &Connection) -> (f64, Vec<V>, i64) {
+    let (dt, tbname, tid) = lookup_observation(id, conn);
+    let v: Vec<_> = load_table(&tbname, conn).into_iter().map(|v| v.1).collect();
+    (dt, v, tid)
+}
+
+fn load_table(table_name: &str, conn: &Connection) -> Vec<(f64, V)> {
+    let sql = format!("SELECT * FROM {} ORDER BY time", table_name);
+    let mut st = conn.prepare(&sql).unwrap();
+    let data = st.query_map(&[],
+                   |row| (row.get(0), arr1(&[row.get(1), row.get(2), row.get(3)])))
+        .unwrap()
+        .map(|v: Result<(f64, _), _>| v.unwrap())
+        .collect();
+    data
+}
+
 fn generate_table_name(postfix: &str) -> String {
     format!("_ts_{}", postfix)
+}
+
+pub fn lookup_truth(id: i64, conn: &Connection) -> (f64, String) {
+    let mut st = conn.prepare("SELECT dt,table_name FROM truth WHERE id=?").unwrap();
+    let (dt, tbname) = st.query_map(&[&id], |row| {
+            let dt: f64 = row.get(0);
+            let tbname: String = row.get(1);
+            (dt, tbname)
+        })
+        .unwrap()
+        .next()
+        .unwrap()
+        .unwrap();
+    (dt, tbname)
+}
+
+pub fn lookup_observation(id: i64, conn: &Connection) -> (f64, String, i64) {
+    let mut st = conn.prepare("SELECT dt,table_name,id FROM observation WHERE id=?").unwrap();
+    let (dt, tbname, tid) = st.query_map(&[&id], |row| {
+            let dt: f64 = row.get(0);
+            let tbname: String = row.get(1);
+            let tid: i64 = row.get(2);
+            (dt, tbname, tid)
+        })
+        .unwrap()
+        .next()
+        .unwrap()
+        .unwrap();
+    (dt, tbname, tid)
 }
 
 fn register_truth(dt: f64, table_name: &str, conn: &Connection) -> i64 {
