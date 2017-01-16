@@ -67,14 +67,18 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
     for (t, ((tr, ob), (xs_b, xs_a))) in truth.iter().zip(obs.iter()).zip(enkf).enumerate() {
         pb.inc();
         let time = step * (t as f64);
+        // mean, std, RMSE
         let (xm_b, pb) = stat::stat2(&xs_b);
-        let rmse = stat::rmse(&xm_b, tr);
-        let std = pb.trace().unwrap().sqrt();
+        let rmse_b = stat::rmse(&xm_b, tr);
+        let std_b = pb.trace().unwrap().sqrt();
+        let (xm_a, pa) = stat::stat2(&xs_a);
+        let rmse_a = stat::rmse(&xm_a, tr);
+        let std_a = pa.trace().unwrap().sqrt();
+        // bias
         let w: weight::Weight = obs_op.log_weight(&xs_b, &ob).into();
         let xm_mpf = w.mean(&xs_b);
-        let xm_a = stat::mean(&xs_a);
         let bias = (xm_a - xm_mpf).norm();
-        stts.insert(time, rmse, std, bias);
+        stts.insert(time, rmse_b, rmse_a, std_b, std_a, bias);
         if t % everyn == 0 {
             let tb_xsb = sql::save_ensemble(&xs_b, &conn, &format!("{}_b{:05}", postfix, t / everyn));
             let tb_xsa = sql::save_ensemble(&xs_a, &conn, &format!("{}_a{:05}", postfix, t / everyn));
