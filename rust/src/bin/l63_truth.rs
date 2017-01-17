@@ -28,11 +28,7 @@ fn main() {
     let mut conn = rusqlite::Connection::open(args.arg_db).unwrap();
     let tx = conn.transaction().unwrap();
     let truth = l63::generate_truth(&setting);
-    let tid = sql::save_truth(setting.dt,
-                              (setting.tau * setting.count) as f64 * setting.dt,
-                              &truth,
-                              &tx,
-                              &sql::util::now_str());
+    let tid = sql::save_truth(&setting, &truth, &tx, &sql::util::now_str());
     tx.commit().unwrap();
     println!("{}", tid);
 }

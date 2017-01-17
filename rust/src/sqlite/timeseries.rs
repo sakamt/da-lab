@@ -1,23 +1,25 @@
 
 use ndarray::prelude::*;
 use rusqlite::Connection;
-use super::super::types::V;
 
-pub fn save_truth(dt: f64, duration: f64, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> i64 {
+use super::super::types::V;
+use super::super::da;
+
+pub fn save_truth(setting: &da::Setting, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> i64 {
+    let dt = setting.dt;
+    let duration = (setting.tau * setting.count) as f64 * setting.dt;
     let table_name = save_timeseries(dt, x_tl, conn, postfix);
     register_truth(dt, duration, &table_name, conn)
 }
 
-pub fn save_observation(dt: f64,
-                        r: f64,
-                        count: i64,
-                        x_tl: &Vec<V>,
-                        truth_id: i64,
-                        conn: &Connection,
-                        postfix: &str)
-                        -> i64 {
-    let table_name = save_timeseries(dt, x_tl, conn, postfix);
-    register_observation(dt, r, count, truth_id, &table_name, conn)
+pub fn save_observation(setting: &da::Setting, x_tl: &Vec<V>, truth_id: i64, conn: &Connection, postfix: &str) -> i64 {
+    let table_name = save_timeseries(setting.dt, x_tl, conn, postfix);
+    register_observation(setting.dt * setting.tau as f64,
+                         setting.r,
+                         setting.count as i64,
+                         truth_id,
+                         &table_name,
+                         conn)
 }
 
 fn save_timeseries(dt: f64, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> String {
