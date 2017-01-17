@@ -5,9 +5,8 @@ use rand::distributions::*;
 use ndarray_rand::RandomExt;
 use float_cmp::ApproxEqRatio;
 
-use types::*;
-use super::{da, weight};
-
+use super::types::*;
+use super::{da, weight, linalg};
 
 pub fn noise(rs: &M) -> V {
     let (n, _) = rs.size();
@@ -37,9 +36,20 @@ impl ObsOperator {
     pub fn evaluate(&self, truth: &V) -> V {
         self.h.dot(truth) + noise(&self.rs)
     }
+    /// information gain $\Omega = H^TR^{-1}H$
     pub fn info_gain(&self) -> M {
-        // FIXME
-        self.rs.dot(&self.rs)
+        let r_inv = self.rs.dot(&self.rs).inv().unwrap();
+        linalg::bracket(&r_inv, &self.h)
+    }
+    pub fn kalman_gain(&self, p: &M) -> M {
+        let v = linalg::bracket(p, &self.h.t().to_owned()) + self.rs.dot(&self.rs);
+        p.dot(&self.h.t()).dot(&v.inv().unwrap())
+    }
+    /// execute an analysis step only for covariance matrix $ P \to (1-KH)P$
+    pub fn covariance_analysis(&self, p: &M) -> M {
+        let k = self.kalman_gain(p);
+        let (n, _) = k.size();
+        (Array::eye(n) - k.dot(&self.h)).dot(p)
     }
     pub fn log_weight(&self, xs: &Ensemble, y: &V) -> weight::LogWeight {
         let ws: Vec<_> = xs.iter()
