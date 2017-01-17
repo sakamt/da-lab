@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS enkf (
   truth_id INTEGER NOT NULL,
   observation_id INTEGER NOT NULL,
   ensemble_table TEXT NOT NULL,
+  stat_table TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS truth (
