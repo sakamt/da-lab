@@ -30,13 +30,8 @@ struct Args {
     arg_db: String,
 }
 
-fn main() {
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
-    let setting: da::Setting = io::read_json(&args.arg_setting);
-
+fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
     let step = setting.dt * setting.tau as f64;
-
-    let mut conn = rusqlite::Connection::open(args.arg_db).unwrap();
     let postfix = sql::util::now_str();
 
     let x0 = arr1(&[1.0, 0.0, 0.0]);
@@ -44,29 +39,20 @@ fn main() {
         .take(setting.count)
         .collect();
 
-    let h = Array::<f64, _>::eye(3);
-    let rs = setting.r.sqrt() * Array::<f64, _>::eye(3);
-
+    let obs_op = observation::ObsOperator::isotropic(3, setting.r);
     let obs: Vec<V> = truth.iter()
-        .map(|x| x + &observation::noise(&rs))
+        .map(|x| obs_op.generate(x))
         .collect();
 
-    let tb_truth;
-    let tb_obs;
-    {
-        let tx = conn.transaction().unwrap();
-        tb_truth = sql::save_truth(step, &truth, &tx, &format!("truth_{}", postfix));
-        tb_obs = sql::save_observation(step,
-                                       setting.r,
-                                       &obs,
-                                       tb_truth,
-                                       &tx,
-                                       &format!("obs_{}", postfix));
-        tx.commit().unwrap();
-    }
+    let tid = sql::save_truth(step, &truth, &conn, &format!("truth_{}", postfix));
+    let oid = sql::save_observation(step,
+                                    setting.r,
+                                    &obs,
+                                    tid,
+                                    &conn,
+                                    &format!("obs_{}", postfix));
 
-    let obs_op = observation::ObsOperator::new(h, rs);
-    let analyzer = enkf::EnKF::new(obs_op);
+    let analyzer = enkf::EnKF::new(obs_op.clone());
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
 
     let xs0 = da::replica(&truth[0], setting.r.sqrt(), setting.k);
@@ -74,21 +60,27 @@ fn main() {
 
     let mut pb = ProgressBar::on(stderr(), setting.count as u64);
     let everyn = setting.everyn.unwrap_or(1);
-    let tx = conn.transaction().unwrap();
-    {
-        let ents = sql::EnsembleTS::new(&tx, &postfix);
-        for (t, (xs_b, xs_a)) in enkf.enumerate() {
-            pb.inc();
-            if t % everyn == 0 {
-                let time = step * (t as f64);
-                let tb_xsb = sql::save_ensemble(&xs_b, &tx, &format!("{}_b{:05}", postfix, t / everyn));
-                let tb_xsa = sql::save_ensemble(&xs_a, &tx, &format!("{}_a{:05}", postfix, t / everyn));
-                ents.insert(time, &tb_xsb, &tb_xsa);
-            }
+    let ents = sql::EnsembleTS::new(&conn, &postfix);
+    for (t, (xs_b, xs_a)) in enkf.enumerate() {
+        pb.inc();
+        if t % everyn == 0 {
+            let time = step * (t as f64);
+            let tb_xsb = sql::save_ensemble(&xs_b, &conn, &format!("{}_b{:05}", postfix, t / everyn));
+            let tb_xsa = sql::save_ensemble(&xs_a, &conn, &format!("{}_a{:05}", postfix, t / everyn));
+            ents.insert(time, &tb_xsb, &tb_xsa);
         }
-        let tb_ensemble = ents.register(step, setting.k, tb_truth, tb_obs);
-        sql::da::insert_enkf(&setting, tb_truth, tb_obs, tb_ensemble, &tx);
     }
-    tx.commit().unwrap();
+    let tb_ensemble = ents.table_name();
+    sql::da::insert_enkf(&setting, tid, oid, tb_ensemble, &conn);
     pb.finish_print("Done!\n");
+}
+
+fn main() {
+    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
+    let setting: da::Setting = io::read_json(&args.arg_setting);
+
+    let mut conn = rusqlite::Connection::open(args.arg_db).unwrap();
+    let tx = conn.transaction().unwrap();
+    enkf(setting, &tx);
+    tx.commit().unwrap();
 }
