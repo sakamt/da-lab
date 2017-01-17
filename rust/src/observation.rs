@@ -53,6 +53,9 @@ impl ObsOperator {
     pub fn generate(&self, setting: &da::Setting, truth: &Vec<V>, truth_dt: f64) -> Vec<V> {
         let step = setting.tau as f64 * setting.dt;
         let n = get_ratio(step, truth_dt).expect("dt are imcompatible");
+        if n as usize * setting.count > truth.len() {
+            panic!("truth is too short");
+        }
         truth.iter()
             .enumerate()
             .filter(|&(i, _)| i as i64 % n == 0)
