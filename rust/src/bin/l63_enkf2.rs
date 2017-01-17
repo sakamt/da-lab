@@ -35,8 +35,8 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
     let obs_op = observation::ObsOperator::isotropic(3, setting.r);
     let obs = obs_op.generate(&setting, &truth, setting.dt);
 
-    let tid = sql::save_truth(&setting, &truth, &conn, &format!("truth_{}", postfix));
-    let oid = sql::save_observation(&setting, &obs, tid, &conn, &format!("obs_{}", postfix));
+    let tid = sql::save_truth(&setting, &truth, &conn, &postfix);
+    let oid = sql::save_observation(&setting, &obs, tid, &conn, &postfix);
 
     let analyzer = enkf::EnKF::new(obs_op.clone());
     let teo = |x| l63::teo(setting.dt, setting.tau, x);

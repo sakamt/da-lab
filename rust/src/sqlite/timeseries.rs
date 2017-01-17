@@ -8,12 +8,14 @@ use super::super::da;
 pub fn save_truth(setting: &da::Setting, x_tl: &Vec<V>, conn: &Connection, postfix: &str) -> i64 {
     let dt = setting.dt;
     let duration = (setting.tau * setting.count) as f64 * setting.dt;
-    let table_name = save_timeseries(dt, x_tl, conn, postfix);
+    let postfix = format!("truth_{}", postfix);
+    let table_name = save_timeseries(dt, x_tl, conn, &postfix);
     register_truth(dt, duration, &table_name, conn)
 }
 
 pub fn save_observation(setting: &da::Setting, x_tl: &Vec<V>, truth_id: i64, conn: &Connection, postfix: &str) -> i64 {
-    let table_name = save_timeseries(setting.dt, x_tl, conn, postfix);
+    let postfix = format!("obs_{}", postfix);
+    let table_name = save_timeseries(setting.dt, x_tl, conn, &postfix);
     register_observation(setting.dt * setting.tau as f64,
                          setting.r,
                          setting.count as i64,
