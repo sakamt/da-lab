@@ -64,23 +64,23 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
     let everyn = setting.everyn.unwrap_or(1);
     let ents = sql::EnsembleTS::new(&conn, &postfix);
     let stts = sql::StatTS::new(&conn, &postfix);
-    for (t, ((tr, ob), (xs_b, xs_a))) in truth.iter().zip(obs.iter()).zip(enkf).enumerate() {
+    for (t, ((tr, ob), (xs_f, xs_a))) in truth.iter().zip(obs.iter()).zip(enkf).enumerate() {
         pb.inc();
         let time = step * (t as f64);
         // mean, std, RMSE
-        let (xm_b, pb) = stat::stat2(&xs_b);
-        let rmse_b = stat::rmse(&xm_b, tr);
-        let std_b = pb.trace().unwrap().sqrt();
+        let (xm_f, pb) = stat::stat2(&xs_f);
+        let rmse_f = stat::rmse(&xm_f, tr);
+        let std_f = pb.trace().unwrap().sqrt();
         let (xm_a, pa) = stat::stat2(&xs_a);
         let rmse_a = stat::rmse(&xm_a, tr);
         let std_a = pa.trace().unwrap().sqrt();
         // bias
-        let w: weight::Weight = obs_op.log_weight(&xs_b, &ob).into();
-        let xm_mpf = w.mean(&xs_b);
+        let w: weight::Weight = obs_op.log_weight(&xs_f, &ob).into();
+        let xm_mpf = w.mean(&xs_f);
         let bias = (xm_a - xm_mpf).norm();
-        stts.insert(time, rmse_b, rmse_a, std_b, std_a, bias);
+        stts.insert(time, rmse_f, rmse_a, std_f, std_a, bias);
         if t % everyn == 0 {
-            let tb_xsb = sql::save_ensemble(&xs_b, &conn, &format!("{}_b{:05}", postfix, t / everyn));
+            let tb_xsb = sql::save_ensemble(&xs_f, &conn, &format!("{}_f{:05}", postfix, t / everyn));
             let tb_xsa = sql::save_ensemble(&xs_a, &conn, &format!("{}_a{:05}", postfix, t / everyn));
             ents.insert(time, &tb_xsb, &tb_xsa);
         }

@@ -18,11 +18,11 @@ impl<'a> StatTS<'a> {
     pub fn table_name(&self) -> &str {
         &self.table_name
     }
-    pub fn insert(&self, time: f64, rmse_b: f64, rmse_a: f64, std_b: f64, std_a: f64, bias: f64) {
+    pub fn insert(&self, time: f64, rmse_f: f64, rmse_a: f64, std_f: f64, std_a: f64, bias: f64) {
         insert(time,
-               rmse_b,
+               rmse_f,
                rmse_a,
-               std_b,
+               std_f,
                std_a,
                bias,
                self.conn,
@@ -37,9 +37,9 @@ fn generate_table_name(postfix: &str) -> String {
 fn create_table(conn: &Connection, table_name: &str) {
     let sql = format!(r#"CREATE TABLE {} (
                            time REAL NOT NULL,
-                           rmse_b REAL NOT NULL,
+                           rmse_f REAL NOT NULL,
                            rmse_a REAL NOT NULL,
-                           std_b REAL NOT NULL,
+                           std_f REAL NOT NULL,
                            std_a REAL NOT NULL,
                            bias REAL NOT NULL
                          );"#,
@@ -48,14 +48,14 @@ fn create_table(conn: &Connection, table_name: &str) {
 }
 
 fn insert(time: f64,
-          rmse_b: f64,
+          rmse_f: f64,
           rmse_a: f64,
-          std_b: f64,
+          std_f: f64,
           std_a: f64,
           bias: f64,
           conn: &Connection,
           table_name: &str) {
     let sql = format!("INSERT INTO {} values (?1, ?2, ?3, ?4, ?5, ?6);",
                       &table_name);
-    conn.execute(&sql, &[&time, &rmse_b, &rmse_a, &std_b, &std_a, &bias]).expect("miss to insert stat");
+    conn.execute(&sql, &[&time, &rmse_f, &rmse_a, &std_f, &std_a, &bias]).expect("miss to insert stat");
 }

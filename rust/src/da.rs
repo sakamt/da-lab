@@ -43,7 +43,7 @@ pub fn iterate<F, A>(forecaster: &F, analyzer: &A, mut state: &mut Ensemble, obs
           A: EnsembleAnalyzer
 {
     let xs_a = analyzer.analysis(state.clone(), obs);
-    let xs_b = forecaster.forecast(xs_a.clone());
-    let xs_b_pre: Ensemble = mem::replace(&mut state, xs_b);
-    (xs_b_pre, xs_a)
+    let xs_f = forecaster.forecast(xs_a.clone());
+    let xs_f_pre: Ensemble = mem::replace(&mut state, xs_f);
+    (xs_f_pre, xs_a)
 }
