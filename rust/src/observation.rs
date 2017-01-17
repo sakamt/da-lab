@@ -34,7 +34,7 @@ impl ObsOperator {
         let rs = r * &h;
         Self::new(h, rs)
     }
-    pub fn generate(&self, truth: &V) -> V {
+    pub fn evaluate(&self, truth: &V) -> V {
         self.h.dot(truth) + noise(&self.rs)
     }
     pub fn info_gain(&self) -> M {
@@ -50,17 +50,17 @@ impl ObsOperator {
             .collect();
         ws.into()
     }
+    pub fn generate(&self, setting: &da::Setting, truth: &Vec<V>, truth_dt: f64) -> Vec<V> {
+        let step = setting.tau as f64 * setting.dt;
+        let n = get_ratio(step, truth_dt).expect("dt are imcompatible");
+        truth.iter()
+            .enumerate()
+            .filter(|&(i, _)| i as i64 % n == 0)
+            .map(|(_, v)| self.evaluate(v))
+            .collect()
+    }
 }
 
-pub fn generate(setting: da::Setting, truth: &Vec<V>, truth_dt: f64) -> Vec<V> {
-    let step = setting.tau as f64 * setting.dt;
-    let n = get_ratio(step, truth_dt).expect("dt are imcompatible");
-    truth.iter()
-        .enumerate()
-        .filter(|&(i, _)| i as i64 % n == 0)
-        .map(|(_, v)| v.clone())
-        .collect()
-}
 
 /// test $\exists n \in N, s.t. a = nb$ and return $n$ if exists
 fn get_ratio(a: f64, b: f64) -> Option<i64> {
