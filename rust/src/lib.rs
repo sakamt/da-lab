@@ -11,7 +11,7 @@ extern crate rusqlite;
 extern crate time;
 
 pub mod types;
-pub mod einsum;
+pub mod linalg;
 pub mod io;
 pub mod sqlite;
 pub mod stat;

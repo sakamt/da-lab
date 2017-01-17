@@ -3,7 +3,7 @@ use ndarray::prelude::*;
 use ndarray_linalg::prelude::*;
 
 use types::*;
-use einsum;
+use linalg::outer;
 
 pub fn rmse(mean: &V, truth: &V) -> f64 {
     let n = mean.len() as f64;
@@ -29,7 +29,7 @@ pub fn covar(xs: &Ensemble, ys: &Ensemble) -> M {
     for (x, y) in xs.iter().zip(ys.iter()) {
         let dx = x - &xs_m;
         let dy = y - &ys_m;
-        c = c + einsum::a_b__ab(&dx, &dy);
+        c = c + outer(&dx, &dy);
     }
     c / (xs.len() - 1) as f64
 }
@@ -46,7 +46,7 @@ pub fn stat2(xs: &Ensemble) -> (V, M) {
     let mut m = Array::zeros((n, n));
     for x in xs.iter() {
         let dx = x - &v;
-        m = m + einsum::a_b__ab(&dx, &dx);
+        m = m + outer(&dx, &dx);
     }
     m /= k as f64 - 1.0;
     (v, m)

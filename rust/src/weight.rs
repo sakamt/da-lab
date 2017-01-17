@@ -4,7 +4,7 @@ use rand::distributions::*;
 use ndarray::prelude::*;
 
 use types::*;
-use einsum::a_b__ab;
+use linalg::outer;
 
 #[derive(Clone, Debug)]
 pub struct Weight {
@@ -49,7 +49,7 @@ impl Weight {
         let xm = self.mean(xs);
         let cov = xs.iter().zip(self.weight.iter()).fold(Array::zeros((n, n)), |a, (b, w)| {
             let dx = b - &xm;
-            a + *w * a_b__ab(&dx, &dx)
+            a + *w * outer(&dx, &dx)
         });
         (xm, cov)
     }
