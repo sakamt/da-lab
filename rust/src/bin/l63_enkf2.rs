@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
 extern crate ndarray;
+extern crate ndarray_linalg;
 extern crate rustc_serialize;
 extern crate rusqlite;
 extern crate aics_da;
@@ -11,6 +12,7 @@ extern crate itertools;
 use std::io::stderr;
 use docopt::Docopt;
 use ndarray::prelude::*;
+use ndarray_linalg::prelude::*;
 use aics_da::*;
 use aics_da::types::V;
 use aics_da::sqlite as sql;
@@ -61,17 +63,27 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
     let mut pb = ProgressBar::on(stderr(), setting.count as u64);
     let everyn = setting.everyn.unwrap_or(1);
     let ents = sql::EnsembleTS::new(&conn, &postfix);
-    for (t, (xs_b, xs_a)) in enkf.enumerate() {
+    let stts = sql::StatTS::new(&conn, &postfix);
+    for (t, ((tr, ob), (xs_b, xs_a))) in truth.iter().zip(obs.iter()).zip(enkf).enumerate() {
         pb.inc();
+        let time = step * (t as f64);
+        let (xm_b, pb) = stat::stat2(&xs_b);
+        let rmse = stat::rmse(&xm_b, tr);
+        let std = pb.trace().unwrap().sqrt();
+        let w: weight::Weight = obs_op.log_weight(&xs_b, &ob).into();
+        let xm_mpf = w.mean(&xs_b);
+        let xm_a = stat::mean(&xs_a);
+        let bias = (xm_a - xm_mpf).norm();
+        stts.insert(time, rmse, std, bias);
         if t % everyn == 0 {
-            let time = step * (t as f64);
             let tb_xsb = sql::save_ensemble(&xs_b, &conn, &format!("{}_b{:05}", postfix, t / everyn));
             let tb_xsa = sql::save_ensemble(&xs_a, &conn, &format!("{}_a{:05}", postfix, t / everyn));
             ents.insert(time, &tb_xsb, &tb_xsa);
         }
     }
     let tb_ensemble = ents.table_name();
-    sql::da::insert_enkf(&setting, tid, oid, tb_ensemble, &conn);
+    let tb_stat = stts.table_name();
+    sql::da::insert_enkf(&setting, tid, oid, tb_ensemble, tb_stat, &conn);
     pb.finish_print("Done!\n");
 }
 
