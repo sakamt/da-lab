@@ -40,6 +40,9 @@ class EnKF(UserDict):
         super().__init__(data)
         self._db = db
 
+    def stat(self):
+        return self._db._read_table(self["stat_table"]).set_index("time").sort_index()
+
     def ensemble_iter(self):
         df = self._db._read_table(self["ensemble_table"]).set_index("time").sort_index()
         for t, row in df.iterrows():
