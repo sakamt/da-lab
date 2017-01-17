@@ -49,3 +49,9 @@ class EnKF(UserDict):
             b = self._read_table(row["forecasted"])
             a = self._read_table(row["analysized"])
             yield (t, b, a)
+
+    def truth(self):
+        return self._db.get_truth(self["truth_id"])
+
+    def observation(self):
+        return self._db.get_truth(self["observation_id"])
