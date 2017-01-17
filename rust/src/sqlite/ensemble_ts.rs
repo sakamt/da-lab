@@ -15,13 +15,11 @@ impl<'a> EnsembleTS<'a> {
             conn: conn,
         }
     }
-
+    pub fn table_name(&self) -> &str {
+        &self.table_name
+    }
     pub fn insert(&self, time: f64, forecasted: &str, analysized: &str) {
         insert(time, forecasted, analysized, self.conn, &self.table_name);
-    }
-
-    pub fn register(&self, dt: f64, k: usize, truth_id: i64, observation_id: i64) -> i64 {
-        register(dt, k, truth_id, observation_id, &self.table_name, self.conn)
     }
 }
 
@@ -37,14 +35,6 @@ fn create_table(conn: &Connection, table_name: &str) {
                          );"#,
                       table_name);
     conn.execute(&sql, &[]).expect("Fail to create ensemble timeserise table");
-}
-
-fn register(dt: f64, k: usize, truth_id: i64, observation_id: i64, table_name: &str, conn: &Connection) -> i64 {
-    let sql = "INSERT INTO ensemble (table_name, dt, K, truth_id, observation_id) VALUES (?1, ?2, ?3, ?4, ?5)";
-    conn.execute(&sql,
-                 &[&table_name, &dt, &(k as i64), &truth_id, &observation_id])
-        .expect("Failed to register ensemble timeserise");
-    conn.last_insert_rowid()
 }
 
 fn insert(time: f64, forecasted: &str, analysized: &str, conn: &Connection, table_name: &str) {

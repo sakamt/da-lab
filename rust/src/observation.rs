@@ -28,6 +28,11 @@ impl ObsOperator {
     pub fn new(h: M, rs: M) -> Self {
         ObsOperator { h: h, rs: rs }
     }
+    pub fn isotropic(n: usize, r: f64) -> Self {
+        let h = Array::<f64, _>::eye(n);
+        let rs = r * &h;
+        Self::new(h, rs)
+    }
     pub fn generate(&self, truth: &V) -> V {
         self.h.dot(truth) + noise(&self.rs)
     }

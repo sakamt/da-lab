@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS enkf (
   dt REAL NOT NULL,
   truth_id INTEGER NOT NULL,
   observation_id INTEGER NOT NULL,
-  ensemble_id INTEGER NOT NULL
+  ensemble_table TEXT NOT NULL,
 );
 
 CREATE TABLE IF NOT EXISTS truth (
@@ -22,13 +22,4 @@ CREATE TABLE IF NOT EXISTS observation (
   dt REAL NOT NULL,
   r REAL NOT NULL,
   truth_id INTEGER NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS ensemble (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  table_name TEXT NOT NULL,
-  dt REAL NOT NULL,
-  K INTEGER NOT NULL,
-  truth_id INTEGER NOT NULL,
-  observation_id INTEGER NOT NULL
 );
