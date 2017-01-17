@@ -8,7 +8,9 @@ extern crate rmp_serialize;
 extern crate rustc_serialize;
 extern crate num_traits;
 extern crate rusqlite;
+extern crate itertools;
 extern crate time;
+extern crate float_cmp;
 
 pub mod types;
 pub mod linalg;
