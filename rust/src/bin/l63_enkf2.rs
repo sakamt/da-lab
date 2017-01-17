@@ -46,9 +46,14 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
         .map(|x| obs_op.generate(x))
         .collect();
 
-    let tid = sql::save_truth(step, &truth, &conn, &format!("truth_{}", postfix));
+    let tid = sql::save_truth(step,
+                              step * setting.count as f64,
+                              &truth,
+                              &conn,
+                              &format!("truth_{}", postfix));
     let oid = sql::save_observation(step,
                                     setting.r,
+                                    setting.count as i64,
                                     &obs,
                                     tid,
                                     &conn,
