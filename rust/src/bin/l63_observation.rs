@@ -42,8 +42,8 @@ fn main() {
         let (dt, truth) = sql::get_truth(args.flag_tid, &tx);
         (dt, truth, args.flag_tid)
     };
-    let obs_op = observation::ObsOperator::isotropic(3, setting.r);
-    let obs = obs_op.generate(&setting, &truth, dt);
+    let obs_op = observation::LinearNormal::isotropic(3, setting.r);
+    let obs = observation::eval_series(&obs_op, &setting, &truth, dt);
     let oid = sql::save_observation(&setting, &obs, tid, &tx, &postfix);
     tx.commit().unwrap();
     println!("{}", oid);

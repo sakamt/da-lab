@@ -45,11 +45,11 @@ impl MergeResampler {
 #[derive(Clone, Debug)]
 pub struct MPF {
     resampler: MergeResampler,
-    obs: ObsOperator,
+    obs: LinearNormal,
 }
 
 impl MPF {
-    pub fn new(obs: ObsOperator, n: usize) -> Self {
+    pub fn new(obs: LinearNormal, n: usize) -> Self {
         if n != 3 {
             panic!("MPF: only n=3 is supported now.");
         }
