@@ -2,8 +2,9 @@
 use ndarray::prelude::*;
 use ndarray_linalg::prelude::*;
 
-use types::*;
-use linalg::outer;
+use super::types::*;
+use super::linalg::outer;
+use super::observation::*;
 
 pub fn rmse(mean: &V, truth: &V) -> f64 {
     let n = mean.len() as f64;
@@ -50,6 +51,19 @@ pub fn stat2(xs: &Ensemble) -> (V, M) {
     }
     m /= k as f64 - 1.0;
     (v, m)
+}
+
+/// non-Gaussian bias
+pub fn ng_bias(obs: &LinearNormal, xs_f: &Ensemble, y: &V) -> f64 {
+    // enkf
+    let (xm_f, pf) = stat2(xs_f);
+    let k = obs.kalman_gain(&pf);
+    let dev = y - &obs.eval(&xm_f);
+    let xm_a = xm_f + k.dot(&dev);
+    // mpf
+    let w = obs.weight(xs_f, y);
+    let xm_mpf = w.mean(&xs_f);
+    (xm_a - xm_mpf).norm()
 }
 
 pub fn pca(xs: &Ensemble) -> Ensemble {

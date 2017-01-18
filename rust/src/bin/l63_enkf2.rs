@@ -32,8 +32,8 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
     let postfix = sql::util::now_str();
 
     let truth = l63::generate_truth(&setting);
-    let obs_op = observation::ObsOperator::isotropic(3, setting.r);
-    let obs = obs_op.generate(&setting, &truth, setting.dt);
+    let obs_op = observation::LinearNormal::isotropic(3, setting.r);
+    let obs = observation::eval_series(&obs_op, &setting, &truth, setting.dt);
 
     let tid = sql::save_truth(&setting, &truth, &conn, &postfix);
     let oid = sql::save_observation(&setting, &obs, tid, &conn, &postfix);
@@ -59,9 +59,7 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
         let rmse_a = stat::rmse(&xm_a, tr);
         let std_a = pa.trace().unwrap().sqrt();
         // bias
-        let w: weight::Weight = obs_op.log_weight(&xs_f, &ob).into();
-        let xm_mpf = w.mean(&xs_f);
-        let bias = (xm_a - xm_mpf).norm();
+        let bias = stat::ng_bias(&obs_op, &xs_f, &ob);
         stts.insert(time, rmse_f, rmse_a, std_f, std_a, bias);
         if t % everyn == 0 {
             let tb_xsb = sql::save_ensemble(&xs_f, &conn, &format!("{}_f{:05}", postfix, t / everyn));
