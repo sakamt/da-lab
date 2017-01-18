@@ -39,7 +39,7 @@ fn main() {
         let tid = sql::save_truth(&setting, &truth, &tx, &postfix);
         (setting.dt, truth, tid)
     } else {
-        let (dt, truth) = sql::timeseries::get_truth(args.flag_tid, &tx);
+        let (dt, truth) = sql::get_truth(args.flag_tid, &tx);
         (dt, truth, args.flag_tid)
     };
     let obs_op = observation::ObsOperator::isotropic(3, setting.r);
