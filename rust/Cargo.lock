@@ -3,6 +3,7 @@ name = "aics-da"
 version = "0.1.0"
 dependencies = [
  "docopt 0.6.86 (registry+https://github.com/rust-lang/crates.io-index)",
+ "float-cmp 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "itertools 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray-linalg 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",

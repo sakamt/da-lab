@@ -17,6 +17,7 @@ docopt = "*"
 pbr = "*"
 rusqlite = "*"
 time = "*"
+float-cmp = "*"
 
 [dependencies.ndarray]
 version = "*"

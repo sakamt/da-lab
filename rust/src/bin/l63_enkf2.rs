@@ -1,4 +1,3 @@
-#![allow(non_snake_case)]
 
 extern crate ndarray;
 extern crate ndarray_linalg;
@@ -7,17 +6,13 @@ extern crate rusqlite;
 extern crate aics_da;
 extern crate docopt;
 extern crate pbr;
-extern crate itertools;
 
 use std::io::stderr;
 use docopt::Docopt;
-use ndarray::prelude::*;
 use ndarray_linalg::prelude::*;
 use aics_da::*;
-use aics_da::types::V;
 use aics_da::sqlite as sql;
 use pbr::ProgressBar;
-use itertools::iterate;
 
 const USAGE: &'static str = "
 EnKF for Lorenz63 model
@@ -36,23 +31,12 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
     let step = setting.dt * setting.tau as f64;
     let postfix = sql::util::now_str();
 
-    let x0 = arr1(&[1.0, 0.0, 0.0]);
-    let truth: Vec<V> = iterate(x0, |x| l63::teo(setting.dt, setting.tau, x.clone()))
-        .take(setting.count)
-        .collect();
-
+    let truth = l63::generate_truth(&setting);
     let obs_op = observation::ObsOperator::isotropic(3, setting.r);
-    let obs: Vec<V> = truth.iter()
-        .map(|x| obs_op.generate(x))
-        .collect();
+    let obs = obs_op.generate(&setting, &truth, setting.dt);
 
-    let tid = sql::save_truth(step, &truth, &conn, &format!("truth_{}", postfix));
-    let oid = sql::save_observation(step,
-                                    setting.r,
-                                    &obs,
-                                    tid,
-                                    &conn,
-                                    &format!("obs_{}", postfix));
+    let tid = sql::save_truth(&setting, &truth, &conn, &postfix);
+    let oid = sql::save_observation(&setting, &obs, tid, &conn, &postfix);
 
     let analyzer = enkf::EnKF::new(obs_op.clone());
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
