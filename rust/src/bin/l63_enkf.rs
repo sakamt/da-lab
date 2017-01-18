@@ -63,7 +63,7 @@ fn main() {
 
     let h = Array::<f64, _>::eye(3);
     let rs = setting.r.sqrt() * Array::<f64, _>::eye(3);
-    let obs_op = observation::ObsOperator::new(h, rs);
+    let obs_op = observation::LinearNormal::new(h, rs);
 
     let xs0 = da::replica(&x0, setting.r.sqrt(), setting.k);
     let analyzer = enkf::EnKF::new(obs_op);
