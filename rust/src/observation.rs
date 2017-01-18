@@ -8,13 +8,6 @@ use float_cmp::ApproxEqRatio;
 use super::types::*;
 use super::{da, weight, linalg};
 
-pub fn noise(rs: &M) -> V {
-    let (n, _) = rs.size();
-    let dist = Normal::new(0., 1.0);
-    let d = Array::random(n, dist);
-    rs.dot(&d)
-}
-
 pub trait ObservationOperator {
     fn noisy_eval(&self, x: &V) -> V;
     fn eval(&self, x: &V) -> V;
@@ -94,11 +87,9 @@ impl LinearNormal {
 }
 
 
-pub fn eval_series<Obs: ObservationOperator>(obs: &Obs,
-                                             setting: &da::Setting,
-                                             truth: &Vec<V>,
-                                             truth_dt: f64)
-                                             -> Vec<V> {
+pub fn eval_series<Obs>(obs: &Obs, setting: &da::Setting, truth: &Vec<V>, truth_dt: f64) -> Vec<V>
+    where Obs: ObservationOperator
+{
     let step = setting.tau as f64 * setting.dt;
     let n = get_ratio(step, truth_dt).expect("dt are imcompatible");
     if n as usize * setting.count > truth.len() {
@@ -119,4 +110,12 @@ fn get_ratio(a: f64, b: f64) -> Option<i64> {
     } else {
         None
     }
+}
+
+/// DEPRICATED: will be private
+pub fn noise(rs: &M) -> V {
+    let (n, _) = rs.size();
+    let dist = Normal::new(0., 1.0);
+    let d = Array::random(n, dist);
+    rs.dot(&d)
 }
