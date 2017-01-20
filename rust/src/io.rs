@@ -5,7 +5,7 @@ use std::fs::File;
 use std::io::Read;
 use std::string::String;
 
-use super::types::{Truth, Observation};
+use super::types::{Ensemble, Truth, Observation};
 use super::settings;
 
 
@@ -34,4 +34,13 @@ pub trait SeriesStorage {
     fn load_truth(&self, Self::Key) -> (settings::Truth, Truth);
     fn save_observation(&self, &settings::Observation, truth_key: Self::Key, &Observation) -> Self::Key;
     fn load_observation(&self, Self::Key) -> (settings::Observation, Self::Key, Observation);
+}
+
+pub trait EnsembleStorage {
+    type SeriesKey;
+    type Key;
+    fn load(&self, Self::Key) -> Ensemble;
+    fn save(&self, time: f64, &Ensemble) -> Self::Key;
+    fn commit(&self, &Vec<(f64, Self::Key)>) -> Self::SeriesKey;
+    fn query(&self, Self::SeriesKey) -> Vec<(f64, Self::Key)>;
 }
