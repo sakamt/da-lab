@@ -5,6 +5,9 @@ use std::fs::File;
 use std::io::Read;
 use std::string::String;
 
+use super::types::{Truth, Observation};
+use super::settings;
+
 
 pub fn save_msg<T: Encodable>(val: &T, filename: &str) {
     let mut buf = File::create(filename).ok().unwrap();
@@ -23,4 +26,12 @@ pub fn read_json<Contents: Decodable>(filename: &str) -> Contents {
     let mut s = String::new();
     f.read_to_string(&mut s).unwrap();
     json::decode(s.as_str()).unwrap()
+}
+
+pub trait SeriesStorage {
+    type Key;
+    fn save_truth(&self, &settings::Truth, &Truth) -> Self::Key;
+    fn load_truth(&self, Self::Key) -> (settings::Truth, Truth);
+    fn save_observation(&self, &settings::Observation, truth_key: Self::Key, &Observation) -> Self::Key;
+    fn load_observation(&self, Self::Key) -> (settings::Observation, Self::Key, Observation);
 }
