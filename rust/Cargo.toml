@@ -18,6 +18,7 @@ pbr = "*"
 rusqlite = "*"
 time = "*"
 float-cmp = "*"
+uuid = { version = "0.2", features = ["v4"] }
 
 [dependencies.ndarray]
 version = "*"
