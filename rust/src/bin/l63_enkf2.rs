@@ -27,6 +27,10 @@ struct Args {
     arg_db: String,
 }
 
+fn thin_out<T: Clone>(tl: &Vec<T>, n: usize) -> Vec<T> {
+    tl.iter().enumerate().filter(|&(i, _)| i % n == 0).map(|(_, v)| v.clone()).collect()
+}
+
 fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
     let step = setting.dt * setting.tau as f64;
     let postfix = sql::util::now_str();
@@ -37,6 +41,8 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
 
     let tid = sql::save_truth(&setting, &truth, &conn, &postfix);
     let oid = sql::save_observation(&setting, &obs, tid, &conn, &postfix);
+
+    let truth = thin_out(&truth, setting.tau);
 
     let analyzer = enkf::EnKF::new(obs_op.clone());
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
