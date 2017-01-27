@@ -28,6 +28,7 @@ fn $clone(b: &mut test::Bencher) {
 }
 }} // impl_bench
 
+impl_bench!(bench_replica_k1, bench_clone_k1, 10);
 impl_bench!(bench_replica_k2, bench_clone_k2, 100);
 impl_bench!(bench_replica_k3, bench_clone_k3, 1000);
 
@@ -46,6 +47,9 @@ fn $func(b: &mut test::Bencher) {
 }
 }} // impl_bench_forecast
 
+impl_bench_forecast!(bench_forecast_t08_k1, 8, 10);
+impl_bench_forecast!(bench_forecast_t25_k1, 25, 10);
+impl_bench_forecast!(bench_forecast_t50_k1, 50, 10);
 impl_bench_forecast!(bench_forecast_t08_k2, 8, 100);
 impl_bench_forecast!(bench_forecast_t25_k2, 25, 100);
 impl_bench_forecast!(bench_forecast_t50_k2, 50, 100);
@@ -78,5 +82,6 @@ fn $mpf(b: &mut test::Bencher) {
 }
 }} // impl_bench_analysis
 
+impl_bench_analysis!(bench_enkf_k1, bench_mpf_k1, 10);
 impl_bench_analysis!(bench_enkf_k2, bench_mpf_k2, 100);
 impl_bench_analysis!(bench_enkf_k3, bench_mpf_k3, 1000);
