@@ -1,9 +1,10 @@
 
 use super::types::{V, M};
 use ndarray::{Data, stack, ShapeError};
-use ndarray::linalg::Dot;
 use ndarray::prelude::*;
 use ndarray_linalg::prelude::*;
+
+pub use ndarray::linalg::Dot;
 
 pub fn hstack(xs: &Vec<V>) -> Result<M, ShapeError> {
     let views: Vec<_> = xs.iter()
