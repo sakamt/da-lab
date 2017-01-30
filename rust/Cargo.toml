@@ -9,18 +9,18 @@ rustc-serialize = "*"
 rmp-serialize = "*"
 rand = "*"
 ndarray-rand = "*"
-num-traits = "*"
-ndarray-linalg = "*"
-ndarray-odeint = "*"
+ndarray-linalg = "0.1.6"
+ndarray-odeint = "0.1"
 itertools = "*"
 docopt = "*"
 pbr = "*"
 rusqlite = "*"
 time = "*"
 float-cmp = "*"
+num-traits = "*"
 
 [dependencies.ndarray]
-version = "*"
+version = "0.7.3"
 default-features = false
 features = ["blas", "rustc-serialize"]
 
