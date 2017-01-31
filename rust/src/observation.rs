@@ -86,7 +86,6 @@ impl LinearNormal {
     }
 }
 
-
 pub fn eval_series<Obs>(obs: &Obs, setting: &da::Setting, truth: &Vec<V>, truth_dt: f64) -> Vec<V>
     where Obs: ObservationOperator
 {

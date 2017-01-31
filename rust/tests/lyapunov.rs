@@ -39,3 +39,25 @@ fn jacobi_cached_linear() {
     let b = jacobi_cached(&f, &x, 1e-7);
     b.assert_allclose_l2(&a, 1e-5);
 }
+
+#[test]
+fn jacobi_dot_v() {
+    let n = 3;
+    let dist = RealNormal::<f64>::new(0.0, 1.0);
+    let a = Array::random((n, n), dist);
+    let x = Array::random(n, dist);
+    let f = |y| a.dot(&y);
+    let fx = f.jacobian(&x, 1e-7).dot(&x);
+    fx.assert_allclose_l2(&a.dot(&x), 1e-5);
+}
+
+#[test]
+fn jacobi_dot_m() {
+    let dist = RealNormal::<f64>::new(0.0, 1.0);
+    let a = Array::random((3, 3), dist);
+    let x = Array::random(3, dist);
+    let xs = Array::random((3, 2), dist);
+    let f = |y| a.dot(&y);
+    let fx = f.jacobian(&x, 1e-7).dot(&xs);
+    fx.assert_allclose_l2(&a.dot(&xs), 1e-5);
+}

@@ -12,3 +12,5 @@ target/
 *.bk
 .*.rustfmt
 *.db
+
+rusty-tags.*
