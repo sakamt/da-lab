@@ -8,6 +8,12 @@ pub struct SqliteStorage<'a> {
     conn: &'a Connection,
 }
 
+impl<'a> SqliteStorage<'a> {
+    pub fn new(conn: &'a Connection) -> Self {
+        SqliteStorage { conn: conn }
+    }
+}
+
 impl<'a> io::SeriesStorage for SqliteStorage<'a> {
     type Key = i64;
     fn save_truth(&self, setting: &settings::Truth, truth: &Truth) -> i64 {
