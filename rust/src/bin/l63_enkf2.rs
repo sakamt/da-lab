@@ -11,7 +11,8 @@ use std::io::stderr;
 use docopt::Docopt;
 use ndarray_linalg::prelude::*;
 use aics_da::*;
-use aics_da::sqlite as sql;
+use aics_da::io::SeriesStorage;
+use aics_da::settings::*;
 use pbr::ProgressBar;
 
 const USAGE: &'static str = "
@@ -33,14 +34,15 @@ fn thin_out<T: Clone>(tl: &Vec<T>, n: usize) -> Vec<T> {
 
 fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
     let step = setting.dt * setting.tau as f64;
-    let postfix = sql::util::now_str();
+    let postfix = sqlite::util::now_str();
 
     let truth = l63::generate_truth(&setting);
     let obs_op = observation::LinearNormal::isotropic(3, setting.r);
     let obs = observation::eval_series(&obs_op, &setting, &truth, setting.dt);
 
-    let tid = sql::save_truth(&setting, &truth, &conn, &postfix);
-    let oid = sql::save_observation(&setting, &obs, tid, &conn, &postfix);
+    let storage = sqlite::SqliteStorage::new(conn);
+    let tid = storage.save_truth(&setting.induce(), &truth);
+    let oid = storage.save_observation(&setting.induce(), tid, &obs);
 
     let truth = thin_out(&truth, setting.tau);
 
@@ -52,8 +54,8 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
 
     let mut pb = ProgressBar::on(stderr(), setting.count as u64);
     let everyn = setting.everyn.unwrap_or(1);
-    let ents = sql::EnsembleTS::new(&conn, &postfix);
-    let stts = sql::StatTS::new(&conn, &postfix);
+    let ents = sqlite::EnsembleTS::new(&conn, &postfix);
+    let stts = sqlite::StatTS::new(&conn, &postfix);
     for (t, ((tr, ob), (xs_f, xs_a))) in truth.iter().zip(obs.iter()).zip(enkf).enumerate() {
         pb.inc();
         let time = step * (t as f64);
@@ -68,14 +70,14 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
         let bias = stat::ng_bias(&obs_op, &xs_f, &ob);
         stts.insert(time, rmse_f, rmse_a, std_f, std_a, bias);
         if t % everyn == 0 {
-            let tb_xsb = sql::save_ensemble(&xs_f, &conn, &format!("{}_f{:05}", postfix, t / everyn));
-            let tb_xsa = sql::save_ensemble(&xs_a, &conn, &format!("{}_a{:05}", postfix, t / everyn));
+            let tb_xsb = sqlite::save_ensemble(&xs_f, &conn, &format!("{}_f{:05}", postfix, t / everyn));
+            let tb_xsa = sqlite::save_ensemble(&xs_a, &conn, &format!("{}_a{:05}", postfix, t / everyn));
             ents.insert(time, &tb_xsb, &tb_xsa);
         }
     }
     let tb_ensemble = ents.table_name();
     let tb_stat = stts.table_name();
-    sql::da::insert_enkf(&setting, tid, oid, tb_ensemble, tb_stat, &conn);
+    sqlite::da::insert_enkf(&setting, tid, oid, tb_ensemble, tb_stat, &conn);
     pb.finish_print("Done!\n");
 }
 
