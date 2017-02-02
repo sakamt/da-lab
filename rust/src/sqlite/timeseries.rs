@@ -6,7 +6,7 @@ use super::super::types::V;
 use super::super::settings;
 
 pub fn create_table(conn: &Connection, table_name: &str) {
-    let sql = format!(r#"CREATE TABLE {} (
+    let sql = format!(r#"CREATE TABLE '{}' (
                            time REAL NOT NULL,
                            X REAL NOT NULL,
                            Y REAL NOT NULL,
@@ -17,8 +17,8 @@ pub fn create_table(conn: &Connection, table_name: &str) {
 }
 
 pub fn save(dt: f64, ts: &Vec<V>, conn: &Connection, table_name: &str) {
-    let sql = format!("INSERT INTO {} values (?1, ?2, ?3, ?4);", &table_name);
-    let mut st = conn.prepare(&sql).unwrap();
+    let sql = format!("INSERT INTO '{}' values (?1, ?2, ?3, ?4);", &table_name);
+    let mut st = conn.prepare(&sql).expect("SQL for save time series is invalid");
     for (t, x) in ts.iter().enumerate() {
         let time = t as f64 * dt;
         st.execute(&[&time, &x[0], &x[1], &x[2]]).expect("miss to insert snapshot");
@@ -64,7 +64,7 @@ pub fn register_observation(setting: &settings::Observation,
                             conn: &Connection,
                             table_name: &str)
                             -> i64 {
-    conn.execute("INSERT INTO observation(table_name, dt, tau, count, r, truth_id) VALUES (?1, ?2, ?3, ?4, ?5);",
+    conn.execute("INSERT INTO observation(table_name, dt, tau, count, r, truth_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6);",
                  &[&table_name, &setting.dt, &(setting.tau as i64), &(setting.count as i64), &setting.r, &truth_id])
         .expect("Failed to register observation");
     conn.last_insert_rowid()
