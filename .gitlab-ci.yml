@@ -6,6 +6,15 @@ test-rust:
     - cd rust/
     - cargo test
 
+run-rust:
+  image: termoshtt/rust
+  cache:
+    untracked: true
+  script:
+    - cd rust/
+    - sqlite3 test.db < src/sqlite/init.sql
+    - cargo run --release --bin l63_enkf2 sample.json test.db
+
 test-python:
   image: termoshtt/scipy:3.5
   script:
