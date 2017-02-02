@@ -18,11 +18,13 @@ impl<'a> io::SeriesStorage for SqliteStorage<'a> {
     type Key = i64;
     fn save_truth(&self, setting: &settings::Truth, truth: &Truth) -> i64 {
         let table_name = util::generate_table_name("truth");
+        timeseries::create_table(self.conn, &table_name);
         timeseries::save(setting.dt, truth, self.conn, &table_name);
         timeseries::register_truth(setting, self.conn, &table_name)
     }
     fn save_observation(&self, setting: &settings::Observation, tid: i64, obs: &Observation) -> i64 {
         let table_name = util::generate_table_name("obs");
+        timeseries::create_table(self.conn, &table_name);
         timeseries::save(setting.dt, obs, self.conn, &table_name);
         timeseries::register_observation(setting, tid, self.conn, &table_name)
     }
