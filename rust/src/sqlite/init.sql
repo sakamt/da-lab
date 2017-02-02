@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS observation (
   table_name TEXT NOT NULL,
   dt REAL NOT NULL,
   tau INTEGER NOT NULL,
-  count INTEGER NOT NULL
+  count INTEGER NOT NULL,
   r REAL NOT NULL,
-  truth_id INTEGER NOT NULL,
+  truth_id INTEGER NOT NULL
 );
