@@ -5,7 +5,7 @@ use super::storage::SqliteStorage;
 use super::util;
 
 pub fn create_table(conn: &Connection, table_name: &str) {
-    let sql = format!(r#"CREATE TABLE {} (
+    let sql = format!(r#"CREATE TABLE '{}' (
                            time REAL NOT NULL,
                            rmse_f REAL NOT NULL,
                            rmse_a REAL NOT NULL,
@@ -18,7 +18,7 @@ pub fn create_table(conn: &Connection, table_name: &str) {
 }
 
 pub fn insert(time: f64, st: &stat::Stat, conn: &Connection, table_name: &str) {
-    let sql = format!("INSERT INTO {} values (?1, ?2, ?3, ?4, ?5, ?6);",
+    let sql = format!("INSERT INTO '{}' values (?1, ?2, ?3, ?4, ?5, ?6);",
                       &table_name);
     conn.execute(&sql,
                  &[&time, &st.rmse_f, &st.rmse_a, &st.std_f, &st.std_a, &st.bias])
