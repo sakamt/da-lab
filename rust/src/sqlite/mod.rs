@@ -8,4 +8,3 @@ pub mod stat;
 pub mod util;
 
 pub use self::storage::SqliteStorage;
-pub use self::stat::StatTS;

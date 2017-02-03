@@ -5,7 +5,7 @@ use super::super::types::*;
 use super::super::{io, settings};
 
 pub struct SqliteStorage<'a> {
-    conn: &'a Connection,
+    pub conn: &'a Connection,
 }
 
 impl<'a> SqliteStorage<'a> {

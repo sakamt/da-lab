@@ -6,6 +6,32 @@ use super::types::*;
 use super::linalg::outer;
 use super::observation::*;
 
+pub struct Stat {
+    pub rmse_f: f64,
+    pub rmse_a: f64,
+    pub std_f: f64,
+    pub std_a: f64,
+    pub bias: f64,
+}
+
+impl Stat {
+    pub fn eval<Obs>(obs: &Obs, xs_f: &Ensemble, xs_a: &Ensemble, x: &V, y: &V) -> Stat
+        where Obs: ObservationOperator + WeightEvaluator
+    {
+        let (xm_f, pf) = stat2(xs_f);
+        let (xm_a, pa) = stat2(xs_a);
+        let w = obs.weight(xs_f, y);
+        let xm_mpf = w.mean(&xs_f);
+        Stat {
+            rmse_f: rmse(&xm_f, x),
+            rmse_a: rmse(&xm_a, x),
+            std_f: pf.trace().unwrap().sqrt(),
+            std_a: pa.trace().unwrap().sqrt(),
+            bias: (xm_a - xm_mpf).norm(),
+        }
+    }
+}
+
 pub fn rmse(mean: &V, truth: &V) -> f64 {
     let n = mean.len() as f64;
     (mean - truth).norm() / n.sqrt()

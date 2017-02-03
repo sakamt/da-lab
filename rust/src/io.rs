@@ -6,7 +6,7 @@ use std::io::Read;
 use std::string::String;
 
 use super::types::{Ensemble, Truth, Observation};
-use super::settings;
+use super::{settings, stat};
 
 pub fn save_msg<T: Encodable>(val: &T, filename: &str) {
     let mut buf = File::create(filename).ok().unwrap();
@@ -42,4 +42,9 @@ pub trait EnsembleStorage {
     fn save_ensemble(&self, &Ensemble) -> Self::Key;
     fn commit_ensemble_series(&self, &[(f64, Self::Key, Self::Key)]) -> Self::SeriesKey;
     fn query_ensemble_series(&self, Self::SeriesKey) -> Vec<(f64, Self::Key, Self::Key)>;
+}
+
+pub trait StatStorage {
+    type Key;
+    fn save_stat(&self, stat: &[(f64, stat::Stat)]) -> Self::Key;
 }
