@@ -8,6 +8,8 @@ test-rust:
 
 run-rust:
   image: termoshtt/rust
+  variables:
+    RUST_BACKTRACE: 1
   cache:
     untracked: true
   script:
