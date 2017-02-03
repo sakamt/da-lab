@@ -1,6 +1,6 @@
 
 use rusqlite::Connection;
-use super::{util, timeseries};
+use super::{util, timeseries, ensemble, ensemble_ts};
 use super::super::types::*;
 use super::super::{io, settings};
 
@@ -37,5 +37,32 @@ impl<'a> io::SeriesStorage for SqliteStorage<'a> {
         let (setting, tid, tbname) = timeseries::lookup_observation(id, self.conn);
         let v: Observation = timeseries::load(&tbname, self.conn);
         (setting, tid, v)
+    }
+}
+
+impl<'a> io::EnsembleStorage for SqliteStorage<'a> {
+    type SeriesKey = String;
+    type Key = String;
+    fn save(&self, xs: &Ensemble) -> Self::Key {
+        let table_name = util::generate_table_name("ensemble");
+        ensemble::create_table(self.conn, &table_name);
+        ensemble::insert(xs, self.conn, &table_name);
+        table_name
+    }
+    fn commit(&self, series: &[(f64, Self::Key, Self::Key)]) -> Self::SeriesKey {
+        let table_name = util::generate_table_name("ensemble_series");
+        ensemble_ts::create_table(self.conn, &table_name);
+        for &(time, ref forecasted, ref analysized) in series.iter() {
+            ensemble_ts::insert(time, &forecasted, &analysized, self.conn, &table_name);
+        }
+        table_name
+    }
+    fn load(&self, _: Self::Key) -> Ensemble {
+        // TODO
+        Vec::new()
+    }
+    fn query(&self, _: Self::SeriesKey) -> Vec<(f64, Self::Key, Self::Key)> {
+        // TODO
+        Vec::new()
     }
 }

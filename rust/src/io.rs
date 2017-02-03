@@ -40,7 +40,7 @@ pub trait EnsembleStorage {
     type SeriesKey;
     type Key;
     fn load(&self, Self::Key) -> Ensemble;
-    fn save(&self, time: f64, &Ensemble) -> Self::Key;
-    fn commit(&self, &Vec<(f64, Self::Key)>) -> Self::SeriesKey;
-    fn query(&self, Self::SeriesKey) -> Vec<(f64, Self::Key)>;
+    fn save(&self, &Ensemble) -> Self::Key;
+    fn commit(&self, &[(f64, Self::Key, Self::Key)]) -> Self::SeriesKey;
+    fn query(&self, Self::SeriesKey) -> Vec<(f64, Self::Key, Self::Key)>;
 }

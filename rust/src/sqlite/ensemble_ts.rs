@@ -27,7 +27,7 @@ fn generate_table_name(postfix: &str) -> String {
     format!("_ensemble_ts_{}", postfix)
 }
 
-fn create_table(conn: &Connection, table_name: &str) {
+pub fn create_table(conn: &Connection, table_name: &str) {
     let sql = format!(r#"CREATE TABLE {} (
                            time REAL NOT NULL,
                            forecasted TEXT NOT NULL,
@@ -37,7 +37,7 @@ fn create_table(conn: &Connection, table_name: &str) {
     conn.execute(&sql, &[]).expect("Fail to create ensemble timeserise table");
 }
 
-fn insert(time: f64, forecasted: &str, analysized: &str, conn: &Connection, table_name: &str) {
+pub fn insert(time: f64, forecasted: &str, analysized: &str, conn: &Connection, table_name: &str) {
     let sql = format!("INSERT INTO {} values (?1, ?2, ?3);", &table_name);
     conn.execute(&sql, &[&time, &forecasted, &analysized]).expect("miss to insert ensemble_ts");
 }

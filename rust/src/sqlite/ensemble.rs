@@ -3,7 +3,6 @@ use rusqlite::Connection;
 use super::super::types::Ensemble;
 
 pub fn save_ensemble(xs: &Ensemble, conn: &Connection, postfix: &str) -> String {
-
     let table_name = generate_table_name(postfix);
     create_table(conn, &table_name);
     insert(xs, conn, &table_name);
