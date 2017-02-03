@@ -1,5 +1,6 @@
 
 use rusqlite::Connection;
+use ndarray::arr1;
 use super::super::types::Ensemble;
 
 pub fn save_ensemble(xs: &Ensemble, conn: &Connection, postfix: &str) -> String {
@@ -7,6 +8,16 @@ pub fn save_ensemble(xs: &Ensemble, conn: &Connection, postfix: &str) -> String 
     create_table(conn, &table_name);
     insert(xs, conn, &table_name);
     table_name
+}
+
+pub fn load(table_name: &str, conn: &Connection) -> Ensemble {
+    let sql = format!("SELECT * FROM {};", table_name);
+    let mut st = conn.prepare(&sql).unwrap();
+    let data = st.query_map(&[], |row| arr1(&[row.get(0), row.get(1), row.get(2)]))
+        .unwrap()
+        .map(|v| v.unwrap())
+        .collect();
+    data
 }
 
 pub fn generate_table_name(postfix: &str) -> String {

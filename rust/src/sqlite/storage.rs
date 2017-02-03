@@ -57,12 +57,10 @@ impl<'a> io::EnsembleStorage for SqliteStorage<'a> {
         }
         table_name
     }
-    fn load(&self, _: Self::Key) -> Ensemble {
-        // TODO
-        Vec::new()
+    fn load(&self, table_name: Self::Key) -> Ensemble {
+        ensemble::load(&table_name, self.conn)
     }
-    fn query(&self, _: Self::SeriesKey) -> Vec<(f64, Self::Key, Self::Key)> {
-        // TODO
-        Vec::new()
+    fn query(&self, table_name: Self::SeriesKey) -> Vec<(f64, Self::Key, Self::Key)> {
+        ensemble_series::load(&table_name, self.conn)
     }
 }
