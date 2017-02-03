@@ -1,6 +1,6 @@
 
 use rusqlite::Connection;
-use super::{util, timeseries, ensemble, ensemble_ts};
+use super::{util, timeseries, ensemble, ensemble_series};
 use super::super::types::*;
 use super::super::{io, settings};
 
@@ -51,9 +51,9 @@ impl<'a> io::EnsembleStorage for SqliteStorage<'a> {
     }
     fn commit(&self, series: &[(f64, Self::Key, Self::Key)]) -> Self::SeriesKey {
         let table_name = util::generate_table_name("ensemble_series");
-        ensemble_ts::create_table(self.conn, &table_name);
+        ensemble_series::create_table(self.conn, &table_name);
         for &(time, ref forecasted, ref analysized) in series.iter() {
-            ensemble_ts::insert(time, &forecasted, &analysized, self.conn, &table_name);
+            ensemble_series::insert(time, &forecasted, &analysized, self.conn, &table_name);
         }
         table_name
     }

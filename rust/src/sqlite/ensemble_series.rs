@@ -24,7 +24,7 @@ impl<'a> EnsembleTS<'a> {
 }
 
 fn generate_table_name(postfix: &str) -> String {
-    format!("_ensemble_ts_{}", postfix)
+    format!("_ensemble_series_{}", postfix)
 }
 
 pub fn create_table(conn: &Connection, table_name: &str) {
@@ -39,5 +39,5 @@ pub fn create_table(conn: &Connection, table_name: &str) {
 
 pub fn insert(time: f64, forecasted: &str, analysized: &str, conn: &Connection, table_name: &str) {
     let sql = format!("INSERT INTO {} values (?1, ?2, ?3);", &table_name);
-    conn.execute(&sql, &[&time, &forecasted, &analysized]).expect("miss to insert ensemble_ts");
+    conn.execute(&sql, &[&time, &forecasted, &analysized]).expect("miss to insert ensemble_series");
 }
