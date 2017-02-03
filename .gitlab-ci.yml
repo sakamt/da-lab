@@ -4,6 +4,7 @@ test-rust:
     untracked: true
   script:
     - cd rust/
+    - sqlite3 tests/test.db < src/sqlite/init.sql
     - cargo test
 
 run-rust:
