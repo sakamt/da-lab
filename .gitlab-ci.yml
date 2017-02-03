@@ -3,8 +3,8 @@ test-rust:
   cache:
     untracked: true
   script:
-    - cd rust/
-    - sqlite3 tests/test.db < src/sqlite/init.sql
+    - cd rust/tests
+    - sqlite3 test.db < ../src/sqlite/init.sql
     - cargo test
 
 run-rust:
