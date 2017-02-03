@@ -35,3 +35,12 @@ fn io_observation() {
     let oid = storage.save_observation(&setting, tid, &obs);
     let _ = storage.load_observation(oid);
 }
+
+#[test]
+fn io_ensemble() {
+    let conn = rusqlite::Connection::open("test.db").unwrap();
+    let storage = sqlite::SqliteStorage::new(&conn);
+    let ens = vec![arr1(&[1.0, 0.0, 0.0]), arr1(&[0.0, 1.0, 0.0])];
+    let tbname = storage.save_ensemble(&ens);
+    let _ = storage.load_ensemble(tbname);
+}
