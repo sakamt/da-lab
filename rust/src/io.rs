@@ -8,7 +8,6 @@ use std::string::String;
 use super::types::{Ensemble, Truth, Observation};
 use super::settings;
 
-
 pub fn save_msg<T: Encodable>(val: &T, filename: &str) {
     let mut buf = File::create(filename).ok().unwrap();
     let mut enc = Encoder::new(&mut buf);
@@ -39,8 +38,8 @@ pub trait SeriesStorage {
 pub trait EnsembleStorage {
     type SeriesKey;
     type Key;
-    fn load(&self, Self::Key) -> Ensemble;
-    fn save(&self, &Ensemble) -> Self::Key;
-    fn commit(&self, &[(f64, Self::Key, Self::Key)]) -> Self::SeriesKey;
-    fn query(&self, Self::SeriesKey) -> Vec<(f64, Self::Key, Self::Key)>;
+    fn load_ensemble(&self, Self::Key) -> Ensemble;
+    fn save_ensemble(&self, &Ensemble) -> Self::Key;
+    fn commit_ensemble_series(&self, &[(f64, Self::Key, Self::Key)]) -> Self::SeriesKey;
+    fn query_ensemble_series(&self, Self::SeriesKey) -> Vec<(f64, Self::Key, Self::Key)>;
 }

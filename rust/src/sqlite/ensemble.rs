@@ -3,7 +3,7 @@ use rusqlite::Connection;
 use ndarray::arr1;
 use super::super::types::Ensemble;
 
-pub fn save_ensemble(xs: &Ensemble, conn: &Connection, postfix: &str) -> String {
+pub fn save(xs: &Ensemble, conn: &Connection, postfix: &str) -> String {
     let table_name = generate_table_name(postfix);
     create_table(conn, &table_name);
     insert(xs, conn, &table_name);
@@ -20,7 +20,7 @@ pub fn load(table_name: &str, conn: &Connection) -> Ensemble {
     data
 }
 
-pub fn generate_table_name(postfix: &str) -> String {
+fn generate_table_name(postfix: &str) -> String {
     format!("_ensemble_{}", postfix)
 }
 

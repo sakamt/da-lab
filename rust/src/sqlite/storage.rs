@@ -43,13 +43,16 @@ impl<'a> io::SeriesStorage for SqliteStorage<'a> {
 impl<'a> io::EnsembleStorage for SqliteStorage<'a> {
     type SeriesKey = String;
     type Key = String;
-    fn save(&self, xs: &Ensemble) -> Self::Key {
+    fn save_ensemble(&self, xs: &Ensemble) -> Self::Key {
         let table_name = util::generate_table_name("ensemble");
         ensemble::create_table(self.conn, &table_name);
         ensemble::insert(xs, self.conn, &table_name);
         table_name
     }
-    fn commit(&self, series: &[(f64, Self::Key, Self::Key)]) -> Self::SeriesKey {
+    fn load_ensemble(&self, table_name: Self::Key) -> Ensemble {
+        ensemble::load(&table_name, self.conn)
+    }
+    fn commit_ensemble_series(&self, series: &[(f64, Self::Key, Self::Key)]) -> Self::SeriesKey {
         let table_name = util::generate_table_name("ensemble_series");
         ensemble_series::create_table(self.conn, &table_name);
         for &(time, ref forecasted, ref analysized) in series.iter() {
@@ -57,10 +60,7 @@ impl<'a> io::EnsembleStorage for SqliteStorage<'a> {
         }
         table_name
     }
-    fn load(&self, table_name: Self::Key) -> Ensemble {
-        ensemble::load(&table_name, self.conn)
-    }
-    fn query(&self, table_name: Self::SeriesKey) -> Vec<(f64, Self::Key, Self::Key)> {
+    fn query_ensemble_series(&self, table_name: Self::SeriesKey) -> Vec<(f64, Self::Key, Self::Key)> {
         ensemble_series::load(&table_name, self.conn)
     }
 }

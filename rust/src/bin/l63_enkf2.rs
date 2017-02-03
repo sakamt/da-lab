@@ -11,7 +11,7 @@ use std::io::stderr;
 use docopt::Docopt;
 use ndarray_linalg::prelude::*;
 use aics_da::*;
-use aics_da::io::SeriesStorage;
+use aics_da::io::*;
 use aics_da::settings::*;
 use pbr::ProgressBar;
 
@@ -54,7 +54,7 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
 
     let mut pb = ProgressBar::on(stderr(), setting.count as u64);
     let everyn = setting.everyn.unwrap_or(1);
-    let ents = sqlite::EnsembleTS::new(&conn, &postfix);
+    let mut ensemble_series = Vec::new();
     let stts = sqlite::StatTS::new(&conn, &postfix);
     for (t, ((tr, ob), (xs_f, xs_a))) in truth.iter().zip(obs.iter()).zip(enkf).enumerate() {
         pb.inc();
@@ -70,14 +70,14 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
         let bias = stat::ng_bias(&obs_op, &xs_f, &ob);
         stts.insert(time, rmse_f, rmse_a, std_f, std_a, bias);
         if t % everyn == 0 {
-            let tb_xsb = sqlite::save_ensemble(&xs_f, &conn, &format!("{}_f{:05}", postfix, t / everyn));
-            let tb_xsa = sqlite::save_ensemble(&xs_a, &conn, &format!("{}_a{:05}", postfix, t / everyn));
-            ents.insert(time, &tb_xsb, &tb_xsa);
+            let tb_xsb = storage.save_ensemble(&xs_f);
+            let tb_xsa = storage.save_ensemble(&xs_a);
+            ensemble_series.push((time, tb_xsb, tb_xsa));
         }
     }
-    let tb_ensemble = ents.table_name();
+    let tb_ensemble = storage.commit_ensemble_series(ensemble_series.as_slice());
     let tb_stat = stts.table_name();
-    sqlite::da::insert_enkf(&setting, tid, oid, tb_ensemble, tb_stat, &conn);
+    sqlite::da::insert_enkf(&setting, tid, oid, &tb_ensemble, tb_stat, &conn);
     pb.finish_print("Done!\n");
 }
 
