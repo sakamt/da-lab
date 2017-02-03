@@ -26,7 +26,7 @@ pub fn save(dt: f64, ts: &Vec<V>, conn: &Connection, table_name: &str) {
 }
 
 pub fn load(table_name: &str, conn: &Connection) -> Vec<V> {
-    let sql = format!("SELECT * FROM {} ORDER BY time", table_name);
+    let sql = format!("SELECT * FROM '{}' ORDER BY time", table_name);
     let mut st = conn.prepare(&sql).unwrap();
     let data = st.query_map(&[], |row| arr1(&[row.get(1), row.get(2), row.get(3)]))
         .unwrap()
