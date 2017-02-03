@@ -19,3 +19,19 @@ fn io_truth() {
     let tid = storage.save_truth(&setting, &truth);
     let _ = storage.load_truth(tid);
 }
+
+#[test]
+fn io_observation() {
+    let conn = rusqlite::Connection::open("test.db").unwrap();
+    let storage = sqlite::SqliteStorage::new(&conn);
+    let obs = vec![arr1(&[1.0, 0.0, 0.0]), arr1(&[0.0, 1.0, 0.0])];
+    let tid = 1;
+    let setting = settings::Observation {
+        dt: 0.01,
+        tau: 8,
+        count: 10,
+        r: 1.0,
+    };
+    let oid = storage.save_observation(&setting, tid, &obs);
+    let _ = storage.load_observation(oid);
+}
