@@ -46,7 +46,7 @@ fn observation(args: Args, setting: da::Setting, conn: &rusqlite::Connection) {
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     let setting: da::Setting = io::read_json(&args.arg_setting);
-    let mut conn = rusqlite::Connection::open(&args.arg_db).unwrap();
+    let mut conn = sqlite::open_with_init(&args.arg_db);
     let tx = conn.transaction().unwrap();
     observation(args, setting, &tx);
     tx.commit().unwrap();

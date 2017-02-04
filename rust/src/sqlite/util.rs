@@ -43,7 +43,8 @@ pub fn generate_table_name(prefix: &str) -> String {
     format!("{}_{}", prefix, Uuid::new_v4())
 }
 
-pub fn open_with_init(dbpath: &Path) -> Connection {
+pub fn open_with_init(dbname: &str) -> Connection {
+    let dbpath = Path::new(dbname);
     if dbpath.exists() {
         Connection::open(dbpath).expect("Failed to open DB")
     } else {
