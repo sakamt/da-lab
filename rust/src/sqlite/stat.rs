@@ -1,7 +1,6 @@
 
 use rusqlite::Connection;
 use super::super::{io, stat};
-use super::storage::SqliteStorage;
 use super::util;
 
 pub fn create_table(conn: &Connection, table_name: &str) {
@@ -25,13 +24,13 @@ pub fn insert(time: f64, st: &stat::Stat, conn: &Connection, table_name: &str) {
         .expect("miss to insert stat");
 }
 
-impl<'a> io::StatStorage for SqliteStorage<'a> {
+impl io::StatStorage for Connection {
     type Key = String;
     fn save_stat(&self, stat: &[(f64, stat::Stat)]) -> Self::Key {
         let table_name = util::generate_table_name("stat");
-        create_table(self.conn, &table_name);
+        create_table(self, &table_name);
         for &(time, ref st) in stat.iter() {
-            insert(time, st, self.conn, &table_name);
+            insert(time, st, self, &table_name);
         }
         table_name
     }

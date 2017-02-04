@@ -4,63 +4,53 @@ use super::{util, timeseries, ensemble, ensemble_series};
 use super::super::types::*;
 use super::super::{io, settings};
 
-pub struct SqliteStorage<'a> {
-    pub conn: &'a Connection,
-}
-
-impl<'a> SqliteStorage<'a> {
-    pub fn new(conn: &'a Connection) -> Self {
-        SqliteStorage { conn: conn }
-    }
-}
-
-impl<'a> io::SeriesStorage for SqliteStorage<'a> {
+impl io::SeriesStorage for Connection {
     type Key = i64;
     fn save_truth(&self, setting: &settings::Truth, truth: &Truth) -> i64 {
         let table_name = util::generate_table_name("truth");
-        timeseries::create_table(self.conn, &table_name);
-        timeseries::save(setting.dt, truth, self.conn, &table_name);
-        timeseries::register_truth(setting, self.conn, &table_name)
+        timeseries::create_table(self, &table_name);
+        timeseries::save(setting.dt, truth, self, &table_name);
+        timeseries::register_truth(setting, self, &table_name)
     }
     fn save_observation(&self, setting: &settings::Observation, tid: i64, obs: &Observation) -> i64 {
         let table_name = util::generate_table_name("obs");
-        timeseries::create_table(self.conn, &table_name);
-        timeseries::save(setting.dt, obs, self.conn, &table_name);
-        timeseries::register_observation(setting, tid, self.conn, &table_name)
+        timeseries::create_table(self, &table_name);
+        timeseries::save(setting.dt, obs, self, &table_name);
+        timeseries::register_observation(setting, tid, self, &table_name)
     }
     fn load_truth(&self, id: i64) -> (settings::Truth, Truth) {
-        let (setting, tbname) = timeseries::lookup_truth(id, self.conn);
-        let v: Truth = timeseries::load(&tbname, self.conn);
+        let (setting, tbname) = timeseries::lookup_truth(id, self);
+        let v: Truth = timeseries::load(&tbname, self);
         (setting, v)
     }
     fn load_observation(&self, id: i64) -> (settings::Observation, i64, Observation) {
-        let (setting, tid, tbname) = timeseries::lookup_observation(id, self.conn);
-        let v: Observation = timeseries::load(&tbname, self.conn);
+        let (setting, tid, tbname) = timeseries::lookup_observation(id, self);
+        let v: Observation = timeseries::load(&tbname, self);
         (setting, tid, v)
     }
 }
 
-impl<'a> io::EnsembleStorage for SqliteStorage<'a> {
+impl io::EnsembleStorage for Connection {
     type SeriesKey = String;
     type Key = String;
     fn save_ensemble(&self, xs: &Ensemble) -> Self::Key {
         let table_name = util::generate_table_name("ensemble");
-        ensemble::create_table(self.conn, &table_name);
-        ensemble::insert(xs, self.conn, &table_name);
+        ensemble::create_table(self, &table_name);
+        ensemble::insert(xs, self, &table_name);
         table_name
     }
     fn load_ensemble(&self, table_name: Self::Key) -> Ensemble {
-        ensemble::load(&table_name, self.conn)
+        ensemble::load(&table_name, self)
     }
     fn commit_ensemble_series(&self, series: &[(f64, Self::Key, Self::Key)]) -> Self::SeriesKey {
         let table_name = util::generate_table_name("ensemble_series");
-        ensemble_series::create_table(self.conn, &table_name);
+        ensemble_series::create_table(self, &table_name);
         for &(time, ref forecasted, ref analysized) in series.iter() {
-            ensemble_series::insert(time, &forecasted, &analysized, self.conn, &table_name);
+            ensemble_series::insert(time, &forecasted, &analysized, self, &table_name);
         }
         table_name
     }
     fn query_ensemble_series(&self, table_name: Self::SeriesKey) -> Vec<(f64, Self::Key, Self::Key)> {
-        ensemble_series::load(&table_name, self.conn)
+        ensemble_series::load(&table_name, self)
     }
 }
