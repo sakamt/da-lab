@@ -28,11 +28,8 @@ fn main() {
     let setting: da::Setting = io::read_json(&args.arg_setting);
     let mut conn = rusqlite::Connection::open(args.arg_db).unwrap();
     let tx = conn.transaction().unwrap();
-    {
-        let storage = sqlite::SqliteStorage::new(&tx);
-        let truth = l63::generate_truth(&setting);
-        let tid = storage.save_truth(&setting.induce(), &truth);
-        println!("{}", tid);
-    }
+    let truth = l63::generate_truth(&setting);
+    let tid = tx.save_truth(&setting.induce(), &truth);
+    println!("{}", tid);
     tx.commit().unwrap();
 }

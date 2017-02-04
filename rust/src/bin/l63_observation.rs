@@ -30,18 +30,17 @@ struct Args {
 }
 
 fn observation(args: Args, setting: da::Setting, conn: &rusqlite::Connection) {
-    let storage = sqlite::SqliteStorage::new(conn);
     let (dt, truth, tid) = if args.flag_tid == 0 {
         let truth = l63::generate_truth(&setting);
-        let tid = storage.save_truth(&setting.induce(), &truth);
+        let tid = conn.save_truth(&setting.induce(), &truth);
         (setting.dt, truth, tid)
     } else {
-        let (setting, truth) = storage.load_truth(args.flag_tid);
+        let (setting, truth) = conn.load_truth(args.flag_tid);
         (setting.dt, truth, args.flag_tid)
     };
     let obs_op = observation::LinearNormal::isotropic(3, setting.r);
     let obs = observation::eval_series(&obs_op, &setting, &truth, dt);
-    storage.save_observation(&setting.induce(), tid, &obs);
+    conn.save_observation(&setting.induce(), tid, &obs);
 }
 
 fn main() {
