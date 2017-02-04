@@ -4,7 +4,6 @@ test-rust:
     untracked: true
   script:
     - cd rust/tests
-    - sqlite3 test.db < ../src/sqlite/init.sql
     - cargo test
 
 run-rust:
@@ -13,7 +12,6 @@ run-rust:
     untracked: true
   script:
     - cd rust/
-    - sqlite3 test.db < src/sqlite/init.sql
     - cargo run --release --bin l63_truth sample_setting.json test.db
     - cargo run --release --bin l63_observation sample_setting.json test.db
     - cargo run --release --bin l63_enkf2 sample_setting.json test.db
