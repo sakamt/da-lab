@@ -3,7 +3,7 @@ test-rust:
   cache:
     untracked: true
   script:
-    - cd rust/tests
+    - cd rust
     - cargo test
 
 run-rust:
