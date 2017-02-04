@@ -1,9 +1,9 @@
 {
   "dt": 0.01,
-  "init_count": 10000,
+  "init_count": 100,
   "r": 2.0,
-  "count": 1000,
+  "count": 100,
   "tau": 8,
-  "k": 1000,
-  "save_count": 100
+  "k": 100,
+  "save_count": 10
 }

@@ -7,7 +7,8 @@ extern crate rusqlite;
 
 use docopt::Docopt;
 use aics_da::*;
-use aics_da::sqlite as sql;
+use aics_da::io::SeriesStorage;
+use aics_da::settings::Induce;
 
 const USAGE: &'static str = "
 Generate truth of Lorenz63 model
@@ -25,10 +26,10 @@ struct Args {
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     let setting: da::Setting = io::read_json(&args.arg_setting);
-    let mut conn = rusqlite::Connection::open(args.arg_db).unwrap();
+    let mut conn = sqlite::open_with_init(&args.arg_db);
     let tx = conn.transaction().unwrap();
     let truth = l63::generate_truth(&setting);
-    let tid = sql::save_truth(&setting, &truth, &tx, &sql::util::now_str());
-    tx.commit().unwrap();
+    let tid = tx.save_truth(&setting.induce(), &truth);
     println!("{}", tid);
+    tx.commit().unwrap();
 }

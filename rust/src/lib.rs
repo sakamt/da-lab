@@ -11,8 +11,10 @@ extern crate rusqlite;
 extern crate itertools;
 extern crate time;
 extern crate float_cmp;
+extern crate uuid;
 
 pub mod types;
+pub mod settings;
 pub mod linalg;
 pub mod io;
 pub mod sqlite;

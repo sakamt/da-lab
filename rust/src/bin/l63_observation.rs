@@ -7,7 +7,8 @@ extern crate rusqlite;
 
 use docopt::Docopt;
 use aics_da::*;
-use aics_da::sqlite as sql;
+use aics_da::io::SeriesStorage;
+use aics_da::settings::Induce;
 
 const USAGE: &'static str = "
 Generate observation of Lorenz63 model
@@ -28,23 +29,25 @@ struct Args {
     arg_db: String,
 }
 
-fn main() {
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
-    let setting: da::Setting = io::read_json(&args.arg_setting);
-    let postfix = sql::util::now_str();
-    let mut conn = rusqlite::Connection::open(args.arg_db).unwrap();
-    let tx = conn.transaction().unwrap();
+fn observation(args: Args, setting: da::Setting, conn: &rusqlite::Connection) {
     let (dt, truth, tid) = if args.flag_tid == 0 {
         let truth = l63::generate_truth(&setting);
-        let tid = sql::save_truth(&setting, &truth, &tx, &postfix);
+        let tid = conn.save_truth(&setting.induce(), &truth);
         (setting.dt, truth, tid)
     } else {
-        let (dt, truth) = sql::get_truth(args.flag_tid, &tx);
-        (dt, truth, args.flag_tid)
+        let (setting, truth) = conn.load_truth(args.flag_tid);
+        (setting.dt, truth, args.flag_tid)
     };
     let obs_op = observation::LinearNormal::isotropic(3, setting.r);
     let obs = observation::eval_series(&obs_op, &setting, &truth, dt);
-    let oid = sql::save_observation(&setting, &obs, tid, &tx, &postfix);
+    conn.save_observation(&setting.induce(), tid, &obs);
+}
+
+fn main() {
+    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
+    let setting: da::Setting = io::read_json(&args.arg_setting);
+    let mut conn = sqlite::open_with_init(&args.arg_db);
+    let tx = conn.transaction().unwrap();
+    observation(args, setting, &tx);
     tx.commit().unwrap();
-    println!("{}", oid);
 }

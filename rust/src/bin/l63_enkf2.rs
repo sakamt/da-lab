@@ -1,6 +1,5 @@
 
 extern crate ndarray;
-extern crate ndarray_linalg;
 extern crate rustc_serialize;
 extern crate rusqlite;
 extern crate aics_da;
@@ -9,9 +8,9 @@ extern crate pbr;
 
 use std::io::stderr;
 use docopt::Docopt;
-use ndarray_linalg::prelude::*;
 use aics_da::*;
-use aics_da::sqlite as sql;
+use aics_da::io::*;
+use aics_da::settings::*;
 use pbr::ProgressBar;
 
 const USAGE: &'static str = "
@@ -33,14 +32,13 @@ fn thin_out<T: Clone>(tl: &Vec<T>, n: usize) -> Vec<T> {
 
 fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
     let step = setting.dt * setting.tau as f64;
-    let postfix = sql::util::now_str();
 
     let truth = l63::generate_truth(&setting);
     let obs_op = observation::LinearNormal::isotropic(3, setting.r);
     let obs = observation::eval_series(&obs_op, &setting, &truth, setting.dt);
 
-    let tid = sql::save_truth(&setting, &truth, &conn, &postfix);
-    let oid = sql::save_observation(&setting, &obs, tid, &conn, &postfix);
+    let tid = conn.save_truth(&setting.induce(), &truth);
+    let oid = conn.save_observation(&setting.induce(), tid, &obs);
 
     let truth = thin_out(&truth, setting.tau);
 
@@ -52,38 +50,29 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
 
     let mut pb = ProgressBar::on(stderr(), setting.count as u64);
     let everyn = setting.everyn.unwrap_or(1);
-    let ents = sql::EnsembleTS::new(&conn, &postfix);
-    let stts = sql::StatTS::new(&conn, &postfix);
+    let mut ensemble_series = Vec::new();
+    let mut stat_series = Vec::new();
     for (t, ((tr, ob), (xs_f, xs_a))) in truth.iter().zip(obs.iter()).zip(enkf).enumerate() {
         pb.inc();
         let time = step * (t as f64);
-        // mean, std, RMSE
-        let (xm_f, pb) = stat::stat2(&xs_f);
-        let rmse_f = stat::rmse(&xm_f, tr);
-        let std_f = pb.trace().unwrap().sqrt();
-        let (xm_a, pa) = stat::stat2(&xs_a);
-        let rmse_a = stat::rmse(&xm_a, tr);
-        let std_a = pa.trace().unwrap().sqrt();
-        // bias
-        let bias = stat::ng_bias(&obs_op, &xs_f, &ob);
-        stts.insert(time, rmse_f, rmse_a, std_f, std_a, bias);
+        let st = stat::Stat::eval(&obs_op, &xs_f, &xs_a, tr, ob);
+        stat_series.push((time, st));
         if t % everyn == 0 {
-            let tb_xsb = sql::save_ensemble(&xs_f, &conn, &format!("{}_f{:05}", postfix, t / everyn));
-            let tb_xsa = sql::save_ensemble(&xs_a, &conn, &format!("{}_a{:05}", postfix, t / everyn));
-            ents.insert(time, &tb_xsb, &tb_xsa);
+            let tb_xsb = conn.save_ensemble(&xs_f);
+            let tb_xsa = conn.save_ensemble(&xs_a);
+            ensemble_series.push((time, tb_xsb, tb_xsa));
         }
     }
-    let tb_ensemble = ents.table_name();
-    let tb_stat = stts.table_name();
-    sql::da::insert_enkf(&setting, tid, oid, tb_ensemble, tb_stat, &conn);
+    let tb_ensemble = conn.commit_ensemble_series(ensemble_series.as_slice());
+    let tb_stat = conn.save_stat(stat_series.as_slice());
+    sqlite::da::insert_enkf(&setting, tid, oid, &tb_ensemble, &tb_stat, &conn);
     pb.finish_print("Done!\n");
 }
 
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     let setting: da::Setting = io::read_json(&args.arg_setting);
-
-    let mut conn = rusqlite::Connection::open(args.arg_db).unwrap();
+    let mut conn = sqlite::open_with_init(&args.arg_db);
     let tx = conn.transaction().unwrap();
     enkf(setting, &tx);
     tx.commit().unwrap();

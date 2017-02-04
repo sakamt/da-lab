@@ -3,18 +3,15 @@ test-rust:
   cache:
     untracked: true
   script:
-    - cd rust/
+    - cd rust
     - cargo test
 
-test-python:
-  image: termoshtt/scipy:3.5
+run-rust:
+  image: termoshtt/rust
+  cache:
+    untracked: true
   script:
-    - cd python
-    - pip install -r requirements.txt
-    - nosetests --with-doctest -v --with-coverage --cover-package=aics_da
-
-install-python:
-  image: termoshtt/scipy:3.5
-  script:
-    - cd python
-    - python setup.py install
+    - cd rust/
+    - cargo run --release --bin l63_truth sample_setting.json test.db
+    - cargo run --release --bin l63_observation sample_setting.json test.db
+    - cargo run --release --bin l63_enkf2 sample_setting.json test.db
