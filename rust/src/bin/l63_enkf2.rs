@@ -37,9 +37,8 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
     let obs_op = observation::LinearNormal::isotropic(3, setting.r);
     let obs = observation::eval_series(&obs_op, &setting, &truth, setting.dt);
 
-    let storage = sqlite::SqliteStorage::new(conn);
-    let tid = storage.save_truth(&setting.induce(), &truth);
-    let oid = storage.save_observation(&setting.induce(), tid, &obs);
+    let tid = conn.save_truth(&setting.induce(), &truth);
+    let oid = conn.save_observation(&setting.induce(), tid, &obs);
 
     let truth = thin_out(&truth, setting.tau);
 
@@ -59,13 +58,13 @@ fn enkf(setting: da::Setting, conn: &rusqlite::Connection) {
         let st = stat::Stat::eval(&obs_op, &xs_f, &xs_a, tr, ob);
         stat_series.push((time, st));
         if t % everyn == 0 {
-            let tb_xsb = storage.save_ensemble(&xs_f);
-            let tb_xsa = storage.save_ensemble(&xs_a);
+            let tb_xsb = conn.save_ensemble(&xs_f);
+            let tb_xsa = conn.save_ensemble(&xs_a);
             ensemble_series.push((time, tb_xsb, tb_xsa));
         }
     }
-    let tb_ensemble = storage.commit_ensemble_series(ensemble_series.as_slice());
-    let tb_stat = storage.save_stat(stat_series.as_slice());
+    let tb_ensemble = conn.commit_ensemble_series(ensemble_series.as_slice());
+    let tb_stat = conn.save_stat(stat_series.as_slice());
     sqlite::da::insert_enkf(&setting, tid, oid, &tb_ensemble, &tb_stat, &conn);
     pb.finish_print("Done!\n");
 }
