@@ -23,6 +23,8 @@ pub trait WeightEvaluator {
 }
 
 pub trait LinearTheory {
+    /// correlation matrix
+    fn corr(&self) -> M;
     /// information gain $\Omega = H^TR^{-1}H$
     fn info_gain(&self) -> M;
     /// Kalman gain matrix
@@ -60,8 +62,11 @@ impl WeightEvaluator for LinearNormal {
 }
 
 impl LinearTheory for LinearNormal {
+    fn corr(&self) -> M {
+        self.rs.dot(&self.rs)
+    }
     fn info_gain(&self) -> M {
-        let r_inv = self.rs.dot(&self.rs).inv().unwrap();
+        let r_inv = self.corr().inv().unwrap();
         linalg::bracket(&r_inv, &self.h)
     }
     fn kalman_gain(&self, p: &M) -> M {
