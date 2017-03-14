@@ -13,7 +13,7 @@ use super::da::EnsembleAnalyzer;
 pub struct ETKF {
     obs: LinearNormal,
     r_inv: M,
-    rho: f64,
+    rho_inv: f64,
 }
 
 impl ETKF {
@@ -22,25 +22,24 @@ impl ETKF {
         ETKF {
             obs: obs,
             r_inv: r_inv,
-            rho: rho,
+            rho_inv: 1.0 / rho,
         }
     }
 }
 
 impl EnsembleAnalyzer for ETKF {
     fn analysis(&self, xs: Ensemble, y: &V) -> Ensemble {
-        let n = y.len();
         let m = xs.len();
         let xm = mean(&xs);
         let dxs = hstack(&xs.into_iter().map(|x| x - &xm).collect::<Vec<_>>()).unwrap();
-        let dys = hstack(&dxs.axis_iter(Axis(0)).map(|x| self.obs.eval(&x.to_owned())).collect::<Vec<_>>()).unwrap();
+        let dys = hstack(&dxs.axis_iter(Axis(1)).map(|x| self.obs.eval(&x.to_owned())).collect::<Vec<_>>()).unwrap();
         let dy = y - &self.obs.eval(&xm);
-        let p_inv = (m as f64 - 1.0) * Array::eye(n) + dys.t().dot(&self.r_inv).dot(&dys);
+        let p_inv = (m as f64 - 1.0) * self.rho_inv * Array::eye(m) + dys.t().dot(&self.r_inv).dot(&dys);
         let p = p_inv.inv().unwrap();
         let w = p.dot(&dys.t().dot(&self.r_inv.dot(&dy)));
         let t = p.ssqrt().unwrap();
-        let xm_a = dxs.t().dot(&w);
-        let dxs_a = t.dot(&dxs);
-        dxs_a.axis_iter(Axis(0)).map(|dx| &dx + &xm_a).collect()
+        let xm_a = xm + dxs.dot(&w);
+        let dxs_a = dxs.dot(&t);
+        dxs_a.axis_iter(Axis(1)).map(|dx| &dx + &xm_a).collect()
     }
 }
