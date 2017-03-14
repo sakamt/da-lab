@@ -34,6 +34,7 @@ struct Setting {
     save_count: usize,
     dt: f64,
     r: f64,
+    rho: f64,
 }
 
 fn main() {
@@ -53,20 +54,21 @@ fn main() {
     let duration = (T * setting.tau) as f64 * setting.dt;
     assert_eq!(N, 3);
     println!("[Settings]");
-    println!("- dt            : {}", setting.dt);
-    println!("- tau           : {}", setting.tau);
-    println!("- ensemble size : {}", setting.k);
-    println!("- initial spread: {}", setting.r);
-    println!("- steps         : {}", T);
-    println!("- duration      : {}", duration);
-    println!("- save count    : {}", setting.save_count);
+    println!("- dt               : {}", setting.dt);
+    println!("- tau              : {}", setting.tau);
+    println!("- ensemble size    : {}", setting.k);
+    println!("- initial spread   : {}", setting.r);
+    println!("- inflation factor : {}", setting.rho);
+    println!("- steps            : {}", T);
+    println!("- duration         : {}", duration);
+    println!("- save count       : {}", setting.save_count);
 
     let h = Array::<f64, _>::eye(3);
     let rs = setting.r.sqrt() * Array::<f64, _>::eye(3);
     let obs_op = observation::LinearNormal::new(h, rs);
 
     let xs0 = da::replica(&x0, setting.r.sqrt(), setting.k);
-    let analyzer = etkf::ETKF::new(obs_op, 1.4);
+    let analyzer = etkf::ETKF::new(obs_op, setting.rho);
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
     let etkf = obs.iter().scan(xs0, |xs, y| Some(da::iterate(&teo, &analyzer, xs, y)));
 
