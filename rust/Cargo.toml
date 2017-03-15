@@ -8,8 +8,8 @@ rmp = "*"
 rustc-serialize = "*"
 rmp-serialize = "*"
 rand = "*"
-ndarray-rand = "*"
-ndarray-linalg = "0.1.6"
+ndarray-rand = "0.3"
+ndarray-linalg = "0.2"
 ndarray-odeint = "0.1"
 itertools = "*"
 docopt = "*"
@@ -21,7 +21,7 @@ uuid = { version = "0.2", features = ["v4"] }
 num-traits = "*"
 
 [dependencies.ndarray]
-version = "0.7.3"
+version = "0.7"
 default-features = false
 features = ["blas", "rustc-serialize"]
 

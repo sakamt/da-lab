@@ -27,6 +27,7 @@ pub mod lyapunov;
 pub mod da;
 pub mod mpf;
 pub mod enkf;
+pub mod etkf;
 
 // models
 pub mod l63;
