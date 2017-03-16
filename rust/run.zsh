@@ -1,4 +1,5 @@
-#!/bin/zsh -eu
+#!/usr/bin/env zsh
+set -eu
 
 setting=$1
 da=$2
