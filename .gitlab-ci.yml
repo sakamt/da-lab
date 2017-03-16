@@ -12,6 +12,6 @@ run-rust:
     untracked: true
   script:
     - cd rust/
-    - ./run.sh sample_setting.json enkf
-    - ./run.sh sample_setting.json etkf
-    - ./run.sh sample_setting.json mpf
+    - ./run.zsh sample_setting.json enkf
+    - ./run.zsh sample_setting.json etkf
+    - ./run.zsh sample_setting.json mpf

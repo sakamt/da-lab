@@ -1,4 +1,4 @@
-#!/bin/sh -eu
+#!/bin/zsh -eu
 
 setting=$1
 da=$2
