@@ -12,10 +12,10 @@ use aics_da::types::*;
 use pbr::ProgressBar;
 
 const USAGE: &'static str = "
-Bias of EnKF for Lorenz63 model
+Bias of ETKF for Lorenz63 model
 
 Usage:
-  l63_enkf_bias <setting> <truth> <obs>
+  l63_etkf_bias <setting> <truth> <obs>
 ";
 
 #[derive(RustcDecodable)]
@@ -25,7 +25,7 @@ struct Args {
     arg_obs: String,
 }
 
-fn enkf_bias(args: Args, setting: da::Setting) {
+fn etkf_bias(args: Args, setting: da::Setting) {
     let step = setting.dt * setting.tau as f64;
 
     let truth: Vec<V> = io::load_msg(&args.arg_truth);
@@ -33,15 +33,16 @@ fn enkf_bias(args: Args, setting: da::Setting) {
 
     let obs_op = observation::LinearNormal::isotropic(3, setting.r);
 
-    let analyzer = enkf::EnKF::new(obs_op.clone());
+    let rho = setting.rho.unwrap_or(1.0);
+    let analyzer = etkf::ETKF::new(obs_op.clone(), rho);
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
 
     let xs0 = da::replica(&truth[0], setting.r.sqrt(), setting.k);
-    let enkf = obs.iter().scan(xs0, |xs, y| Some(da::iterate(&teo, &analyzer, xs, y)));
+    let etkf = obs.iter().scan(xs0, |xs, y| Some(da::iterate(&teo, &analyzer, xs, y)));
 
     let mut pb = ProgressBar::on(stderr(), setting.count as u64);
     println!("time,X,Y,Z,Bx,By,Bz");
-    for (t, (tr, (_, xs_a))) in truth.iter().zip(enkf).enumerate() {
+    for (t, (tr, (_, xs_a))) in truth.iter().zip(etkf).enumerate() {
         pb.inc();
         let time = step * (t as f64);
         let xm_a = stat::mean(&xs_a);
@@ -61,5 +62,5 @@ fn enkf_bias(args: Args, setting: da::Setting) {
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     let setting: da::Setting = io::read_json(&args.arg_setting);
-    enkf_bias(args, setting);
+    etkf_bias(args, setting);
 }
