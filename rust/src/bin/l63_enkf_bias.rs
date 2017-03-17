@@ -1,7 +1,6 @@
 
 extern crate ndarray;
 extern crate rustc_serialize;
-extern crate rusqlite;
 extern crate aics_da;
 extern crate docopt;
 extern crate pbr;
@@ -9,32 +8,34 @@ extern crate pbr;
 use std::io::stderr;
 use docopt::Docopt;
 use aics_da::*;
+use aics_da::types::*;
 use pbr::ProgressBar;
 
 const USAGE: &'static str = "
 Bias of EnKF for Lorenz63 model
 
 Usage:
-  l63_enkf_bias <setting>
+  l63_enkf_bias <setting> <truth> <obs>
+  l63_rmse (-h | --help)
+
+Options:
+  -h --help  Show this screen
 ";
 
 #[derive(RustcDecodable)]
 struct Args {
     arg_setting: String,
+    arg_truth: String,
+    arg_obs: String,
 }
 
-fn thin_out<T: Clone>(tl: &Vec<T>, n: usize) -> Vec<T> {
-    tl.iter().enumerate().filter(|&(i, _)| i % n == 0).map(|(_, v)| v.clone()).collect()
-}
-
-fn enkf_bias(setting: da::Setting) {
+fn enkf_bias(args: Args, setting: da::Setting) {
     let step = setting.dt * setting.tau as f64;
 
-    let truth = l63::generate_truth(&setting);
-    let obs_op = observation::LinearNormal::isotropic(3, setting.r);
-    let obs = observation::eval_series(&obs_op, &setting, &truth, setting.dt);
+    let truth: Vec<V> = io::load_msg(&args.arg_truth);
+    let obs: Vec<V> = io::load_msg(&args.arg_obs);
 
-    let truth = thin_out(&truth, setting.tau);
+    let obs_op = observation::LinearNormal::isotropic(3, setting.r);
 
     let analyzer = enkf::EnKF::new(obs_op.clone());
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
@@ -64,5 +65,5 @@ fn enkf_bias(setting: da::Setting) {
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     let setting: da::Setting = io::read_json(&args.arg_setting);
-    enkf_bias(setting);
+    enkf_bias(args, setting);
 }
