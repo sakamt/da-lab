@@ -54,7 +54,7 @@ fn enkf_bias(args: Args, setting: da::Setting) {
                  time,
                  tr[0],
                  tr[1],
-                 tr[1],
+                 tr[2],
                  bias[0],
                  bias[1],
                  bias[2]);
