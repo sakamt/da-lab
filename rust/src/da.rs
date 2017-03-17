@@ -14,6 +14,7 @@ pub struct Setting {
     pub everyn: Option<usize>,
     pub dt: f64,
     pub r: f64,
+    pub rho: Option<f64>,
 }
 
 pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {

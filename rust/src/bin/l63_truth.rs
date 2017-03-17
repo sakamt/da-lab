@@ -3,33 +3,51 @@ extern crate ndarray;
 extern crate rustc_serialize;
 extern crate docopt;
 extern crate aics_da;
-extern crate rusqlite;
+extern crate itertools;
 
 use docopt::Docopt;
 use aics_da::*;
-use aics_da::io::SeriesStorage;
-use aics_da::settings::Induce;
+use aics_da::types::V;
+use itertools::iterate;
 
 const USAGE: &'static str = "
-Generate truth of Lorenz63 model
+Generate truth series of Lorenz63 model
 
 Usage:
-  l63_truth <setting> <db>
+  l63_truth <setting> <init>
 ";
 
 #[derive(Debug, RustcDecodable)]
 struct Args {
     arg_setting: String,
-    arg_db: String,
+    arg_init: String,
+}
+
+#[derive(RustcDecodable)]
+struct Setting {
+    dt: f64,
+    tau: usize,
+    count: usize,
 }
 
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
-    let setting: da::Setting = io::read_json(&args.arg_setting);
-    let mut conn = sqlite::open_with_init(&args.arg_db);
-    let tx = conn.transaction().unwrap();
-    let truth = l63::generate_truth(&setting);
-    let tid = tx.save_truth(&setting.induce(), &truth);
-    println!("{}", tid);
-    tx.commit().unwrap();
+    println!("[Arguments]");
+    println!("- executable   : l63_genobs");
+    println!("- setting JSON : {}", args.arg_setting);
+    println!("- initial state: {}", args.arg_init);
+    let setting: Setting = io::read_json(&args.arg_setting);
+    let output = "truth.msg";
+    println!("[Settings]");
+    println!("- dt         : {}", setting.dt);
+    println!("- tau        : {}", setting.tau);
+    println!("- count      : {}", setting.count);
+    println!("[Outputs]");
+    println!("- truth      : {}", output);
+
+    let x0: V = io::load_msg(&args.arg_init);
+    let truth: Vec<V> = iterate(x0, |x| l63::teo(setting.dt, setting.tau, x.clone()))
+        .take(setting.count)
+        .collect();
+    io::save_msg(&truth, output);
 }

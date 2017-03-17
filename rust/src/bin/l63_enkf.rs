@@ -27,15 +27,6 @@ struct Args {
     arg_output: String,
 }
 
-#[derive(RustcDecodable)]
-struct Setting {
-    k: usize,
-    tau: usize,
-    save_count: usize,
-    dt: f64,
-    r: f64,
-}
-
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     println!("[Arguments]");
@@ -45,12 +36,13 @@ fn main() {
     println!("- observations : {}", args.arg_observation);
     println!("- output       : {}", args.arg_output);
     std::fs::create_dir_all(&args.arg_output).unwrap();
-    let setting: Setting = io::read_json(&args.arg_setting);
+    let setting: da::Setting = io::read_json(&args.arg_setting);
     let x0: V = io::load_msg(&args.arg_init);
     let obs: Vec<V> = io::load_msg(&args.arg_observation);
     let T = obs.len();
     let N = obs[0].len();
     let duration = (T * setting.tau) as f64 * setting.dt;
+    let everyn = setting.everyn.unwrap_or(1);
     assert_eq!(N, 3);
     println!("[Settings]");
     println!("- dt            : {}", setting.dt);
@@ -59,8 +51,7 @@ fn main() {
     println!("- initial spread: {}", setting.r);
     println!("- steps         : {}", T);
     println!("- duration      : {}", duration);
-    println!("- save count    : {}", setting.save_count);
-
+    println!("- everyn        : {}", everyn);
     let h = Array::<f64, _>::eye(3);
     let rs = setting.r.sqrt() * Array::<f64, _>::eye(3);
     let obs_op = observation::LinearNormal::new(h, rs);
@@ -73,8 +64,8 @@ fn main() {
     let mut pb = ProgressBar::new(T as u64);
     for (t, (xs_b, xs_a)) in enkf.enumerate() {
         pb.inc();
-        if t % setting.save_count == 0 {
-            let tt = t / setting.save_count;
+        if t % everyn == 0 {
+            let tt = t / everyn;
             io::save_msg(&xs_b, &format!("{}/b{:05}.msg", args.arg_output, tt));
             io::save_msg(&xs_a, &format!("{}/a{:05}.msg", args.arg_output, tt));
         }
