@@ -14,13 +14,14 @@ const USAGE: &'static str = "
 Generate observations of Lorenz63 model
 
 Usage:
-  l63_obs <setting> <truth>
+  l63_obs <setting> <truth> --output=<output>
 ";
 
 #[derive(Debug, RustcDecodable)]
 struct Args {
     arg_setting: String,
     arg_truth: String,
+    flag_output: Option<String>,
 }
 
 #[derive(RustcDecodable)]
@@ -39,7 +40,7 @@ fn main() {
     println!("- truth series : {}", args.arg_truth);
     let setting: Setting = io::read_json(&args.arg_setting);
     let truth: Vec<V> = io::load_msg(&args.arg_truth);
-    let output = "obs.msg";
+    let output = args.flag_output.unwrap_or("obs.msg".to_string());
     println!("[Settings]");
     println!("- dt         : {}", setting.dt);
     println!("- tau        : {}", setting.tau);
@@ -52,5 +53,5 @@ fn main() {
     let obs: Vec<V> = truth.iter()
         .map(|x| x + &observation::noise(&rs))
         .collect();
-    io::save_msg(&obs, output);
+    io::save_msg(&obs, &output);
 }
