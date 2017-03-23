@@ -14,7 +14,7 @@ const USAGE: &'static str = "
 Generate observations of Lorenz63 model
 
 Usage:
-  l63_obs <setting> <truth> --output=<output>
+  l63_obs <setting> <truth> [--output=<output>]
 ";
 
 #[derive(Debug, RustcDecodable)]
