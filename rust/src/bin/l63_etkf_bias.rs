@@ -41,17 +41,20 @@ fn etkf_bias(args: Args, setting: da::Setting) {
     let etkf = obs.iter().scan(xs0, |xs, y| Some(da::iterate(&teo, &analyzer, xs, y)));
 
     let mut pb = ProgressBar::on(stderr(), setting.count as u64);
-    println!("time,X,Y,Z,Bx,By,Bz");
-    for (t, (tr, (_, xs_a))) in truth.iter().zip(etkf).enumerate() {
+    println!("time,X,Y,Z,Ox,Oy,Oz,Bx,By,Bz");
+    for (t, ((tr, ob), (_, xs_a))) in truth.iter().zip(obs.iter()).zip(etkf).enumerate() {
         pb.inc();
         let time = step * (t as f64);
         let xm_a = stat::mean(&xs_a);
         let bias = xm_a - tr;
-        println!("{},{},{},{},{},{},{}",
+        println!("{},{},{},{},{},{},{},{},{},{}",
                  time,
                  tr[0],
                  tr[1],
                  tr[2],
+                 ob[0],
+                 ob[1],
+                 ob[2],
                  bias[0],
                  bias[1],
                  bias[2]);
