@@ -12,7 +12,7 @@ use aics_da::types::*;
 use pbr::ProgressBar;
 
 const USAGE: &'static str = "
-Bias of ETKF for Lorenz63 model
+Bias of methods for Lorenz63 model
 
 Usage:
   l63_bias <method> <setting> <truth> <obs>
@@ -36,8 +36,9 @@ fn etkf_bias(args: Args, setting: da::Setting) {
 
     let rho = setting.rho.unwrap_or(1.0);
     let analyzer: Box<da::EnsembleAnalyzer> = match args.arg_method.trim().as_ref() {
-        "etkf" => Box::new(etkf::ETKF::new(obs_op.clone(), rho)),
-        "enkf" => Box::new(enkf::EnKF::new(obs_op.clone())),
+        "etkf" => Box::new(etkf::ETKF::new(obs_op, rho)),
+        "enkf" => Box::new(enkf::EnKF::new(obs_op)),
+        "mpf" => Box::new(mpf::MPF::new(obs_op, 3)),
         _ => panic!("unsupported method"),
     };
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
