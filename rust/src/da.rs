@@ -40,8 +40,8 @@ pub trait EnsembleAnalyzer {
 }
 
 pub fn iterate<F, A>(forecaster: &F, analyzer: &A, mut state: &mut Ensemble, obs: &V) -> (Ensemble, Ensemble)
-    where F: EnsembleForecaster,
-          A: EnsembleAnalyzer
+    where F: EnsembleForecaster + ?Sized,
+          A: EnsembleAnalyzer + ?Sized
 {
     let xs_a = analyzer.analysis(state.clone(), obs);
     let xs_f = forecaster.forecast(xs_a.clone());
