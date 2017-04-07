@@ -2,14 +2,15 @@
 use rustc_serialize::{Encodable, Decodable, json};
 use rmp_serialize::{Encoder, Decoder};
 use std::fs::File;
-use std::io::Read;
+use std::io::{Read, BufWriter};
 use std::string::String;
 
 use super::types::{Ensemble, Truth, Observation};
 use super::{settings, stat};
 
 pub fn save_msg<T: Encodable>(val: &T, filename: &str) {
-    let mut buf = File::create(filename).ok().unwrap();
+    let f = File::create(filename).ok().unwrap();
+    let mut buf = BufWriter::new(f);
     let mut enc = Encoder::new(&mut buf);
     val.encode(&mut enc).unwrap();
 }
