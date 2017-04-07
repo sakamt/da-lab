@@ -1,4 +1,6 @@
 
+#[macro_use]
+extern crate derive_new;
 extern crate rand;
 extern crate ndarray;
 extern crate ndarray_linalg;
@@ -8,9 +10,7 @@ extern crate rmp_serialize;
 extern crate rustc_serialize;
 extern crate num_traits;
 extern crate itertools;
-extern crate time;
 extern crate float_cmp;
-extern crate uuid;
 
 pub mod types;
 pub mod settings;

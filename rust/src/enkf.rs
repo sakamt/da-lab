@@ -7,15 +7,9 @@ use observation::*;
 use da::EnsembleAnalyzer;
 
 /// Ensemble Kalman Filter with perturbed observation implementation
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, new)]
 pub struct EnKF {
     obs: LinearNormal,
-}
-
-impl EnKF {
-    pub fn new(obs: LinearNormal) -> Self {
-        EnKF { obs: obs }
-    }
 }
 
 impl EnsembleAnalyzer for EnKF {
