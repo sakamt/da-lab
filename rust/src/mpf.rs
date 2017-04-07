@@ -43,13 +43,17 @@ impl MergeResampler {
 
 /// merging particle filter
 #[derive(Clone, Debug)]
-pub struct MPF {
+pub struct MPF<Obs = LinearNormal>
+    where Obs: WeightEvaluator + ObservationOperator
+{
     resampler: MergeResampler,
-    obs: LinearNormal,
+    obs: Obs,
 }
 
-impl MPF {
-    pub fn new(obs: LinearNormal, n: usize) -> Self {
+impl<Obs> MPF<Obs>
+    where Obs: WeightEvaluator + ObservationOperator
+{
+    pub fn new(obs: Obs, n: usize) -> Self {
         if n != 3 {
             panic!("MPF: only n=3 is supported now.");
         }
@@ -60,7 +64,9 @@ impl MPF {
     }
 }
 
-impl EnsembleAnalyzer for MPF {
+impl<Obs> EnsembleAnalyzer for MPF<Obs>
+    where Obs: WeightEvaluator + ObservationOperator
+{
     fn analysis(&self, xs: Ensemble, y: &V) -> Ensemble {
         let w: Weight = self.obs.log_weight(&xs, y).into();
         self.resampler.resampling(&w, &xs)
