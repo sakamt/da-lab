@@ -51,10 +51,11 @@ impl ObservationOperator for LinearNormal {
 
 impl WeightEvaluator for LinearNormal {
     fn log_weight(&self, xs: &Ensemble, y: &V) -> weight::LogWeight {
+        let rs_inv = self.rs.clone().inv().unwrap();
         let ws: Vec<_> = xs.iter()
             .map(|x| {
                 let dev = y - &self.h.dot(x);
-                -0.5 * self.rs.dot(&dev).norm()
+                -0.5 * rs_inv.dot(&dev).norm()
             })
             .collect();
         ws.into()
