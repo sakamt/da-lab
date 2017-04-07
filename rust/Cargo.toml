@@ -14,10 +14,9 @@ ndarray-odeint = "0.1"
 itertools = "*"
 docopt = "*"
 pbr = "*"
-time = "*"
 float-cmp = "*"
-uuid = { version = "0.2", features = ["v4"] }
 num-traits = "*"
+derive-new = "*"
 
 [dependencies.ndarray]
 version = "0.7"
