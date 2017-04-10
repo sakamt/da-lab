@@ -6,10 +6,8 @@ extern crate docopt;
 extern crate pbr;
 
 use std::io::stderr;
-use std::mem;
 use docopt::Docopt;
 use aics_da::*;
-use aics_da::da::*;
 use aics_da::types::*;
 use pbr::ProgressBar;
 
@@ -28,13 +26,6 @@ struct Args {
     arg_method: String,
 }
 
-fn remove_bias(mut xs: Ensemble, truth: &V) -> Ensemble {
-    let dev = stat::mean(&xs) - truth;
-    for x in xs.iter_mut() {
-        *x = &*x - &dev;
-    }
-    xs
-}
 
 fn bias(args: Args, setting: da::Setting) {
     let step = setting.dt * setting.tau as f64;
@@ -55,10 +46,7 @@ fn bias(args: Args, setting: da::Setting) {
 
     let xs0 = da::replica(&truth[0], setting.r.sqrt(), setting.k);
     let series = obs.iter().zip(truth.iter()).scan(xs0, |xs, (y, t)| {
-        let xs_a = analyzer.analysis(xs.clone(), y);
-        let xs_f = teo.forecast(remove_bias(xs_a.clone(), t));
-        let xs_f_pre: Ensemble = mem::replace(xs, xs_f);
-        Some((xs_f_pre, xs_a))
+        Some(da::iterate_bias_collect(&teo, &*analyzer, xs, y, t))
     });
 
     let mut pb = ProgressBar::on(stderr(), setting.count as u64);

@@ -4,7 +4,8 @@ use rand::distributions::*;
 use ndarray::prelude::*;
 use ndarray_rand::RandomExt;
 
-use types::*;
+use super::types::*;
+use super::stat;
 
 #[derive(RustcDecodable)]
 pub struct Setting {
@@ -47,4 +48,27 @@ pub fn iterate<F, A>(forecaster: &F, analyzer: &A, mut state: &mut Ensemble, obs
     let xs_f = forecaster.forecast(xs_a.clone());
     let xs_f_pre: Ensemble = mem::replace(&mut state, xs_f);
     (xs_f_pre, xs_a)
+}
+
+pub fn iterate_bias_collect<F, A>(forecaster: &F,
+                                  analyzer: &A,
+                                  mut xs: &mut Ensemble,
+                                  y: &V,
+                                  t: &V)
+                                  -> (Ensemble, Ensemble)
+    where F: EnsembleForecaster + ?Sized,
+          A: EnsembleAnalyzer + ?Sized
+{
+    let xs_a = analyzer.analysis(xs.clone(), y);
+    let xs_f = forecaster.forecast(remove_bias(xs_a.clone(), t));
+    let xs_f_pre: Ensemble = mem::replace(xs, xs_f);
+    (xs_f_pre, xs_a)
+}
+
+fn remove_bias(mut xs: Ensemble, truth: &V) -> Ensemble {
+    let dev = stat::mean(&xs) - truth;
+    for x in xs.iter_mut() {
+        *x = &*x - &dev;
+    }
+    xs
 }
