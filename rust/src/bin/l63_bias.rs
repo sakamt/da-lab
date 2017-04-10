@@ -26,7 +26,7 @@ struct Args {
     arg_method: String,
 }
 
-fn etkf_bias(args: Args, setting: da::Setting) {
+fn bias(args: Args, setting: da::Setting) {
     let step = setting.dt * setting.tau as f64;
 
     let truth: Vec<V> = io::load_msg(&args.arg_truth);
@@ -71,5 +71,5 @@ fn etkf_bias(args: Args, setting: da::Setting) {
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     let setting: da::Setting = io::read_json(&args.arg_setting);
-    etkf_bias(args, setting);
+    bias(args, setting);
 }

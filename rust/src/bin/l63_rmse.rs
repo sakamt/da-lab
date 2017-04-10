@@ -6,6 +6,7 @@ extern crate docopt;
 extern crate aics_da;
 extern crate pbr;
 
+use std::io::stderr;
 use num_traits::float::Float;
 use docopt::Docopt;
 use ndarray_linalg::prelude::*;
@@ -47,7 +48,7 @@ fn main() {
     println!("[Outputs]");
     println!("- RMSE: {}", output);
 
-    let mut pb = ProgressBar::new((setting.count / everyn) as u64);
+    let mut pb = ProgressBar::on(stderr(), (setting.count / everyn) as u64);
     let rmse: Vec<f64> = truth.iter()
         .enumerate()
         .filter_map(|(t, x)| {

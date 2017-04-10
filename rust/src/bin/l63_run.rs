@@ -5,6 +5,7 @@ extern crate aics_da;
 extern crate docopt;
 extern crate pbr;
 
+use std::io::stderr;
 use docopt::Docopt;
 use ndarray::prelude::*;
 use aics_da::*;
@@ -53,7 +54,7 @@ fn main() {
     let xs0 = da::replica(&x0, setting.r.sqrt(), setting.k);
     let etkf = obs.iter().scan(xs0, |xs, y| Some(da::iterate(&teo, &*analyzer, xs, y)));
 
-    let mut pb = ProgressBar::new(duration as u64);
+    let mut pb = ProgressBar::on(stderr(), duration as u64);
     for (t, (xs_b, xs_a)) in etkf.enumerate() {
         pb.inc();
         if t % everyn == 0 {
