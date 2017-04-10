@@ -9,7 +9,7 @@ nproc=${5:-$(nproc --all)}
 echo "nproc=$nproc"
 cargo run --release --bin=l63_init $setting
 cargo run --release --bin=l63_truth $setting init.msg
-output="${typ}_mean_${da}_$(date +%Y%m%d-%H%M%S)"
+output="${DATA_DIR}/${typ}_mean/${da}/$(date +%Y%m%d-%H%M%S)"
 mkdir -p $output
 cp $setting init.msg truth.msg $output
 parallel -j $nproc "echo Start: {}/${count};\
