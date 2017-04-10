@@ -27,9 +27,9 @@ struct Args {
 }
 
 fn remove_bias(mut xs: &mut Ensemble, truth: &V) {
-    let mv = -stat::mean(&xs) + truth;
+    let dev = stat::mean(&xs) - truth;
     for x in xs.iter_mut() {
-        *x = &*x - &mv;
+        *x = &*x - &dev;
     }
 }
 
