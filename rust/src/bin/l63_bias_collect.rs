@@ -15,7 +15,7 @@ const USAGE: &'static str = "
 Bias of methods for Lorenz63 model
 
 Usage:
-  l63_bias <method> <setting> <truth> <obs>
+  l63_bias_collect <method> <setting> <truth> <obs>
 ";
 
 #[derive(RustcDecodable)]
