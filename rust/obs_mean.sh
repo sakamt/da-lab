@@ -5,11 +5,12 @@ da=$2
 typ=$3
 count=$4
 nproc=${5:-$(nproc --all)}
+data_dir=${DATA_DIR:-.}
 
 echo "nproc=$nproc"
 cargo run --release --bin=l63_init $setting
 cargo run --release --bin=l63_truth $setting init.msg
-output="${DATA_DIR}/${typ}_mean/${da}/$(date +%Y%m%d-%H%M%S)"
+output="${data_dir}/${typ}_mean/${da}/$(date +%Y%m%d-%H%M%S)"
 mkdir -p $output
 cp $setting init.msg truth.msg $output
 parallel -j $nproc "echo Start: {}/${count};\
