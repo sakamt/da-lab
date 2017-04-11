@@ -1,15 +1,21 @@
 
 use ndarray_linalg::prelude::*;
 
-use types::*;
-use stat::*;
-use observation::*;
-use da::EnsembleAnalyzer;
+use super::types::*;
+use super::stat::*;
+use super::observation::*;
+use super::da::{Setting, EnsembleAnalyzer};
 
 /// Ensemble Kalman Filter with perturbed observation implementation
 #[derive(Clone, Debug, new)]
 pub struct EnKF {
     obs: LinearNormal,
+}
+
+impl From<Setting> for EnKF {
+    fn from(setting: Setting) -> Self {
+        EnKF::new(LinearNormal::isotropic(3, setting.r))
+    }
 }
 
 impl EnsembleAnalyzer for EnKF {
