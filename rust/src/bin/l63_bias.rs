@@ -15,13 +15,13 @@ const USAGE: &'static str = "
 Bias of methods for Lorenz63 model
 
 Usage:
-  l63_bias <da> <setting> <truth> <obs> [--progress] [--special]
+  l63_bias <da> <setting> <truth> <obs> [--progress] [--special=<special>]
   l63_bias (-h | --help)
 
 Options:
   -h --help   Show this
   --progress  Show progress bar
-  --special   Special technique
+  --special=<special>   Special technique
 ";
 
 #[derive(RustcDecodable)]
@@ -44,7 +44,15 @@ fn bias(args: Args, setting: da::Setting) {
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
 
     let xs0 = da::replica(&truth[0], setting.r.sqrt(), setting.k);
-    let series = da::series(&teo, &*analyzer, xs0, &obs);
+    let series = match args.flag_special {
+        Some(special) => {
+            match special.as_ref() {
+                "bias_collect" => bias_collect::series(&teo, &*analyzer, xs0, &obs, &truth),
+                _ => panic!("Invalid special: {}", special),
+            }
+        }
+        None => da::series(&teo, &*analyzer, xs0, &obs),
+    };
 
     let mut pb = if args.flag_progress {
         Some(ProgressBar::on(stderr(), setting.count as u64))
