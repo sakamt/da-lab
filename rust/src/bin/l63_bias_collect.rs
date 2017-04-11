@@ -45,7 +45,7 @@ fn bias(args: Args, setting: da::Setting) {
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
 
     let xs0 = da::replica(&truth[0], setting.r.sqrt(), setting.k);
-    let series = da::series_bias_collect(&teo, &*analyzer, xs0, &obs, &truth);
+    let series = bias_collect::series(&teo, &*analyzer, xs0, &obs, &truth);
 
     let mut pb = ProgressBar::on(stderr(), setting.count as u64);
     println!("time,X,Y,Z,Ox,Oy,Oz,Bx,By,Bz");
