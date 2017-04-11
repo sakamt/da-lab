@@ -27,7 +27,6 @@ struct Args {
     arg_datadir: String,
     arg_truth: String,
     arg_setting: String,
-    flag_progress: bool,
 }
 
 fn main() {
