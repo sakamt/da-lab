@@ -6,7 +6,7 @@ use ndarray_rand::RandomExt;
 
 use super::types::*;
 
-#[derive(RustcDecodable)]
+#[derive(RustcDecodable, Clone, Copy)]
 pub struct Setting {
     pub k: usize,
     pub tau: usize,

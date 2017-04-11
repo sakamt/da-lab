@@ -32,15 +32,7 @@ fn bias(args: Args, setting: da::Setting) {
     let truth: Vec<V> = io::load_msg(&args.arg_truth);
     let obs: Vec<V> = io::load_msg(&args.arg_obs);
 
-    let obs_op = observation::LinearNormal::isotropic(3, setting.r);
-
-    let rho = setting.rho.unwrap_or(1.0);
-    let analyzer: Box<da::EnsembleAnalyzer> = match args.arg_method.trim().as_ref() {
-        "etkf" => Box::new(etkf::ETKF::new(obs_op, rho)),
-        "enkf" => Box::new(enkf::EnKF::new(obs_op)),
-        "mpf" => Box::new(mpf::MPF::new(obs_op, 3)),
-        _ => panic!("unsupported method"),
-    };
+    let analyzer = select_analyzer(args.arg_method.trim(), setting);
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
 
     let xs0 = da::replica(&truth[0], setting.r.sqrt(), setting.k);

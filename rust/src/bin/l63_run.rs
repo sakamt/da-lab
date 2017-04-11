@@ -7,7 +7,6 @@ extern crate pbr;
 
 use std::io::stderr;
 use docopt::Docopt;
-use ndarray::prelude::*;
 use aics_da::*;
 use aics_da::types::V;
 use pbr::ProgressBar;
@@ -36,18 +35,9 @@ fn main() {
     let obs: Vec<V> = io::load_msg(&args.arg_observation);
     let duration = obs.len();
     let everyn = setting.everyn.unwrap_or(1);
-    let rho = setting.rho.unwrap_or(1.0);
 
     // DA settings
-    let h = Array::<f64, _>::eye(3);
-    let rs = setting.r.sqrt() * Array::<f64, _>::eye(3);
-    let obs_op = observation::LinearNormal::new(h, rs);
-    let analyzer: Box<da::EnsembleAnalyzer> = match args.arg_method.trim().as_ref() {
-        "etkf" => Box::new(etkf::ETKF::new(obs_op, rho)),
-        "enkf" => Box::new(enkf::EnKF::new(obs_op)),
-        "mpf" => Box::new(mpf::MPF::new(obs_op, 3)),
-        _ => panic!("unsupported method"),
-    };
+    let analyzer = select_analyzer(args.arg_method.trim(), setting);
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
 
     // generate DA sequence
