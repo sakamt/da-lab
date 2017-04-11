@@ -50,6 +50,17 @@ pub fn iterate<F, A>(forecaster: &F, analyzer: &A, mut state: &mut Ensemble, obs
     (xs_f_pre, xs_a)
 }
 
+pub fn series<'a, F, A>(forecaster: &'a F,
+                        analyzer: &'a A,
+                        xs0: Ensemble,
+                        obs: &'a Vec<V>)
+                        -> Box<Iterator<Item = (Ensemble, Ensemble)> + 'a>
+    where F: EnsembleForecaster + ?Sized,
+          A: EnsembleAnalyzer + ?Sized
+{
+    Box::new(obs.iter().scan(xs0, move |xs, y| Some(iterate(forecaster, analyzer, xs, y))))
+}
+
 pub fn iterate_bias_collect<F, A>(forecaster: &F,
                                   analyzer: &A,
                                   mut xs: &mut Ensemble,
@@ -63,6 +74,20 @@ pub fn iterate_bias_collect<F, A>(forecaster: &F,
     let xs_f = forecaster.forecast(remove_bias(xs_a.clone(), t));
     let xs_f_pre: Ensemble = mem::replace(xs, xs_f);
     (xs_f_pre, xs_a)
+}
+
+pub fn series_bias_collect<'a, F, A>(forecaster: &'a F,
+                                     analyzer: &'a A,
+                                     xs0: Ensemble,
+                                     obs: &'a Vec<V>,
+                                     truth: &'a Vec<V>)
+                                     -> Box<Iterator<Item = (Ensemble, Ensemble)> + 'a>
+    where F: EnsembleForecaster + ?Sized,
+          A: EnsembleAnalyzer + ?Sized
+{
+    Box::new(obs.iter().zip(truth.iter()).scan(xs0, move |xs, (y, t)| {
+        Some(iterate_bias_collect(forecaster, analyzer, xs, y, t))
+    }))
 }
 
 fn remove_bias(mut xs: Ensemble, truth: &V) -> Ensemble {
