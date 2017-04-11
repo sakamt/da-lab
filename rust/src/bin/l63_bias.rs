@@ -15,23 +15,25 @@ const USAGE: &'static str = "
 Bias of methods for Lorenz63 model
 
 Usage:
-  l63_bias <da> <special> <setting> <truth> <obs> [--progress]
+  l63_bias <da> <setting> <truth> <obs> [--collect] [--shake] [--progress]
   l63_bias (-h | --help)
 
 Options:
   -h --help   Show this
   --progress  Show progress bar
-  --special=<special>   Special technique
+  --collect   Collect bias by truth
+  --shake     Shake ensemble by merge-resmpling
 ";
 
 #[derive(RustcDecodable)]
 struct Args {
     arg_da: String,
-    arg_special: String,
     arg_setting: String,
     arg_truth: String,
     arg_obs: String,
     flag_progress: bool,
+    flag_collect: bool,
+    flag_shake: bool,
 }
 
 fn bias(args: Args, setting: da::Setting) {
@@ -44,11 +46,13 @@ fn bias(args: Args, setting: da::Setting) {
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
 
     let xs0 = da::replica(&truth[0], setting.r.sqrt(), setting.k);
-    let series = match args.arg_special.trim().as_ref() {
-        "bias" => da::series(&teo, &*analyzer, xs0, &obs),
-        "bias_collect" => bias_collect::series(&teo, &*analyzer, xs0, &obs, &truth),
-        _ => panic!("Invalid special: {}", args.arg_special),
-    };
+    let series = bias_collect::series(&teo,
+                                      &*analyzer,
+                                      xs0,
+                                      &obs,
+                                      &truth,
+                                      args.flag_collect,
+                                      args.flag_shake);
 
     let mut pb = if args.flag_progress {
         Some(ProgressBar::on(stderr(), setting.count as u64))
