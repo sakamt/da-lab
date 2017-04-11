@@ -15,7 +15,7 @@ const USAGE: &'static str = "
 Bias of methods for Lorenz63 model
 
 Usage:
-  l63_bias <da> <setting> <truth> <obs> [--progress] [--special=<special>]
+  l63_bias <da> <special> <setting> <truth> <obs> [--progress]
   l63_bias (-h | --help)
 
 Options:
@@ -27,11 +27,11 @@ Options:
 #[derive(RustcDecodable)]
 struct Args {
     arg_da: String,
+    arg_special: String,
     arg_setting: String,
     arg_truth: String,
     arg_obs: String,
     flag_progress: bool,
-    flag_special: Option<String>,
 }
 
 fn bias(args: Args, setting: da::Setting) {
@@ -44,14 +44,10 @@ fn bias(args: Args, setting: da::Setting) {
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
 
     let xs0 = da::replica(&truth[0], setting.r.sqrt(), setting.k);
-    let series = match args.flag_special {
-        Some(special) => {
-            match special.as_ref() {
-                "bias_collect" => bias_collect::series(&teo, &*analyzer, xs0, &obs, &truth),
-                _ => panic!("Invalid special: {}", special),
-            }
-        }
-        None => da::series(&teo, &*analyzer, xs0, &obs),
+    let series = match args.arg_special.trim().as_ref() {
+        "bias" => da::series(&teo, &*analyzer, xs0, &obs),
+        "bias_collect" => bias_collect::series(&teo, &*analyzer, xs0, &obs, &truth),
+        _ => panic!("Invalid special: {}", args.arg_special),
     };
 
     let mut pb = if args.flag_progress {
