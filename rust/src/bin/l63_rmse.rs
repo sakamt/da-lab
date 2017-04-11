@@ -4,15 +4,12 @@ extern crate ndarray_linalg;
 extern crate rustc_serialize;
 extern crate docopt;
 extern crate aics_da;
-extern crate pbr;
 
-use std::io::stderr;
 use num_traits::float::Float;
-use docopt::Docopt;
 use ndarray_linalg::prelude::*;
+use docopt::Docopt;
 use aics_da::*;
 use aics_da::types::V;
-use pbr::ProgressBar;
 
 const USAGE: &'static str = "
 Calculate RMSE of Lorenz63 model
@@ -22,7 +19,7 @@ Usage:
   l63_rmse (-h | --help)
 
 Options:
-  -h --help  Show this screen
+  -h --help   Show this screen
 ";
 
 #[derive(Debug, RustcDecodable)]
@@ -30,6 +27,7 @@ struct Args {
     arg_datadir: String,
     arg_truth: String,
     arg_setting: String,
+    flag_progress: bool,
 }
 
 fn main() {
@@ -48,14 +46,12 @@ fn main() {
     println!("[Outputs]");
     println!("- RMSE: {}", output);
 
-    let mut pb = ProgressBar::on(stderr(), (setting.count / everyn) as u64);
     let rmse: Vec<f64> = truth.iter()
         .enumerate()
         .filter_map(|(t, x)| {
             if t % everyn != 0 {
                 return None;
             }
-            pb.inc();
             let xs_a: Vec<V> = io::load_msg(&format!("{}/a{:05}.msg", args.arg_datadir, t / everyn));
             let xm = stat::mean(&xs_a);
             Some((x - &xm).norm() / 3.0.sqrt())
