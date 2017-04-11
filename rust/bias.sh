@@ -2,11 +2,13 @@
 
 setting=$1
 da=$2
+name=${3:-bias}
+data_dir=${DATA_DIR:-.}
 
-cargo run --release --bin=l63_init $setting
-cargo run --release --bin=l63_truth $setting init.msg
-cargo run --release --bin=l63_obs $setting truth.msg
-output="bias_${da}_$(date +%Y%m%d-%H%M%S)"
+time cargo run --release --bin=l63_init $setting
+time cargo run --release --bin=l63_truth $setting init.msg
+time cargo run --release --bin=l63_obs $setting truth.msg
+output="${data_dir}/${name}/${da}/$(date +%Y%m%d-%H%M%S)"
 mkdir -p $output
 cp $setting init.msg obs.msg truth.msg $output
-cargo run --release --bin=l63_bias -- $da $setting truth.msg obs.msg > $output/bias.csv
+time cargo run --release --bin=l63_bias -- $da $name $setting truth.msg obs.msg --progress > $output/$name.csv

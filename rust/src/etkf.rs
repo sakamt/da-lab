@@ -6,7 +6,7 @@ use ndarray_linalg::util::hstack;
 use super::types::*;
 use super::stat::*;
 use super::observation::*;
-use super::da::EnsembleAnalyzer;
+use super::da::{Setting, EnsembleAnalyzer};
 
 /// Ensemble Kalman Filter with perturbed observation implementation
 #[derive(Clone, Debug)]
@@ -24,6 +24,13 @@ impl ETKF {
             r_inv: r_inv,
             rho_inv: 1.0 / rho,
         }
+    }
+}
+
+impl From<Setting> for ETKF {
+    fn from(setting: Setting) -> Self {
+        let rho = setting.rho.unwrap_or(1.0);
+        ETKF::new(LinearNormal::isotropic(3, setting.r), rho)
     }
 }
 

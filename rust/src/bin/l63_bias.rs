@@ -15,15 +15,23 @@ const USAGE: &'static str = "
 Bias of methods for Lorenz63 model
 
 Usage:
-  l63_bias <method> <setting> <truth> <obs>
+  l63_bias <da> <special> <setting> <truth> <obs> [--progress]
+  l63_bias (-h | --help)
+
+Options:
+  -h --help   Show this
+  --progress  Show progress bar
+  --special=<special>   Special technique
 ";
 
 #[derive(RustcDecodable)]
 struct Args {
+    arg_da: String,
+    arg_special: String,
     arg_setting: String,
     arg_truth: String,
     arg_obs: String,
-    arg_method: String,
+    flag_progress: bool,
 }
 
 fn bias(args: Args, setting: da::Setting) {
@@ -32,24 +40,27 @@ fn bias(args: Args, setting: da::Setting) {
     let truth: Vec<V> = io::load_msg(&args.arg_truth);
     let obs: Vec<V> = io::load_msg(&args.arg_obs);
 
-    let obs_op = observation::LinearNormal::isotropic(3, setting.r);
-
-    let rho = setting.rho.unwrap_or(1.0);
-    let analyzer: Box<da::EnsembleAnalyzer> = match args.arg_method.trim().as_ref() {
-        "etkf" => Box::new(etkf::ETKF::new(obs_op, rho)),
-        "enkf" => Box::new(enkf::EnKF::new(obs_op)),
-        "mpf" => Box::new(mpf::MPF::new(obs_op, 3)),
-        _ => panic!("unsupported method"),
-    };
+    let analyzer = select_analyzer(args.arg_da.trim(), setting);
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
 
     let xs0 = da::replica(&truth[0], setting.r.sqrt(), setting.k);
-    let etkf = obs.iter().scan(xs0, |xs, y| Some(da::iterate(&teo, &*analyzer, xs, y)));
+    let series = match args.arg_special.trim().as_ref() {
+        "bias" => da::series(&teo, &*analyzer, xs0, &obs),
+        "bias_collect" => bias_collect::series(&teo, &*analyzer, xs0, &obs, &truth),
+        _ => panic!("Invalid special: {}", args.arg_special),
+    };
 
-    let mut pb = ProgressBar::on(stderr(), setting.count as u64);
+    let mut pb = if args.flag_progress {
+        Some(ProgressBar::on(stderr(), setting.count as u64))
+    } else {
+        None
+    };
     println!("time,X,Y,Z,Ox,Oy,Oz,Bx,By,Bz");
-    for (t, ((tr, ob), (_, xs_a))) in truth.iter().zip(obs.iter()).zip(etkf).enumerate() {
-        pb.inc();
+    for (t, ((tr, ob), (_, xs_a))) in truth.iter().zip(obs.iter()).zip(series).enumerate() {
+        pb = pb.map(|mut p| {
+            p.inc();
+            p
+        });
         let time = step * (t as f64);
         let xm_a = stat::mean(&xs_a);
         let bias = xm_a - tr;
@@ -65,7 +76,6 @@ fn bias(args: Args, setting: da::Setting) {
                  bias[1],
                  bias[2]);
     }
-    pb.finish_print("Done!\n");
 }
 
 fn main() {

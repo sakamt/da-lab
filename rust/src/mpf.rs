@@ -4,10 +4,10 @@ use rand::distributions::IndependentSample;
 use num_traits::float::Float;
 use ndarray::prelude::*;
 
-use types::*;
-use weight::*;
-use observation::*;
-use da::EnsembleAnalyzer;
+use super::types::*;
+use super::weight::*;
+use super::observation::*;
+use super::da::{Setting, EnsembleAnalyzer};
 
 /// Coefficient for merge resampling
 #[derive(Clone, Debug)]
@@ -61,6 +61,12 @@ impl<Obs> MPF<Obs>
             resampler: MergeResampler::default(),
             obs: obs,
         }
+    }
+}
+
+impl From<Setting> for MPF {
+    fn from(setting: Setting) -> Self {
+        MPF::new(LinearNormal::isotropic(3, setting.r), 3)
     }
 }
 
