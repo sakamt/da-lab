@@ -55,7 +55,7 @@ impl WeightEvaluator for LinearNormal {
         let ws: Vec<_> = xs.iter()
             .map(|x| {
                 let dev = y - &self.h.dot(x);
-                -0.5 * rs_inv.dot(&dev).norm()
+                -0.5 * rs_inv.dot(&dev).norm().powi(2)
             })
             .collect();
         ws.into()
