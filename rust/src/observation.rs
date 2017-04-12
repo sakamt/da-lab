@@ -87,7 +87,7 @@ impl LinearNormal {
     }
     pub fn isotropic(n: usize, r: f64) -> Self {
         let h = Array::<f64, _>::eye(n);
-        let rs = r * &h;
+        let rs = r.sqrt() * &h;
         Self::new(h, rs)
     }
 }
