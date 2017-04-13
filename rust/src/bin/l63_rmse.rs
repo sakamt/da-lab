@@ -4,6 +4,8 @@ extern crate ndarray_linalg;
 extern crate rustc_serialize;
 extern crate docopt;
 extern crate aics_da;
+extern crate env_logger;
+extern crate dotenv;
 
 use num_traits::float::Float;
 use ndarray_linalg::prelude::*;
@@ -30,6 +32,8 @@ struct Args {
 }
 
 fn main() {
+    dotenv::dotenv().ok();
+    env_logger::init().unwrap();
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     println!("[Arguments]");
     println!("- executable  : l63_rmse");

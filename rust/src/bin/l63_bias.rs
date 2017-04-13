@@ -4,6 +4,8 @@ extern crate rustc_serialize;
 extern crate aics_da;
 extern crate docopt;
 extern crate pbr;
+extern crate env_logger;
+extern crate dotenv;
 
 use std::io::stderr;
 use docopt::Docopt;
@@ -83,6 +85,8 @@ fn bias(args: Args, setting: da::Setting) {
 }
 
 fn main() {
+    dotenv::dotenv().ok();
+    env_logger::init().unwrap();
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     let setting: da::Setting = io::read_json(&args.arg_setting);
     bias(args, setting);

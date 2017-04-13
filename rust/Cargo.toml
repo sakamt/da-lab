@@ -17,6 +17,9 @@ pbr = "*"
 float-cmp = "*"
 num-traits = "*"
 derive-new = "*"
+log = "*"
+env_logger = "*"
+dotenv = "*"
 
 [dependencies.ndarray]
 version = "0.7"

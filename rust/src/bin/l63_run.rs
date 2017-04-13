@@ -4,6 +4,8 @@ extern crate rustc_serialize;
 extern crate aics_da;
 extern crate docopt;
 extern crate pbr;
+extern crate env_logger;
+extern crate dotenv;
 
 use std::io::stderr;
 use docopt::Docopt;
@@ -34,6 +36,8 @@ struct Args {
 }
 
 fn main() {
+    dotenv::dotenv().ok();
+    env_logger::init().unwrap();
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     std::fs::create_dir_all(&args.arg_output).unwrap();
     let setting: da::Setting = io::read_json(&args.arg_setting);
