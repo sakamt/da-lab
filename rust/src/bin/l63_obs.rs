@@ -4,6 +4,8 @@ extern crate rustc_serialize;
 extern crate docopt;
 extern crate aics_da;
 extern crate itertools;
+extern crate env_logger;
+extern crate dotenv;
 
 use docopt::Docopt;
 use ndarray::prelude::*;
@@ -33,6 +35,8 @@ struct Setting {
 }
 
 fn main() {
+    dotenv::dotenv().ok();
+    env_logger::init().unwrap();
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     println!("[Arguments]");
     println!("- executable   : l63_obs");
