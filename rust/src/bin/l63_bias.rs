@@ -1,5 +1,6 @@
 
 extern crate ndarray;
+extern crate ndarray_linalg;
 extern crate rustc_serialize;
 extern crate aics_da;
 extern crate docopt;
@@ -11,6 +12,7 @@ use std::io::stderr;
 use docopt::Docopt;
 use aics_da::*;
 use aics_da::types::*;
+use ndarray_linalg::prelude::*;
 use pbr::ProgressBar;
 
 const USAGE: &'static str = "
@@ -61,26 +63,28 @@ fn bias(args: Args, setting: da::Setting) {
     } else {
         None
     };
-    println!("time,X,Y,Z,Ox,Oy,Oz,Bx,By,Bz");
-    for (t, ((tr, ob), (_, xs_a))) in truth.iter().zip(obs.iter()).zip(series).enumerate() {
+    println!("time,X,Y,Z,Bx,By,Bz,sb,sa");
+    for (t, (tr, (xs_b, xs_a))) in truth.iter().zip(series).enumerate() {
         pb = pb.map(|mut p| {
             p.inc();
             p
         });
         let time = step * (t as f64);
-        let xm_a = stat::mean(&xs_a);
+        let (_, pb) = stat::stat2(&xs_b);
+        let (xm_a, pa) = stat::stat2(&xs_a);
+        let sb = pb.trace().unwrap().sqrt();
+        let sa = pa.trace().unwrap().sqrt();
         let bias = xm_a - tr;
-        println!("{},{},{},{},{},{},{},{},{},{}",
+        println!("{},{},{},{},{},{},{},{},{}",
                  time,
                  tr[0],
                  tr[1],
                  tr[2],
-                 ob[0],
-                 ob[1],
-                 ob[2],
                  bias[0],
                  bias[1],
-                 bias[2]);
+                 bias[2],
+                 sb,
+                 sa);
     }
 }
 
