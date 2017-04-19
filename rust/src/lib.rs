@@ -35,7 +35,7 @@ pub mod etkf;
 pub mod l63;
 
 // for study
-pub mod bias_collect;
+pub mod bias_correct;
 
 pub fn select_analyzer(method_name: &str, setting: da::Setting) -> Box<da::EnsembleAnalyzer> {
     match method_name {

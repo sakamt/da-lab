@@ -12,7 +12,7 @@ pub fn series<'a, F, A>(forecaster: &'a F,
                         xs0: Ensemble,
                         obs: &'a Vec<V>,
                         truth: &'a Vec<V>,
-                        collect: bool,
+                        correct: bool,
                         shake: bool)
                         -> Box<Iterator<Item = (Ensemble, Ensemble)> + 'a>
     where F: EnsembleForecaster + ?Sized,
@@ -25,8 +25,8 @@ pub fn series<'a, F, A>(forecaster: &'a F,
         } else {
             xs_a.clone()
         };
-        if collect {
-            collect_bias(&mut xs_a_new, t);
+        if correct {
+            correct_bias(&mut xs_a_new, t);
         }
         let xs_f = forecaster.forecast(xs_a_new);
         let xs_f_pre: Ensemble = mem::replace(xs, xs_f);
@@ -34,7 +34,7 @@ pub fn series<'a, F, A>(forecaster: &'a F,
     }))
 }
 
-fn collect_bias(mut xs: &mut Ensemble, truth: &V) {
+fn correct_bias(mut xs: &mut Ensemble, truth: &V) {
     let dev = stat::mean(&xs) - truth;
     for x in xs.iter_mut() {
         *x = &*x - &dev;

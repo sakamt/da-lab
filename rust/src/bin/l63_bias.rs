@@ -17,13 +17,13 @@ const USAGE: &'static str = "
 Bias of methods for Lorenz63 model
 
 Usage:
-  l63_bias <da> <setting> <truth> <obs> [--collect] [--shake] [--progress]
+  l63_bias <da> <setting> <truth> <obs> [--correct] [--shake] [--progress]
   l63_bias (-h | --help)
 
 Options:
   -h --help   Show this
   --progress  Show progress bar
-  --collect   Collect bias by truth
+  --correct   Collect bias by truth
   --shake     Shake ensemble by merge-resmpling
 ";
 
@@ -34,7 +34,7 @@ struct Args {
     arg_truth: String,
     arg_obs: String,
     flag_progress: bool,
-    flag_collect: bool,
+    flag_correct: bool,
     flag_shake: bool,
 }
 
@@ -48,12 +48,12 @@ fn bias(args: Args, setting: da::Setting) {
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
 
     let xs0 = da::replica(&truth[0], setting.r.sqrt(), setting.k);
-    let series = bias_collect::series(&teo,
+    let series = bias_correct::series(&teo,
                                       &*analyzer,
                                       xs0,
                                       &obs,
                                       &truth,
-                                      args.flag_collect,
+                                      args.flag_correct,
                                       args.flag_shake);
 
     let mut pb = if args.flag_progress {
