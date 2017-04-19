@@ -6,9 +6,9 @@ name=${3:-bias}
 data_dir=${DATA_DIR:-.}
 case "$name" in
   bias ) flag="" ;;
-  bias_collect ) flag="--collect" ;;
+  bias_correct ) flag="--correct" ;;
   bias_shake ) flag="--shake" ;;
-  bias_collect_shake ) flag="--collect --shake" ;;
+  bias_correct_shake ) flag="--correct --shake" ;;
   * ) echo "Invalid name: $name"
       exit 1
 esac
