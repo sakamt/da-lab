@@ -1,11 +1,5 @@
 box: termoshtt/rust:latest
 
-build:
-  steps:
-    - script:
-      name: build da-lab
-      code: cargo build --release
-
 test:
   steps:
     - script:
