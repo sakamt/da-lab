@@ -15,7 +15,7 @@ test:
 run:
   steps:
     - script:
-      name: test NetLib backend
+      name: run EnKF/ETKF/MPF with sample setting
       code: |
         ./run.sh sample_setting.json enkf
         ./run.sh sample_setting.json etkf
