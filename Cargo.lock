@@ -10,9 +10,9 @@ dependencies = [
  "itertools 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "ndarray-linalg 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ndarray-linalg 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray-numtest 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "ndarray-odeint 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ndarray-odeint 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray-rand 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
  "pbr 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -136,6 +136,15 @@ version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "enum-error-derive"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "quote 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 0.11.10 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "env_logger"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -254,14 +263,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "ndarray"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "blas-sys 0.6.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "itertools 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "matrixmultiply 0.1.13 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-complex 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-traits 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "ndarray-linalg"
-version = "0.2.1"
+version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "blas 0.15.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "enum-error-derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "lapack 0.11.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "ndarray 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ndarray 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-complex 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rand 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -278,11 +303,14 @@ dependencies = [
 
 [[package]]
 name = "ndarray-odeint"
-version = "0.1.0"
+version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "itertools 0.5.10 (registry+https://github.com/rust-lang/crates.io-index)",
- "ndarray 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ndarray 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ndarray-linalg 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-complex 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-traits 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -510,6 +538,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum docopt 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ab32ea6e284d87987066f21a9e809a73c14720571ef34516f0890b3d355ccfd8"
 "checksum dotenv 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)" = "5f0b6bea196dc1effc0f5184ff71d4df7cc28b81ba81bcfb74b4c633d683ebda"
 "checksum either 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "18785c1ba806c258137c937e44ada9ee7e69a37e3c72077542cd2f069d78562a"
+"checksum enum-error-derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "f19ef7a65c06bb99eeb54fbbc867d38e7ac182ab0d085f667114dedeb12c04f0"
 "checksum env_logger 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "e3856f1697098606fc6cb97a93de88ca3f3bc35bb878c725920e6e82ecf05e83"
 "checksum error-chain 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d9435d864e017c3c6afeac1654189b06cdb491cf2ff73dbf0d73b0f292f42ff8"
 "checksum float-cmp 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "ae5c9d3ac80527346eb21666d9135b695243a48ef5f2df19022856975a66c411"
@@ -525,9 +554,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum matrixmultiply 0.1.13 (registry+https://github.com/rust-lang/crates.io-index)" = "7ce012d2c43046267a74283eaa7e9a51941479901e2b86702be10f27e2779158"
 "checksum memchr 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "1dbccc0e46f1ea47b9f17e6d67c5a96bd27030519c519c9c91327e31275a47b4"
 "checksum ndarray 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)" = "ca79eae6f423bfc70a6807ed49efad1c332b2b3b0a758a1863db0021a540e56e"
-"checksum ndarray-linalg 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "12fd58cb01e576bc7ba834a8eb60972e829367a9b05fec32d46805e9c00efaf8"
+"checksum ndarray 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)" = "9d0603e041601804a61a33ebecbea220b43a86437b9ee20680a1f9fdaaa922a8"
+"checksum ndarray-linalg 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)" = "11fbd5f26374c81042085d7bd86dae679374f034366aca969b1ad02e0bce511e"
 "checksum ndarray-numtest 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)" = "3f1df721158c6e52f888e97a0376d7f2aec471fc34497904ef536d886a7d7457"
-"checksum ndarray-odeint 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ca50a379a08e42d48fcd4c7cba94a82449871bb15899dd77f2d4db8c2653e01c"
+"checksum ndarray-odeint 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)" = "ffa1d74aa3129f986204db34deb8720a499178fb3d02764373349b4f04d55ab3"
 "checksum ndarray-rand 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "473b9f2a92b9515796ffc08669986eeefad8ab966600b0f4205f08901744da34"
 "checksum num-complex 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)" = "148eb324ca772230853418731ffdf13531738b50f89b30692a01fcdcb0a64677"
 "checksum num-traits 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)" = "e1cbfa3781f3fe73dc05321bed52a06d2d491eaa764c52335cf4399f046ece99"

@@ -1,5 +1,5 @@
 use ndarray::*;
-use ndarray_linalg::prelude::*;
+use ndarray_linalg::*;
 use ndarray_linalg::util::hstack;
 
 use super::da::{EnsembleAnalyzer, Setting};

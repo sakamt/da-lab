@@ -5,8 +5,8 @@ extern crate ndarray_numtest;
 extern crate aics_da;
 
 use aics_da::lyapunov::*;
-use ndarray::prelude::*;
-use ndarray_numtest::prelude::*;
+use ndarray::*;
+use ndarray_numtest::*;
 use ndarray_rand::*;
 
 #[test]

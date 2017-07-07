@@ -1,7 +1,7 @@
 use super::types::{M, V};
 use ndarray::{Data, ShapeError, stack};
-use ndarray::prelude::*;
-use ndarray_linalg::prelude::*;
+use ndarray::*;
+use ndarray_linalg::*;
 
 pub use ndarray::linalg::Dot;
 

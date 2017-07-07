@@ -1,6 +1,6 @@
 
 use itertools::iterate;
-use ndarray::prelude::*;
+use ndarray::*;
 use ndarray_odeint::*;
 
 use super::da;

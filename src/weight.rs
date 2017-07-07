@@ -1,5 +1,5 @@
 
-use ndarray::prelude::*;
+use ndarray::*;
 use rand::*;
 use rand::distributions::*;
 

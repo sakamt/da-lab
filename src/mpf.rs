@@ -1,5 +1,5 @@
 
-use ndarray::prelude::*;
+use ndarray::*;
 use num_traits::float::Float;
 use rand;
 use rand::distributions::IndependentSample;

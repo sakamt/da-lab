@@ -1,7 +1,7 @@
 
 use float_cmp::ApproxEqRatio;
-use ndarray::prelude::*;
-use ndarray_linalg::prelude::*;
+use ndarray::*;
+use ndarray_linalg::*;
 use ndarray_rand::RandomExt;
 use rand::distributions::*;
 

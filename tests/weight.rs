@@ -4,7 +4,7 @@ extern crate aics_da;
 extern crate ndarray_numtest;
 
 use aics_da::weight::*;
-use ndarray_numtest::prelude::*;
+use ndarray_numtest::*;
 use rand::distributions::IndependentSample;
 use std::f64::consts::E;
 

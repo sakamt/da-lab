@@ -6,7 +6,7 @@ extern crate aics_da;
 
 use aics_da::*;
 use aics_da::da::{EnsembleAnalyzer, EnsembleForecaster};
-use ndarray::prelude::*;
+use ndarray::*;
 
 macro_rules! impl_bench {
     ($replica:ident, $clone:ident, $K:expr) => {

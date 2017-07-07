@@ -1,5 +1,5 @@
 
-use ndarray::prelude::*;
+use ndarray::*;
 use ndarray_rand::RandomExt;
 use rand::distributions::*;
 use std::mem;

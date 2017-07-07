@@ -10,7 +10,7 @@ extern crate dotenv;
 use aics_da::*;
 use aics_da::types::V;
 use docopt::Docopt;
-use ndarray_linalg::prelude::*;
+use ndarray_linalg::*;
 use num_traits::float::Float;
 
 const USAGE: &'static str = "

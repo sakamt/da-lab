@@ -1,5 +1,5 @@
-use ndarray::prelude::*;
-use ndarray_linalg::prelude::*;
+use ndarray::*;
+use ndarray_linalg::*;
 
 use super::linalg::outer;
 use super::observation::*;

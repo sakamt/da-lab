@@ -10,7 +10,7 @@ extern crate dotenv;
 use aics_da::*;
 use aics_da::types::V;
 use docopt::Docopt;
-use ndarray::prelude::*;
+use ndarray::*;
 
 const USAGE: &'static str = "
 Generate observations of Lorenz63 model

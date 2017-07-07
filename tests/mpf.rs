@@ -7,8 +7,8 @@ extern crate ndarray_numtest;
 use aics_da::mpf::*;
 use aics_da::stat::*;
 use aics_da::weight::*;
-use ndarray::prelude::*;
-use ndarray_numtest::prelude::*;
+use ndarray::*;
+use ndarray_numtest::*;
 use ndarray_rand::*;
 
 #[test]

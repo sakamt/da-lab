@@ -8,7 +8,7 @@ extern crate dotenv;
 
 use aics_da::*;
 use docopt::Docopt;
-use ndarray::prelude::*;
+use ndarray::*;
 
 const USAGE: &'static str = "
 Generate inital state of Lorenz63 model

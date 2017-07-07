@@ -11,7 +11,7 @@ extern crate dotenv;
 use aics_da::*;
 use aics_da::types::*;
 use docopt::Docopt;
-use ndarray_linalg::prelude::*;
+use ndarray_linalg::*;
 use pbr::ProgressBar;
 use std::io::stderr;
 
