@@ -33,7 +33,6 @@ Options:
 
 #[derive(Deserialize)]
 struct Args {
-    arg_da: String,
     arg_setting: String,
     arg_truth: String,
     arg_obs: String,
@@ -48,7 +47,7 @@ fn bias(args: Args, setting: da::Setting) {
     let truth: Vec<V> = io::load_msg(&args.arg_truth);
     let obs: Vec<V> = io::load_msg(&args.arg_obs);
 
-    let analyzer = select_analyzer(args.arg_da.trim(), setting);
+    let analyzer = da::select_analyzer(&setting);
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
 
     let xs0 = da::replica(&truth[0], setting.r.sqrt(), setting.k);

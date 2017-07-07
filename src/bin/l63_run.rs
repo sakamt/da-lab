@@ -28,7 +28,6 @@ Options:
 
 #[derive(Deserialize)]
 struct Args {
-    arg_da: String,
     arg_setting: String,
     arg_obs: String,
     arg_init: String,
@@ -50,7 +49,7 @@ fn main() {
     let everyn = setting.everyn.unwrap_or(1);
 
     // DA settings
-    let analyzer = select_analyzer(args.arg_da.trim(), setting);
+    let analyzer = da::select_analyzer(&setting);
     let teo = |x| l63::teo(setting.dt, setting.tau, x);
 
     // generate DA sequence

@@ -1,14 +1,18 @@
 use ndarray_linalg::*;
 use std::mem;
 
+use super::*;
 use super::types::*;
 
-#[derive(RustcDecodable, Clone, Copy)]
+#[derive(RustcDecodable, Clone)]
 pub struct Setting {
+    pub da: String,
+    pub model: String,
     pub k: usize,
     pub tau: usize,
     pub count: usize,
     pub everyn: Option<usize>,
+    pub merge: Option<usize>,
     pub dt: f64,
     pub r: f64,
     pub rho: Option<f64>,
@@ -60,4 +64,13 @@ where
     Box::new(obs.iter().scan(xs0, move |xs, y| {
         Some(iterate(forecaster, analyzer, xs, y))
     }))
+}
+
+pub fn select_analyzer(setting: &Setting) -> Box<EnsembleAnalyzer> {
+    match setting.da.as_str() {
+        "etkf" => Box::new(etkf::ETKF::new(setting)),
+        "enkf" => Box::new(enkf::EnKF::new(setting)),
+        "mpf" => Box::new(mpf::MPF::new(setting)),
+        _ => panic!("unsupported method"),
+    }
 }
