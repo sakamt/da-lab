@@ -1,4 +1,6 @@
 
+#[macro_use]
+extern crate serde_derive;
 extern crate ndarray;
 extern crate ndarray_linalg;
 extern crate rustc_serialize;
@@ -29,7 +31,7 @@ Options:
   --shake     Shake ensemble by merge-resmpling
 ";
 
-#[derive(RustcDecodable)]
+#[derive(Deserialize)]
 struct Args {
     arg_da: String,
     arg_setting: String,
@@ -95,9 +97,9 @@ fn bias(args: Args, setting: da::Setting) {
 fn main() {
     dotenv::dotenv().ok();
     env_logger::init().unwrap();
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(
-        |e| e.exit(),
-    );
+    let args: Args = Docopt::new(USAGE)
+        .and_then(|d| d.deserialize())
+        .unwrap_or_else(|e| e.exit());
     let setting: da::Setting = io::read_json(&args.arg_setting);
     bias(args, setting);
 }

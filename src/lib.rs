@@ -4,6 +4,7 @@ extern crate derive_new;
 #[macro_use]
 extern crate log;
 extern crate rustc_serialize;
+extern crate serde;
 extern crate rmp_serialize;
 
 extern crate rand;

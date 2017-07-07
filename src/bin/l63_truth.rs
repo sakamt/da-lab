@@ -1,4 +1,6 @@
 
+#[macro_use]
+extern crate serde_derive;
 extern crate ndarray;
 extern crate rustc_serialize;
 extern crate docopt;
@@ -19,7 +21,7 @@ Usage:
   l63_truth <setting> <init>
 ";
 
-#[derive(Debug, RustcDecodable)]
+#[derive(Debug, Deserialize)]
 struct Args {
     arg_setting: String,
     arg_init: String,
@@ -35,9 +37,9 @@ struct Setting {
 fn main() {
     dotenv::dotenv().ok();
     env_logger::init().unwrap();
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(
-        |e| e.exit(),
-    );
+    let args: Args = Docopt::new(USAGE)
+        .and_then(|d| d.deserialize())
+        .unwrap_or_else(|e| e.exit());
     println!("[Arguments]");
     println!("- executable   : l63_genobs");
     println!("- setting JSON : {}", args.arg_setting);

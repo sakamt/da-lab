@@ -5,6 +5,8 @@ authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
 [dependencies]
 rmp = "*"
+serde = "*"
+serde_derive = "*"
 rustc-serialize = "*"
 rmp-serialize = "*"
 rand = "*"

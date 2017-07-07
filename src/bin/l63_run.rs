@@ -1,6 +1,7 @@
 
+#[macro_use]
+extern crate serde_derive;
 extern crate ndarray;
-extern crate rustc_serialize;
 extern crate aics_da;
 extern crate docopt;
 extern crate pbr;
@@ -25,7 +26,7 @@ Options:
   --progress  Show progress bar
 ";
 
-#[derive(RustcDecodable)]
+#[derive(Deserialize)]
 struct Args {
     arg_da: String,
     arg_setting: String,
@@ -38,9 +39,9 @@ struct Args {
 fn main() {
     dotenv::dotenv().ok();
     env_logger::init().unwrap();
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(
-        |e| e.exit(),
-    );
+    let args: Args = Docopt::new(USAGE)
+        .and_then(|d| d.deserialize())
+        .unwrap_or_else(|e| e.exit());
     std::fs::create_dir_all(&args.arg_output).unwrap();
     let setting: da::Setting = io::read_json(&args.arg_setting);
     let x0: V = io::load_msg(&args.arg_init);
