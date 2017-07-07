@@ -1,4 +1,3 @@
-
 use super::types::M;
 use ndarray::*;
 

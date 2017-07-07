@@ -1,4 +1,3 @@
-
 use itertools::iterate;
 use ndarray::*;
 use ndarray_odeint::*;
@@ -7,11 +6,10 @@ use super::da;
 use super::types::V;
 
 pub fn teo(dt: f64, step: usize, mut x: V) -> V {
-    let p = lorenz63::Parameter::default();
-    let l = |y| lorenz63::f(p, y);
-    let u = |y| explicit::rk4(&l, dt, y);
+    let l = model::lorenz63::Lorenz63::default();
+    let u = explicit::rk4(l, dt);
     for _ in 0..step {
-        x = u(x);
+        u.iterate(&mut x);
     }
     x
 }

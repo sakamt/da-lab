@@ -1,7 +1,7 @@
 use ndarray::*;
 use ndarray_linalg::*;
 
-use super::linalg::outer;
+use super::linalg::*;
 use super::observation::*;
 use super::types::*;
 
@@ -94,7 +94,7 @@ pub fn ng_bias(obs: &LinearNormal, xs_f: &Ensemble, y: &V) -> f64 {
 
 pub fn pca(xs: &Ensemble) -> Ensemble {
     let (xm, p) = stat2(xs);
-    let (_, u) = p.eigh().unwrap();
+    let (_, u) = p.eigh(UPLO::Upper).unwrap();
     xs.iter().map(|x| u.t().dot(&(x - &xm))).collect()
 }
 

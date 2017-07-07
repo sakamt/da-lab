@@ -1,4 +1,3 @@
-
 use ndarray::*;
 use num_traits::float::Float;
 use rand;

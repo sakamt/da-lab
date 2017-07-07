@@ -1,4 +1,3 @@
-
 use rmp_serialize::{Decoder, Encoder};
 use rustc_serialize::{Decodable, Encodable, json};
 use std::fs::File;

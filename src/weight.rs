@@ -1,4 +1,3 @@
-
 use ndarray::*;
 use rand::*;
 use rand::distributions::*;

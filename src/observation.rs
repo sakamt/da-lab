@@ -1,4 +1,3 @@
-
 use float_cmp::ApproxEqRatio;
 use ndarray::*;
 use ndarray_linalg::*;
@@ -76,7 +75,7 @@ impl LinearTheory for LinearNormal {
     }
     fn covariance_analysis(&self, p: &M) -> M {
         let k = self.kalman_gain(p);
-        let (n, _) = k.size();
+        let n = k.rows();
         (Array::eye(n) - k.dot(&self.h)).dot(p)
     }
 }
@@ -121,7 +120,7 @@ fn get_ratio(a: f64, b: f64) -> Option<i64> {
 
 /// DEPRICATED: will be private
 pub fn noise(rs: &M) -> V {
-    let (n, _) = rs.size();
+    let n = rs.rows();
     let dist = Normal::new(0., 1.0);
     let d = Array::random(n, dist);
     rs.dot(&d)

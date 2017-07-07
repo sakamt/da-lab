@@ -1,6 +1,5 @@
 use ndarray::*;
 use ndarray_linalg::*;
-use ndarray_linalg::util::hstack;
 
 use super::da::{EnsembleAnalyzer, Setting};
 use super::observation::*;
@@ -46,7 +45,7 @@ impl EnsembleAnalyzer for ETKF {
         let p_inv = mm1 * self.rho_inv * Array::eye(m) + dys.t().dot(&self.r_inv).dot(&dys);
         let p = p_inv.inv().unwrap();
         let w = p.dot(&dys.t().dot(&self.r_inv.dot(&dy)));
-        let t = (mm1 * p).ssqrt().unwrap();
+        let t = (mm1 * p).ssqrt(UPLO::Upper).unwrap();
         let xm_a = xm + dxs.dot(&w);
         let dxs_a = dxs.dot(&t);
         dxs_a.axis_iter(Axis(1)).map(|dx| &dx + &xm_a).collect()

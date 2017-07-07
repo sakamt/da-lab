@@ -1,6 +1,6 @@
 use super::types::{M, V};
-use ndarray::{Data, ShapeError, stack};
 use ndarray::*;
+use ndarray::{Data, ShapeError, stack};
 use ndarray_linalg::*;
 
 pub use ndarray::linalg::Dot;
