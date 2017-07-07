@@ -8,7 +8,8 @@ rmp = "*"
 rustc-serialize = "*"
 rmp-serialize = "*"
 rand = "*"
-ndarray-rand = "0.3"
+ndarray = { version = "0.9", features = ["blas", "rustc-serialize"] }
+ndarray-rand = "*"
 ndarray-linalg = "0.5"
 ndarray-odeint = "0.5"
 itertools = "*"
@@ -20,11 +21,3 @@ derive-new = "*"
 log = "*"
 env_logger = "*"
 dotenv = "*"
-
-[dependencies.ndarray]
-version = "0.7"
-default-features = false
-features = ["blas", "rustc-serialize"]
-
-[dev-dependencies]
-ndarray-numtest = "0.1.2"
