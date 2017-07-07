@@ -1,10 +1,10 @@
 
+use itertools::iterate;
 use ndarray::prelude::*;
 use ndarray_odeint::*;
-use itertools::iterate;
 
-use super::types::V;
 use super::da;
+use super::types::V;
 
 pub fn teo(dt: f64, step: usize, mut x: V) -> V {
     let p = lorenz63::Parameter::default();

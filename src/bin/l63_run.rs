@@ -7,11 +7,11 @@ extern crate pbr;
 extern crate env_logger;
 extern crate dotenv;
 
-use std::io::stderr;
-use docopt::Docopt;
 use aics_da::*;
 use aics_da::types::V;
+use docopt::Docopt;
 use pbr::ProgressBar;
+use std::io::stderr;
 
 const USAGE: &'static str = "
 Run DA for Lorenz63 model
@@ -38,7 +38,9 @@ struct Args {
 fn main() {
     dotenv::dotenv().ok();
     env_logger::init().unwrap();
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
+    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(
+        |e| e.exit(),
+    );
     std::fs::create_dir_all(&args.arg_output).unwrap();
     let setting: da::Setting = io::read_json(&args.arg_setting);
     let x0: V = io::load_msg(&args.arg_init);
@@ -52,7 +54,9 @@ fn main() {
 
     // generate DA sequence
     let xs0 = da::replica(&x0, setting.r.sqrt(), setting.k);
-    let etkf = obs.iter().scan(xs0, |xs, y| Some(da::iterate(&teo, &*analyzer, xs, y)));
+    let etkf = obs.iter().scan(xs0, |xs, y| {
+        Some(da::iterate(&teo, &*analyzer, xs, y))
+    });
 
     let mut pb = if args.flag_progress {
         Some(ProgressBar::on(stderr(), duration as u64))

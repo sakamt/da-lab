@@ -1,4 +1,3 @@
-
 use super::da;
 
 pub trait Induce<Dest> {

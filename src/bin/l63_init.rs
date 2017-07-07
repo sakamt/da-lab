@@ -6,9 +6,9 @@ extern crate aics_da;
 extern crate env_logger;
 extern crate dotenv;
 
+use aics_da::*;
 use docopt::Docopt;
 use ndarray::prelude::*;
-use aics_da::*;
 
 const USAGE: &'static str = "
 Generate inital state of Lorenz63 model
@@ -31,7 +31,9 @@ struct Setting {
 fn main() {
     dotenv::dotenv().ok();
     env_logger::init().unwrap();
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
+    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(
+        |e| e.exit(),
+    );
     println!("[Arguments]");
     println!("- executable  : l63_init");
     println!("- setting JSON: {}", args.arg_setting);

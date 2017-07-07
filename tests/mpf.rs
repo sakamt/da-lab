@@ -5,20 +5,18 @@ extern crate ndarray_rand;
 extern crate ndarray_numtest;
 
 use aics_da::mpf::*;
-use aics_da::weight::*;
 use aics_da::stat::*;
+use aics_da::weight::*;
 use ndarray::prelude::*;
-use ndarray_rand::*;
 use ndarray_numtest::prelude::*;
+use ndarray_rand::*;
 
 #[test]
 fn merge_resampling() {
     let n = 2;
     let k = 10000;
     let dist = RealNormal::<f64>::new(5.0, 1.0);
-    let xs: Vec<_> = (0..k)
-        .map(|_| Array::random(n, dist))
-        .collect();
+    let xs: Vec<_> = (0..k).map(|_| Array::random(n, dist)).collect();
 
     let w = Weight::random(k);
     let (xm, pm) = w.stat2(&xs);

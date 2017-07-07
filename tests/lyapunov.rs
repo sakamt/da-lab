@@ -4,10 +4,10 @@ extern crate ndarray_rand;
 extern crate ndarray_numtest;
 extern crate aics_da;
 
-use ndarray::prelude::*;
-use ndarray_rand::*;
-use ndarray_numtest::prelude::*;
 use aics_da::lyapunov::*;
+use ndarray::prelude::*;
+use ndarray_numtest::prelude::*;
+use ndarray_rand::*;
 
 #[test]
 fn hstack_success() {

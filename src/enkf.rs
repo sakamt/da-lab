@@ -1,10 +1,9 @@
-
 use ndarray_linalg::prelude::*;
 
-use super::types::*;
-use super::stat::*;
+use super::da::{EnsembleAnalyzer, Setting};
 use super::observation::*;
-use super::da::{Setting, EnsembleAnalyzer};
+use super::stat::*;
+use super::types::*;
 
 /// Ensemble Kalman Filter with perturbed observation implementation
 #[derive(Clone, Debug, new)]

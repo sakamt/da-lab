@@ -1,12 +1,12 @@
 
+use float_cmp::ApproxEqRatio;
 use ndarray::prelude::*;
 use ndarray_linalg::prelude::*;
-use rand::distributions::*;
 use ndarray_rand::RandomExt;
-use float_cmp::ApproxEqRatio;
+use rand::distributions::*;
 
+use super::{da, linalg, weight};
 use super::types::*;
-use super::{da, weight, linalg};
 
 pub trait ObservationOperator {
     fn noisy_eval(&self, x: &V) -> V;
@@ -93,14 +93,16 @@ impl LinearNormal {
 }
 
 pub fn eval_series<Obs>(obs: &Obs, setting: &da::Setting, truth: &Vec<V>, truth_dt: f64) -> Vec<V>
-    where Obs: ObservationOperator
+where
+    Obs: ObservationOperator,
 {
     let step = setting.tau as f64 * setting.dt;
     let n = get_ratio(step, truth_dt).expect("dt are imcompatible");
     if n as usize * setting.count > truth.len() {
         panic!("truth is too short");
     }
-    truth.iter()
+    truth
+        .iter()
         .enumerate()
         .filter(|&(i, _)| i as i64 % n == 0)
         .map(|(_, v)| obs.noisy_eval(v))

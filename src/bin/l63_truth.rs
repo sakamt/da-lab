@@ -7,9 +7,9 @@ extern crate itertools;
 extern crate env_logger;
 extern crate dotenv;
 
-use docopt::Docopt;
 use aics_da::*;
 use aics_da::types::V;
+use docopt::Docopt;
 use itertools::iterate;
 
 const USAGE: &'static str = "
@@ -35,7 +35,9 @@ struct Setting {
 fn main() {
     dotenv::dotenv().ok();
     env_logger::init().unwrap();
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
+    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(
+        |e| e.exit(),
+    );
     println!("[Arguments]");
     println!("- executable   : l63_genobs");
     println!("- setting JSON : {}", args.arg_setting);

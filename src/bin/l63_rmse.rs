@@ -7,11 +7,11 @@ extern crate aics_da;
 extern crate env_logger;
 extern crate dotenv;
 
-use num_traits::float::Float;
-use ndarray_linalg::prelude::*;
-use docopt::Docopt;
 use aics_da::*;
 use aics_da::types::V;
+use docopt::Docopt;
+use ndarray_linalg::prelude::*;
+use num_traits::float::Float;
 
 const USAGE: &'static str = "
 Calculate RMSE of Lorenz63 model
@@ -34,7 +34,9 @@ struct Args {
 fn main() {
     dotenv::dotenv().ok();
     env_logger::init().unwrap();
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
+    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(
+        |e| e.exit(),
+    );
     println!("[Arguments]");
     println!("- executable  : l63_rmse");
     println!("- setting JSON: {}", args.arg_setting);
@@ -49,7 +51,8 @@ fn main() {
     println!("[Outputs]");
     println!("- RMSE: {}", output);
 
-    let rmse: Vec<f64> = truth.iter()
+    let rmse: Vec<f64> = truth
+        .iter()
         .enumerate()
         .filter_map(|(t, x)| {
             if t % everyn != 0 {
@@ -60,7 +63,9 @@ fn main() {
             Some((x - &xm).norm() / 3.0.sqrt())
         })
         .collect();
-    println!("Mean RMSE = {}",
-             rmse.iter().sum::<f64>() / rmse.len() as f64);
+    println!(
+        "Mean RMSE = {}",
+        rmse.iter().sum::<f64>() / rmse.len() as f64
+    );
     io::save_msg(&rmse, output);
 }

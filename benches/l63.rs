@@ -4,9 +4,9 @@ extern crate test;
 extern crate ndarray;
 extern crate aics_da;
 
-use ndarray::prelude::*;
 use aics_da::*;
-use aics_da::da::{EnsembleForecaster, EnsembleAnalyzer};
+use aics_da::da::{EnsembleAnalyzer, EnsembleForecaster};
+use ndarray::prelude::*;
 
 macro_rules! impl_bench {
     ($replica:ident, $clone:ident, $K:expr) => {

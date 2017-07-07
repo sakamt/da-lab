@@ -1,8 +1,8 @@
 
-use std::mem;
-use rand::distributions::*;
 use ndarray::prelude::*;
 use ndarray_rand::RandomExt;
+use rand::distributions::*;
+use std::mem;
 
 use super::types::*;
 
@@ -28,7 +28,8 @@ pub trait EnsembleForecaster {
 }
 
 impl<TEO> EnsembleForecaster for TEO
-    where TEO: Fn(V) -> V
+where
+    TEO: Fn(V) -> V,
 {
     fn forecast(&self, xs: Ensemble) -> Ensemble {
         xs.into_iter().map(self).collect()
@@ -40,8 +41,9 @@ pub trait EnsembleAnalyzer {
 }
 
 pub fn iterate<F, A>(forecaster: &F, analyzer: &A, mut state: &mut Ensemble, obs: &V) -> (Ensemble, Ensemble)
-    where F: EnsembleForecaster + ?Sized,
-          A: EnsembleAnalyzer + ?Sized
+where
+    F: EnsembleForecaster + ?Sized,
+    A: EnsembleAnalyzer + ?Sized,
 {
     let xs_a = analyzer.analysis(state.clone(), obs);
     let xs_f = forecaster.forecast(xs_a.clone());
@@ -49,13 +51,17 @@ pub fn iterate<F, A>(forecaster: &F, analyzer: &A, mut state: &mut Ensemble, obs
     (xs_f_pre, xs_a)
 }
 
-pub fn series<'a, F, A>(forecaster: &'a F,
-                        analyzer: &'a A,
-                        xs0: Ensemble,
-                        obs: &'a Vec<V>)
-                        -> Box<Iterator<Item = (Ensemble, Ensemble)> + 'a>
-    where F: EnsembleForecaster + ?Sized,
-          A: EnsembleAnalyzer + ?Sized
+pub fn series<'a, F, A>(
+    forecaster: &'a F,
+    analyzer: &'a A,
+    xs0: Ensemble,
+    obs: &'a Vec<V>,
+) -> Box<Iterator<Item = (Ensemble, Ensemble)> + 'a>
+where
+    F: EnsembleForecaster + ?Sized,
+    A: EnsembleAnalyzer + ?Sized,
 {
-    Box::new(obs.iter().scan(xs0, move |xs, y| Some(iterate(forecaster, analyzer, xs, y))))
+    Box::new(obs.iter().scan(xs0, move |xs, y| {
+        Some(iterate(forecaster, analyzer, xs, y))
+    }))
 }

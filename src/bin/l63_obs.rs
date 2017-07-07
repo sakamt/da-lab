@@ -7,10 +7,10 @@ extern crate itertools;
 extern crate env_logger;
 extern crate dotenv;
 
-use docopt::Docopt;
-use ndarray::prelude::*;
 use aics_da::*;
 use aics_da::types::V;
+use docopt::Docopt;
+use ndarray::prelude::*;
 
 const USAGE: &'static str = "
 Generate observations of Lorenz63 model
@@ -37,7 +37,9 @@ struct Setting {
 fn main() {
     dotenv::dotenv().ok();
     env_logger::init().unwrap();
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
+    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(
+        |e| e.exit(),
+    );
     println!("[Arguments]");
     println!("- executable   : l63_obs");
     println!("- setting JSON : {}", args.arg_setting);
@@ -54,8 +56,6 @@ fn main() {
     println!("- observation: {}", output);
 
     let rs = setting.r.sqrt() * Array::<f64, _>::eye(3);
-    let obs: Vec<V> = truth.iter()
-        .map(|x| x + &observation::noise(&rs))
-        .collect();
+    let obs: Vec<V> = truth.iter().map(|x| x + &observation::noise(&rs)).collect();
     io::save_msg(&obs, &output);
 }

@@ -3,10 +3,10 @@ extern crate rand;
 extern crate aics_da;
 extern crate ndarray_numtest;
 
-use std::f64::consts::E;
-use rand::distributions::IndependentSample;
-use ndarray_numtest::prelude::*;
 use aics_da::weight::*;
+use ndarray_numtest::prelude::*;
+use rand::distributions::IndependentSample;
+use std::f64::consts::E;
 
 #[test]
 fn lw2w2lw() {
@@ -14,7 +14,10 @@ fn lw2w2lw() {
     let lw: LogWeight = vec![0.0; n].into();
     let w: Weight = lw.clone().into();
     let lw2: LogWeight = w.into();
-    lw2.get_raw_logweight().assert_allclose_inf(&lw.get_raw_logweight(), 1e-7);
+    lw2.get_raw_logweight().assert_allclose_inf(
+        &lw.get_raw_logweight(),
+        1e-7,
+    );
 }
 
 #[test]
@@ -23,7 +26,10 @@ fn w2lw2w() {
     let w = Weight::random(n);
     let lw: LogWeight = w.clone().into();
     let w2: Weight = lw.into();
-    w2.get_raw_weight().assert_allclose_inf(&w.get_raw_weight(), 1e-7);
+    w2.get_raw_weight().assert_allclose_inf(
+        &w.get_raw_weight(),
+        1e-7,
+    );
 }
 
 #[test]
@@ -31,7 +37,7 @@ fn logweight_to_weight() {
     let n = 10;
     let lw: LogWeight = vec![0.0; n].into();
     let w: Weight = lw.into();
-    let truth = vec![1.0/n as f64; n];
+    let truth = vec![1.0 / n as f64; n];
     w.get_raw_weight().assert_allclose_l2(&truth, 1e-7);
 }
 

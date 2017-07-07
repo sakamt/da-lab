@@ -1,10 +1,9 @@
-
 use ndarray::prelude::*;
 use ndarray_linalg::prelude::*;
 
-use super::types::*;
 use super::linalg::outer;
 use super::observation::*;
+use super::types::*;
 
 pub struct Stat {
     pub rmse_f: f64,
@@ -16,7 +15,8 @@ pub struct Stat {
 
 impl Stat {
     pub fn eval<Obs>(obs: &Obs, xs_f: &Ensemble, xs_a: &Ensemble, x: &V, y: &V) -> Stat
-        where Obs: ObservationOperator + WeightEvaluator
+    where
+        Obs: ObservationOperator + WeightEvaluator,
     {
         let (xm_f, pf) = stat2(xs_f);
         let (xm_a, pa) = stat2(xs_a);
@@ -117,7 +117,11 @@ pub fn kstat4(xs: &Ensemble) -> (V, V, V) {
     m3 /= k;
     m4 /= k;
     m4 = (k * k * ((k + 1.0) * m4 - 3.0 * (k - 1.0) * &m2 * &m2)) / ((k - 1.0) * (k - 2.0) * (k - 3.0));
-    (m2 * (k / (k - 1.0)), m3 * ((k * k) / ((k - 1.0) * (k - 2.0))), m4)
+    (
+        m2 * (k / (k - 1.0)),
+        m3 * ((k * k) / ((k - 1.0) * (k - 2.0))),
+        m4,
+    )
 }
 
 pub fn pca_kstat4(xs: &Ensemble) -> (V, V, V) {

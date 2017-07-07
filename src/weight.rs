@@ -1,10 +1,10 @@
 
+use ndarray::prelude::*;
 use rand::*;
 use rand::distributions::*;
-use ndarray::prelude::*;
 
-use types::*;
 use linalg::outer;
+use types::*;
 
 #[derive(Clone, Debug)]
 pub struct Weight {
@@ -19,7 +19,7 @@ impl From<Vec<f64>> for Weight {
 
 impl Weight {
     pub fn uniform(n: usize) -> Self {
-        vec![1.0/n as f64; n].into()
+        vec![1.0 / n as f64; n].into()
     }
     pub fn random(n: usize) -> Self {
         let dist = Range::new(0.0, 1.0);
@@ -42,15 +42,21 @@ impl Weight {
     }
     pub fn mean(&self, xs: &Ensemble) -> V {
         let n = xs[0].len();
-        xs.iter().zip(self.weight.iter()).fold(Array::zeros(n), |a, (b, w)| a + b * *w)
+        xs.iter().zip(self.weight.iter()).fold(Array::zeros(n), |a,
+         (b, w)| {
+            a + b * *w
+        })
     }
     pub fn stat2(&self, xs: &Ensemble) -> (V, M) {
         let n = xs[0].len();
         let xm = self.mean(xs);
-        let cov = xs.iter().zip(self.weight.iter()).fold(Array::zeros((n, n)), |a, (b, w)| {
-            let dx = b - &xm;
-            a + *w * outer(&dx, &dx)
-        });
+        let cov = xs.iter().zip(self.weight.iter()).fold(
+            Array::zeros((n, n)),
+            |a, (b, w)| {
+                let dx = b - &xm;
+                a + *w * outer(&dx, &dx)
+            },
+        );
         (xm, cov)
     }
     pub fn to_dist(&self) -> DiscreteDist {

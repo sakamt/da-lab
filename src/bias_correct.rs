@@ -1,22 +1,24 @@
 
-use super::types::*;
-use super::da::{EnsembleForecaster, EnsembleAnalyzer};
-use super::stat;
+use super::da::{EnsembleAnalyzer, EnsembleForecaster};
 use super::mpf;
+use super::stat;
+use super::types::*;
 use super::weight;
 
 use std::mem;
 
-pub fn series<'a, F, A>(forecaster: &'a F,
-                        analyzer: &'a A,
-                        xs0: Ensemble,
-                        obs: &'a Vec<V>,
-                        truth: &'a Vec<V>,
-                        correct: bool,
-                        shake: bool)
-                        -> Box<Iterator<Item = (Ensemble, Ensemble)> + 'a>
-    where F: EnsembleForecaster + ?Sized,
-          A: EnsembleAnalyzer + ?Sized
+pub fn series<'a, F, A>(
+    forecaster: &'a F,
+    analyzer: &'a A,
+    xs0: Ensemble,
+    obs: &'a Vec<V>,
+    truth: &'a Vec<V>,
+    correct: bool,
+    shake: bool,
+) -> Box<Iterator<Item = (Ensemble, Ensemble)> + 'a>
+where
+    F: EnsembleForecaster + ?Sized,
+    A: EnsembleAnalyzer + ?Sized,
 {
     Box::new(obs.iter().zip(truth.iter()).scan(xs0, move |xs, (y, t)| {
         let xs_a = analyzer.analysis(xs.clone(), y);
