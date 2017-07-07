@@ -40,6 +40,15 @@ pub trait EnsembleAnalyzer {
     fn analysis(&self, xs: Ensemble, obs: &V) -> Ensemble;
 }
 
+pub struct Series<F, A>
+where
+    F: EnsembleForecaster,
+    A: EnsembleAnalyzer,
+{
+    f: F,
+    a: A,
+}
+
 pub fn iterate<F, A>(forecaster: &F, analyzer: &A, mut state: &mut Ensemble, obs: &V) -> (Ensemble, Ensemble)
 where
     F: EnsembleForecaster + ?Sized,
