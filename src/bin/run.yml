@@ -6,20 +6,23 @@ args:
       short: c
       long: config
       value_name: FILE
-      help: configure JSON filename (default: 'configure.json')
+      help: configure JSON filename (default 'configure.json')
       takes_value: true
   - init:
+      short: i
       long: init
       value_name: INIT
       help: msgpack filename of initial value
-      take_value: true
+      takes_value: true
   - truth:
+      short: t
       long: truth
       value_name: TRUTH
       help: msgpack filename of truth values
-      take_value: true
+      takes_value: true
   - obs:
+      short: o
       long: obs
       value_name: OBS
-      help: msgpack filename of observations
-      take_value: true
+      help: msgpack filename of 
+      takes_value: true
