@@ -1,8 +1,6 @@
 use float_cmp::ApproxEqRatio;
 use ndarray::*;
 use ndarray_linalg::*;
-use ndarray_rand::RandomExt;
-use rand::distributions::*;
 
 use super::{da, linalg, weight};
 use super::types::*;
@@ -121,7 +119,6 @@ fn get_ratio(a: f64, b: f64) -> Option<i64> {
 /// DEPRICATED: will be private
 pub fn noise(rs: &M) -> V {
     let n = rs.rows();
-    let dist = Normal::new(0., 1.0);
-    let d = Array::random(n, dist);
+    let d: Array1<f64> = generate::random(n);
     rs.dot(&d)
 }
