@@ -18,11 +18,11 @@ args:
       short: t
       long: truth
       value_name: TRUTH
-      help: msgpack filename of truth values
+      help: msgpack filename of truth values (init will be ignored)
       takes_value: true
   - obs:
       short: o
       long: obs
       value_name: OBS
-      help: msgpack filename of 
+      help: msgpack filename of observations
       takes_value: true
