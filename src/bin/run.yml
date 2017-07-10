@@ -1,0 +1,25 @@
+name: run
+version: "0.1"
+about: Run data-assimilation
+args:
+  - config:
+      short: c
+      long: config
+      value_name: FILE
+      help: configure JSON filename (default: 'configure.json')
+      takes_value: true
+  - init:
+      long: init
+      value_name: INIT
+      help: msgpack filename of initial value
+      take_value: true
+  - truth:
+      long: truth
+      value_name: TRUTH
+      help: msgpack filename of truth values
+      take_value: true
+  - obs:
+      long: obs
+      value_name: OBS
+      help: msgpack filename of observations
+      take_value: true

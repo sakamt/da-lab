@@ -19,4 +19,4 @@ num-traits = "*"
 derive-new = "*"
 env_logger = "*"
 dotenv = "*"
-clap = "*"
+clap = { version = "2", features = ["yaml"] }
