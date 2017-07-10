@@ -1,7 +1,4 @@
-
-use ndarray::prelude::*;
-use ndarray_rand::RandomExt;
-use rand::distributions::*;
+use ndarray_linalg::*;
 use std::mem;
 
 use super::types::*;
@@ -19,8 +16,7 @@ pub struct Setting {
 
 pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {
     let n = x.len();
-    let dist = Normal::new(0.0, 1.0);
-    (0..k).map(|_| r * Array::random(n, dist) + x).collect()
+    (0..k).map(|_| r * generate::random(n) + x).collect()
 }
 
 pub trait EnsembleForecaster {

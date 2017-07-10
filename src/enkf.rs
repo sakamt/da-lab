@@ -1,4 +1,4 @@
-use ndarray_linalg::prelude::*;
+use ndarray_linalg::*;
 
 use super::da::{EnsembleAnalyzer, Setting};
 use super::observation::*;

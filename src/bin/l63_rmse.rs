@@ -1,4 +1,6 @@
 
+#[macro_use]
+extern crate serde_derive;
 extern crate num_traits;
 extern crate ndarray_linalg;
 extern crate rustc_serialize;
@@ -10,7 +12,7 @@ extern crate dotenv;
 use aics_da::*;
 use aics_da::types::V;
 use docopt::Docopt;
-use ndarray_linalg::prelude::*;
+use ndarray_linalg::*;
 use num_traits::float::Float;
 
 const USAGE: &'static str = "
@@ -24,7 +26,7 @@ Options:
   -h --help   Show this screen
 ";
 
-#[derive(Debug, RustcDecodable)]
+#[derive(Debug, Deserialize)]
 struct Args {
     arg_datadir: String,
     arg_truth: String,
@@ -34,9 +36,9 @@ struct Args {
 fn main() {
     dotenv::dotenv().ok();
     env_logger::init().unwrap();
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(
-        |e| e.exit(),
-    );
+    let args: Args = Docopt::new(USAGE)
+        .and_then(|d| d.deserialize())
+        .unwrap_or_else(|e| e.exit());
     println!("[Arguments]");
     println!("- executable  : l63_rmse");
     println!("- setting JSON: {}", args.arg_setting);

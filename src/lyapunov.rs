@@ -1,19 +1,9 @@
 use super::types::{M, V};
-use ndarray::{Data, ShapeError, stack};
-use ndarray::prelude::*;
-use ndarray_linalg::prelude::*;
+use ndarray::*;
+use ndarray::Data;
+use ndarray_linalg::*;
 
 pub use ndarray::linalg::Dot;
-
-pub fn hstack(xs: &Vec<V>) -> Result<M, ShapeError> {
-    let views: Vec<_> = xs.iter()
-        .map(|x| {
-            let n = x.len();
-            x.view().into_shape((n, 1)).unwrap()
-        })
-        .collect();
-    stack(Axis(1), &views)
-}
 
 pub fn jacobi_cached<F>(f: &F, x0: &V, alpha: f64) -> M
 where
@@ -73,6 +63,7 @@ where
 {
     type Output = M;
     fn dot(&self, dxs: &ArrayBase<S, Ix2>) -> M {
-        hstack(&dxs.axis_iter(Axis(1)).map(|dx| self.dot(&dx)).collect()).unwrap()
+        let cols: Vec<_> = dxs.axis_iter(Axis(1)).map(|dx| self.dot(&dx)).collect();
+        hstack(&cols).unwrap()
     }
 }

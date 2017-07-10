@@ -5,26 +5,19 @@ authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
 [dependencies]
 rmp = "*"
+serde = "*"
+serde_derive = "*"
 rustc-serialize = "*"
 rmp-serialize = "*"
 rand = "*"
-ndarray-rand = "0.3"
-ndarray-linalg = "0.2"
-ndarray-odeint = "0.1"
+ndarray = { version = "0.9", features = ["blas", "rustc-serialize"] }
+ndarray-linalg = "0.5"
+ndarray-odeint = "0.5"
 itertools = "*"
 docopt = "*"
 pbr = "*"
 float-cmp = "*"
 num-traits = "*"
 derive-new = "*"
-log = "*"
 env_logger = "*"
 dotenv = "*"
-
-[dependencies.ndarray]
-version = "0.7"
-default-features = false
-features = ["blas", "rustc-serialize"]
-
-[dev-dependencies]
-ndarray-numtest = "0.1.2"

@@ -1,9 +1,8 @@
 
 #[macro_use]
 extern crate derive_new;
-#[macro_use]
-extern crate log;
 extern crate rustc_serialize;
+extern crate serde;
 extern crate rmp_serialize;
 
 extern crate rand;
@@ -13,7 +12,6 @@ extern crate num_traits;
 extern crate ndarray;
 extern crate ndarray_linalg;
 extern crate ndarray_odeint;
-extern crate ndarray_rand;
 extern crate itertools;
 
 pub mod types;

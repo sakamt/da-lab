@@ -1,4 +1,6 @@
 
+#[macro_use]
+extern crate serde_derive;
 extern crate ndarray;
 extern crate rustc_serialize;
 extern crate docopt;
@@ -10,7 +12,7 @@ extern crate dotenv;
 use aics_da::*;
 use aics_da::types::V;
 use docopt::Docopt;
-use ndarray::prelude::*;
+use ndarray::*;
 
 const USAGE: &'static str = "
 Generate observations of Lorenz63 model
@@ -19,7 +21,7 @@ Usage:
   l63_obs <setting> <truth> [--output=<output>]
 ";
 
-#[derive(Debug, RustcDecodable)]
+#[derive(Debug, Deserialize)]
 struct Args {
     arg_setting: String,
     arg_truth: String,
@@ -37,9 +39,9 @@ struct Setting {
 fn main() {
     dotenv::dotenv().ok();
     env_logger::init().unwrap();
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(
-        |e| e.exit(),
-    );
+    let args: Args = Docopt::new(USAGE)
+        .and_then(|d| d.deserialize())
+        .unwrap_or_else(|e| e.exit());
     println!("[Arguments]");
     println!("- executable   : l63_obs");
     println!("- setting JSON : {}", args.arg_setting);
