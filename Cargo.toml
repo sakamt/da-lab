@@ -5,7 +5,6 @@ authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
 [dependencies]
 rmp = "*"
-serde = "*"
 serde_derive = "*"
 rustc-serialize = "*"
 rmp-serialize = "*"
@@ -14,10 +13,10 @@ ndarray = { version = "0.9", features = ["blas", "rustc-serialize"] }
 ndarray-linalg = "0.5"
 ndarray-odeint = "0.5"
 itertools = "*"
-docopt = "*"
 pbr = "*"
 float-cmp = "*"
 num-traits = "*"
 derive-new = "*"
 env_logger = "*"
 dotenv = "*"
+clap = "*"
