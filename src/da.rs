@@ -1,4 +1,6 @@
+use ndarray::*;
 use ndarray_linalg::*;
+use ndarray_odeint::*;
 use std::mem;
 
 use super::*;
@@ -29,10 +31,13 @@ pub trait EnsembleForecaster {
 
 impl<TEO> EnsembleForecaster for TEO
 where
-    TEO: Fn(V) -> V,
+    for<'a> &'a TEO: TimeEvolution<OwnedRepr<f64>, Ix1>,
 {
-    fn forecast(&self, xs: Ensemble) -> Ensemble {
-        xs.into_iter().map(self).collect()
+    fn forecast(&self, mut xs: Ensemble) -> Ensemble {
+        for x in xs.iter_mut() {
+            self.iterate(x);
+        }
+        xs
     }
 }
 
@@ -47,32 +52,7 @@ where
 {
     f: F,
     a: A,
-}
-
-pub fn iterate<F, A>(forecaster: &F, analyzer: &A, mut state: &mut Ensemble, obs: &V) -> (Ensemble, Ensemble)
-where
-    F: EnsembleForecaster + ?Sized,
-    A: EnsembleAnalyzer + ?Sized,
-{
-    let xs_a = analyzer.analysis(state.clone(), obs);
-    let xs_f = forecaster.forecast(xs_a.clone());
-    let xs_f_pre: Ensemble = mem::replace(&mut state, xs_f);
-    (xs_f_pre, xs_a)
-}
-
-pub fn series<'a, F, A>(
-    forecaster: &'a F,
-    analyzer: &'a A,
-    xs0: Ensemble,
-    obs: &'a Vec<V>,
-) -> Box<Iterator<Item = (Ensemble, Ensemble)> + 'a>
-where
-    F: EnsembleForecaster + ?Sized,
-    A: EnsembleAnalyzer + ?Sized,
-{
-    Box::new(obs.iter().scan(xs0, move |xs, y| {
-        Some(iterate(forecaster, analyzer, xs, y))
-    }))
+    pub state: V,
 }
 
 pub fn select_analyzer(setting: &Setting) -> Box<EnsembleAnalyzer> {
