@@ -46,9 +46,9 @@ pub trait EnsembleAnalyzer {
 
 pub fn select_analyzer(setting: &Setting) -> Box<EnsembleAnalyzer> {
     match setting.da.as_str() {
-        "etkf" => Box::new(etkf::ETKF::new(setting)),
-        "enkf" => Box::new(enkf::EnKF::new(setting)),
-        "mpf" => Box::new(mpf::MPF::new(setting)),
+        "etkf" => Box::new(method::ETKF::new(setting)),
+        "enkf" => Box::new(method::EnKF::new(setting)),
+        "mpf" => Box::new(method::MPF::new(setting)),
         _ => panic!("unsupported method"),
     }
 }

@@ -19,11 +19,5 @@ pub mod observation;
 pub mod weight;
 pub mod da;
 pub mod model;
-
-// data assimilation
-pub mod mpf;
-pub mod enkf;
-pub mod etkf;
-
-// for study
+pub mod method;
 pub mod bias;
