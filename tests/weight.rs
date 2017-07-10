@@ -1,10 +1,10 @@
 
 extern crate rand;
 extern crate aics_da;
-extern crate ndarray_numtest;
+extern crate ndarray_linalg;
 
 use aics_da::weight::*;
-use ndarray_numtest::*;
+use ndarray_linalg::*;
 use rand::distributions::IndependentSample;
 use std::f64::consts::E;
 
