@@ -1,15 +1,13 @@
 
-extern crate aics_da;
-extern crate ndarray;
-extern crate ndarray_rand;
+#[macro_use]
 extern crate ndarray_linalg;
+extern crate aics_da;
 
 use aics_da::mpf::*;
 use aics_da::stat::*;
 use aics_da::weight::*;
-use ndarray::*;
+
 use ndarray_linalg::*;
-use ndarray_rand::*;
 
 #[test]
 fn merge_resampling() {
@@ -27,6 +25,6 @@ fn merge_resampling() {
     println!("weighted covar = \n{:?}", pm);
     println!("m-resampled mean  = \n{:?}", xmm);
     println!("m-resampled covar = \n{:?}", pmm);
-    xmm.assert_allclose_l2(&xm, 0.1);
-    pmm.assert_allclose_l2(&pm, 0.1);
+    assert_close_max!(&xmm, &xm, 0.1);
+    assert_close_max!(&pmm, &pm, 0.1);
 }
