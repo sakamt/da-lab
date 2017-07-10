@@ -10,7 +10,6 @@ extern crate num_traits;
 extern crate ndarray;
 extern crate ndarray_linalg;
 extern crate ndarray_odeint;
-extern crate itertools;
 
 pub mod types;
 pub mod linalg;
@@ -19,6 +18,12 @@ pub mod stat;
 pub mod observation;
 pub mod weight;
 pub mod da;
-pub mod l63;
-pub mod bias_correct;
-pub mod method;
+pub mod model;
+
+// data assimilation
+pub mod mpf;
+pub mod enkf;
+pub mod etkf;
+
+// for study
+pub mod bias;

@@ -1,7 +1,6 @@
 use ndarray::*;
 use ndarray_linalg::*;
 use ndarray_odeint::*;
-use std::mem;
 
 use super::*;
 use super::types::*;
@@ -43,16 +42,6 @@ where
 
 pub trait EnsembleAnalyzer {
     fn analysis(&self, xs: Ensemble, obs: &V) -> Ensemble;
-}
-
-pub struct Series<F, A>
-where
-    F: EnsembleForecaster,
-    A: EnsembleAnalyzer,
-{
-    f: F,
-    a: A,
-    pub state: V,
 }
 
 pub fn select_analyzer(setting: &Setting) -> Box<EnsembleAnalyzer> {
