@@ -122,3 +122,7 @@ pub fn noise(rs: &M) -> V {
     let d: Array1<f64> = generate::random(n);
     rs.dot(&d)
 }
+
+pub fn generate_obs(_truth: &Vec<V>, _setting: &da::Setting) -> Vec<V> {
+    vec![V::zeros(3); 2] // TODO moc
+}

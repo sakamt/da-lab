@@ -31,3 +31,11 @@ pub fn select_model(setting: &da::Setting) -> Box<da::EnsembleForecaster> {
         _ => panic!("unsupported model: {}", setting.model),
     }
 }
+
+pub fn generate_init(_setting: &da::Setting) -> V {
+    V::zeros(3) // TODO moc
+}
+
+pub fn generate_truth(_init: &V, _setting: &da::Setting) -> Vec<V> {
+    vec![V::zeros(3); 2]
+}

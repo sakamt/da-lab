@@ -31,40 +31,89 @@ use std::path::PathBuf;
 use aics_da::*;
 use aics_da::types::*;
 
-struct Info {
+struct Input {
     truth: Vec<V>,
     obs: Vec<V>,
     output: PathBuf,
 }
 
-// filename of generated data
+const SETTING_JSON: &'static str = "setting.json";
 const INIT_MSG: &'static str = "init.msg";
 const TRUTH_MSG: &'static str = "truth.msg";
 const OBS_MSG: &'static str = "obs.msg";
 
-fn generate_init(setting: &da::Setting) -> V {
-    let init = V::zeros(3); // TODO moc
-    io::save_msg(&init, INIT_MSG);
-    info!("init is generated: {}", INIT_MSG);
-    init
-}
-
-fn generate_truth(init: &V, setting: &da::Setting) -> Vec<V> {
-    let truth = vec![V::zeros(3); 2]; // TODO moc
-    io::save_msg(&truth, TRUTH_MSG);
-    info!("truth is generated: {}", TRUTH_MSG);
-    truth
-}
-
-fn generate_obs(truth: &Vec<V>, setting: &da::Setting) -> Vec<V> {
-    let obs = vec![V::zeros(3); 2]; // TODO moc
-    io::save_msg(&obs, OBS_MSG);
-    info!("observation is generated: {}", OBS_MSG);
-    obs
-}
-
-fn run(info: &Info, setting: &da::Setting) -> Result<(), Box<std::error::Error>> {
+fn run(input: &Input, setting: &da::Setting) -> Result<(), Box<std::error::Error>> {
     Ok(())
+}
+
+fn ready_output_dir() -> PathBuf {
+    let output = PathBuf::from(format!(
+        "{}/run/{}",
+        std::env::var("DATADIR").unwrap_or(".".to_string()),
+        time::now().strftime("%F-%T").unwrap()
+    ));
+    std::fs::create_dir_all(&output).expect("Cannot create output directory");
+    info!("output directory = {:?}", &output);
+    output
+}
+
+fn ready_input(
+    init: Option<&str>,
+    truth: Option<&str>,
+    obs: Option<&str>,
+    output: PathBuf,
+    setting: &da::Setting,
+) -> Input {
+    let truth: Vec<V> = if truth.is_some() {
+        let truth = truth.unwrap();
+        if init.is_some() {
+            info!("init file '{}' will be ignored", init.unwrap());
+        }
+        std::fs::copy(truth, output.join(TRUTH_MSG)).expect("Cannot copy truth");
+        io::load_msg(truth)
+    } else {
+        let init = if init.is_some() {
+            io::load_msg(init.unwrap())
+        } else {
+            let init = model::generate_init(&setting);
+            io::save_msg(&init, INIT_MSG);
+            info!("init is generated: {}", INIT_MSG);
+            init
+        };
+        let truth = model::generate_truth(&init, &setting);
+        io::save_msg(&truth, TRUTH_MSG);
+        info!("truth is generated: {}", TRUTH_MSG);
+        std::fs::copy(TRUTH_MSG, output.join(TRUTH_MSG)).expect("Cannot copy truth");
+        truth
+    };
+    let obs = if obs.is_some() {
+        let obs = obs.unwrap();
+        std::fs::copy(obs, output.join(OBS_MSG)).expect("Cannot copy obs");
+        io::load_msg(obs)
+    } else {
+        let obs = observation::generate_obs(&truth, &setting);
+        io::save_msg(&obs, OBS_MSG);
+        info!("observation is generated: {}", OBS_MSG);
+        std::fs::copy(OBS_MSG, output.join(OBS_MSG)).expect("Cannot copy obs");
+        obs
+    };
+
+    Input {
+        truth: truth,
+        obs: obs,
+        output: output,
+    }
+}
+
+fn ready_setting(setting_json: &str, output: &PathBuf) -> da::Setting {
+    let setting_path = ::std::path::Path::new(setting_json);
+    if !setting_path.exists() {
+        println!("Setting file '{}' is not found", setting_json);
+        ::std::process::exit(1);
+    }
+    std::fs::copy(setting_json, output.join(SETTING_JSON)).expect("Cannot copy setting file");
+    io::read_json(setting_path.to_str().unwrap())
+
 }
 
 fn main() {
@@ -74,61 +123,17 @@ fn main() {
     let cli = load_yaml!("run.yml");
     let matches = App::from_yaml(cli).get_matches();
 
-    // setting JSON
-    let setting_json = matches.value_of("config").unwrap_or("setting.json");
-    let setting_path = ::std::path::Path::new(setting_json);
-    if !setting_path.exists() {
-        println!("Setting file '{}' is not found", setting_json);
-        ::std::process::exit(1);
-    }
-    let setting = io::read_json(setting_path.to_str().unwrap());
-
-    // output
-    let output = PathBuf::from(format!(
-        "{}/run/{}",
-        std::env::var("DATADIR").unwrap_or(".".to_string()),
-        time::now().strftime("%F-%T").unwrap()
-    ));
-    std::fs::create_dir_all(&output).expect("Cannot create output directory");
-    info!("output directory = {:?}", &output);
+    let output = ready_output_dir();
+    let setting = ready_setting(matches.value_of("config").unwrap_or(SETTING_JSON), &output);
 
     // data
-    let init = matches.value_of("init");
-    let truth = matches.value_of("truth");
-    let obs = matches.value_of("obs");
+    let input = ready_input(
+        matches.value_of("init"),
+        matches.value_of("truth"),
+        matches.value_of("obs"),
+        output,
+        &setting,
+    );
 
-    let truth: Vec<V> = if truth.is_some() {
-        let truth = truth.unwrap();
-        if init.is_some() {
-            info!("init file '{}' will be ignored", init.unwrap());
-        }
-        std::fs::copy(truth, output.join(TRUTH_MSG)).expect("Cannot copy truth.msg");
-        io::load_msg(truth)
-    } else {
-        let init = if init.is_some() {
-            io::load_msg(init.unwrap())
-        } else {
-            generate_init(&setting)
-        };
-        let truth = generate_truth(&init, &setting);
-        std::fs::copy(TRUTH_MSG, output.join(TRUTH_MSG)).expect("Cannot copy truth.msg");
-        truth
-    };
-    let obs = if obs.is_some() {
-        let obs = obs.unwrap();
-        std::fs::copy(obs, output.join(OBS_MSG)).expect("Cannot copy obs.msg");
-        io::load_msg(obs)
-    } else {
-        let obs = generate_obs(&truth, &setting);
-        std::fs::copy(OBS_MSG, output.join(OBS_MSG)).expect("Cannot copy obs.msg");
-        obs
-    };
-
-    // run
-    let info = Info {
-        truth: truth,
-        obs: obs,
-        output: output,
-    };
-    run(&info, &setting).unwrap();
+    run(&input, &setting).unwrap();
 }
