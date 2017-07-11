@@ -5,7 +5,7 @@ use ndarray_odeint::*;
 use super::*;
 use super::types::*;
 
-#[derive(RustcDecodable, Clone)]
+#[derive(Deserialize, Clone)]
 pub struct Setting {
     pub da: String,
     pub model: String,

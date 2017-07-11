@@ -21,9 +21,10 @@ extern crate dotenv;
 #[macro_use]
 extern crate log;
 extern crate time;
-extern crate rustc_serialize;
-extern crate ndarray_linalg;
+#[macro_use]
+extern crate serde_derive;
 
+extern crate ndarray_linalg;
 extern crate aics_da;
 
 use clap::App;
@@ -45,7 +46,7 @@ struct Input {
     out_dir: PathBuf,
 }
 
-#[derive(RustcEncodable)]
+#[derive(Serialize)]
 struct Output {
     time: f64,
     state: V,
