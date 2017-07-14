@@ -1,5 +1,5 @@
 use super::da::{EnsembleAnalyzer, EnsembleForecaster};
-use super::mpf;
+use super::method::mpf;
 use super::stat;
 use super::types::*;
 use super::weight;
