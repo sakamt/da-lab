@@ -9,8 +9,5 @@ test:
 run:
   steps:
     - script:
-      name: run EnKF/ETKF/MPF with sample setting
-      code: |
-        ./run.sh sample_setting.json enkf
-        ./run.sh sample_setting.json etkf
-        ./run.sh sample_setting.json mpf
+      name: run ETKF with sample setting
+      code: cargo run --release -- -c sample_setting.json
