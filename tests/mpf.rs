@@ -3,7 +3,7 @@
 extern crate ndarray_linalg;
 extern crate aics_da;
 
-use aics_da::mpf::*;
+use aics_da::method::mpf::*;
 use aics_da::stat::*;
 use aics_da::weight::*;
 
