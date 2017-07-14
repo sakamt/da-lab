@@ -123,6 +123,9 @@ pub fn noise(rs: &M) -> V {
     rs.dot(&d)
 }
 
-pub fn generate_obs(_truth: &Vec<V>, _setting: &da::Setting) -> Vec<V> {
-    vec![V::zeros(3); 2] // TODO moc
+pub fn generate_obs(truth: &Vec<V>, setting: &da::Setting) -> Vec<V> {
+    truth
+        .iter()
+        .map(|x| setting.r * generate::random(x.len()) + x)
+        .collect()
 }
