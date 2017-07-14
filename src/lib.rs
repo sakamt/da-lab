@@ -23,3 +23,11 @@ pub mod da;
 pub mod model;
 pub mod method;
 pub mod bias;
+
+// For executables
+#[macro_use]
+extern crate log;
+extern crate time;
+extern crate env_logger;
+extern crate dotenv;
+pub mod exec;
