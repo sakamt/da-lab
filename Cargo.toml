@@ -7,8 +7,8 @@ authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 num-traits = "*"
 rand = "*"
 ndarray = { version = "0.9", features = ["blas", "serde"] }
-ndarray-linalg = "0.5"
-ndarray-odeint = { git = "http://github.com/termoshtt/ndarray-odeint.git" }
+ndarray-linalg = "0.5.4"
+ndarray-odeint = "0.6.1"
 float-cmp = "*"
 
 derive-new = "*"

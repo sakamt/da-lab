@@ -10,7 +10,7 @@ dependencies = [
  "log 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray-linalg 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "ndarray-odeint 0.6.0 (git+http://github.com/termoshtt/ndarray-odeint.git)",
+ "ndarray-odeint 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.1.39 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "rmp 0.8.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -306,8 +306,8 @@ dependencies = [
 
 [[package]]
 name = "ndarray-odeint"
-version = "0.6.0"
-source = "git+http://github.com/termoshtt/ndarray-odeint.git#5ae3e8c9598e1c4c0b11f1f387f54f26b499c28e"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "derive-new 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -607,7 +607,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum memchr 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "1dbccc0e46f1ea47b9f17e6d67c5a96bd27030519c519c9c91327e31275a47b4"
 "checksum ndarray 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)" = "9d0603e041601804a61a33ebecbea220b43a86437b9ee20680a1f9fdaaa922a8"
 "checksum ndarray-linalg 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)" = "11fbd5f26374c81042085d7bd86dae679374f034366aca969b1ad02e0bce511e"
-"checksum ndarray-odeint 0.6.0 (git+http://github.com/termoshtt/ndarray-odeint.git)" = "<none>"
+"checksum ndarray-odeint 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)" = "0c64a622276d51b90a592c5491e70e403ebfdbadead3cb295108b5274bc19718"
 "checksum num-complex 0.1.38 (registry+https://github.com/rust-lang/crates.io-index)" = "412dfc143c56579aa6a22c574e38ddbf724522f1280ae2b257498cccff3fb6af"
 "checksum num-traits 0.1.39 (registry+https://github.com/rust-lang/crates.io-index)" = "1708c0628602a98b52fad936cf3edb9a107af06e52e49fdf0707e884456a6af6"
 "checksum openblas-src 0.5.3 (registry+https://github.com/rust-lang/crates.io-index)" = "6a83675723211745cf3b08eedf276a7b7b4c6d58f9a2b41cb06a9164329e0b89"
