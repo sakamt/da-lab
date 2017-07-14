@@ -14,6 +14,7 @@ pub struct Setting {
     pub count: usize,
     pub everyn: Option<usize>,
     pub merge: Option<usize>,
+    pub replica: Option<usize>,
     pub dt: f64,
     pub r: f64,
     pub rho: Option<f64>,
