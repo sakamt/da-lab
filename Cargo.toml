@@ -8,7 +8,7 @@ num-traits = "*"
 rand = "*"
 ndarray = { version = "0.9", features = ["blas", "serde"] }
 ndarray-linalg = "0.5"
-ndarray-odeint = "0.5"
+ndarray-odeint = { git = "http://github.com/termoshtt/ndarray-odeint.git" }
 float-cmp = "*"
 
 derive-new = "*"

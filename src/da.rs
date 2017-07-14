@@ -30,7 +30,7 @@ pub trait EnsembleForecaster {
 
 impl<TEO> EnsembleForecaster for TEO
 where
-    for<'a> &'a TEO: TimeEvolution<OwnedRepr<f64>, Ix1>,
+    TEO: TimeEvolution<f64, Ix1>,
 {
     fn forecast(&self, mut xs: Ensemble) -> Ensemble {
         for x in xs.iter_mut() {
