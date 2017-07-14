@@ -72,7 +72,7 @@ fn replica_mean(truth: Truth, out_dir: PathBuf, setting: da::Setting) {
             mev: xam - t,
             rmse: xa_.iter().map(|x| (x - t).norm()).sum::<f64>() / num_replica as f64,
         };
-        let out_fn = format!("rm{:05}.msg", t);
+        let out_fn = format!("rm{:05}.msg", m);
         io::save_msg(&output, out_dir.join(out_fn).to_str().unwrap());
     }
 
