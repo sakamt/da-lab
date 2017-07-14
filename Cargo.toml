@@ -4,20 +4,23 @@ version = "0.1.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
 [dependencies]
-rmp = "*"
-serde = "*"
-serde_derive = "*"
-rustc-serialize = "*"
-rmp-serialize = "*"
-rand = "*"
-ndarray = { version = "0.9", features = ["blas", "rustc-serialize"] }
-ndarray-linalg = "0.5"
-ndarray-odeint = "0.5"
-itertools = "*"
-docopt = "*"
-pbr = "*"
-float-cmp = "*"
 num-traits = "*"
+rand = "*"
+ndarray = { version = "0.9", features = ["blas", "serde"] }
+ndarray-linalg = "0.5.4"
+ndarray-odeint = "0.6.1"
+float-cmp = "*"
+
 derive-new = "*"
+
+serde = "0.9"
+serde_derive = "0.9"
+serde_json = "0.9"
+rmp = "*"
+rmp-serde = "0.12"
+
+log = "*"
+time = "*"
 env_logger = "*"
 dotenv = "*"
+clap = { version = "2", features = ["yaml"] }

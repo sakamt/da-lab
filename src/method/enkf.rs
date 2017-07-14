@@ -6,14 +6,14 @@ use super::stat::*;
 use super::types::*;
 
 /// Ensemble Kalman Filter with perturbed observation implementation
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug)]
 pub struct EnKF {
     obs: LinearNormal,
 }
 
-impl From<Setting> for EnKF {
-    fn from(setting: Setting) -> Self {
-        EnKF::new(LinearNormal::isotropic(3, setting.r))
+impl EnKF {
+    pub fn new(setting: &Setting) -> Self {
+        EnKF { obs: LinearNormal::isotropic(3, setting.r) }
     }
 }
 

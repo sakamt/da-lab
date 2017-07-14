@@ -15,20 +15,15 @@ pub struct ETKF {
 }
 
 impl ETKF {
-    pub fn new(obs: LinearNormal, rho: f64) -> Self {
+    pub fn new(setting: &Setting) -> Self {
+        let obs = LinearNormal::isotropic(3, setting.r);
+        let rho = setting.rho.unwrap_or(1.0);
         let r_inv = obs.corr().inv().unwrap();
         ETKF {
             obs: obs,
             r_inv: r_inv,
             rho_inv: 1.0 / rho,
         }
-    }
-}
-
-impl From<Setting> for ETKF {
-    fn from(setting: Setting) -> Self {
-        let rho = setting.rho.unwrap_or(1.0);
-        ETKF::new(LinearNormal::isotropic(3, setting.r), rho)
     }
 }
 
