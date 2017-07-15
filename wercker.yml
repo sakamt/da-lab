@@ -10,4 +10,4 @@ run:
   steps:
     - script:
       name: run ETKF with sample setting
-      code: cargo run --release -- -c sample_setting.json
+      code: cargo run --release --bin run -- -c sample_setting.json
