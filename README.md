@@ -1,7 +1,9 @@
-da-lab: Laboraty of Data-Assimilaton study
-====================================
+da-lab
+=======
 
-[![wercker status](https://app.wercker.com/status/0304e048e3e80353ecafa77f8cb61fdb/s/master "wercker status")](https://app.wercker.com/project/byKey/0304e048e3e80353ecafa77f8cb61fdb)
+[![wercker status](https://app.wercker.com/status/7255d5a053304e6fa5a77a8b995088b0/s/master "wercker status")](https://app.wercker.com/project/byKey/7255d5a053304e6fa5a77a8b995088b0)
 
-Repository for Data-Assimilation study at AICS-DA Team.
-Reliable algorithms will be implemented to [da.rs](https://github.com/termoshtt/da.rs), and this repository implements experimental, testing codes.
+Laboraty of Data-Assimilaton study at AICS-DA Team by @termoshtt
+
+This repository implements experimental, concept testing codes,
+which will be merged into [da.rs](https://github.com/termoshtt/da.rs) if usefull.
