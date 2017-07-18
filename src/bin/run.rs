@@ -29,13 +29,6 @@ use std::path::PathBuf;
 use aics_da::*;
 use aics_da::types::*;
 
-// input for DA process
-struct Input {
-    truth: Vec<V>,
-    obs: Vec<V>,
-    out_dir: PathBuf,
-}
-
 #[derive(Serialize)]
 struct Output {
     time: f64,
@@ -47,11 +40,11 @@ struct Output {
 }
 
 // run DA process
-fn run(input: &Input, setting: &da::Setting) {
+fn run(truth: Truth, obs: Observation, out_dir: PathBuf, setting: da::Setting) {
     let f = model::select_model(&setting);
     let a = da::select_analyzer(&setting);
-    let mut xs = da::replica(&input.truth[0], setting.r, setting.k);
-    for (t, (truth, y)) in input.truth.iter().zip(input.obs.iter()).enumerate() {
+    let mut xs = da::replica(&truth[0], setting.r, setting.k);
+    for (t, (truth, y)) in truth.iter().zip(obs.iter()).enumerate() {
         let xb = stat::mean(&xs);
         xs = a.analysis(xs, &y);
         let xa = stat::mean(&xs);
@@ -66,7 +59,7 @@ fn run(input: &Input, setting: &da::Setting) {
             rmse: rmse,
         };
         let out_fn = format!("data{:05}.msg", t);
-        io::save_msg(&output, input.out_dir.join(out_fn).to_str().unwrap());
+        io::save_msg(&output, out_dir.join(out_fn).to_str().unwrap());
     }
 }
 
@@ -82,11 +75,5 @@ fn main() {
     let truth = exec::ready_truth(m.value_of("init"), m.value_of("truth"), &out_dir, &setting);
     let obs = exec::ready_obs(m.value_of("obs"), &truth, &out_dir, &setting);
 
-    let input = Input {
-        truth: truth,
-        obs: obs,
-        out_dir: out_dir,
-    };
-
-    run(&input, &setting);
+    run(truth, obs, out_dir, setting);
 }
