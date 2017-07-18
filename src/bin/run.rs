@@ -44,12 +44,13 @@ fn run(truth: Truth, obs: Observation, out_dir: PathBuf, setting: da::Setting) {
     let f = model::select_model(&setting);
     let a = da::select_analyzer(&setting);
     let mut xs = da::replica(&truth[0], setting.r, setting.k);
+    let mut rmse_ts = Vec::new();
     for (t, (truth, y)) in truth.iter().zip(obs.iter()).enumerate() {
         let xb = stat::mean(&xs);
         xs = a.analysis(xs, &y);
         let xa = stat::mean(&xs);
         xs = f.forecast(xs);
-        let rmse = (truth - &xa).norm();
+        let rmse = (truth - &xa).norm() / (xa.len() as f64).sqrt();
         let output = Output {
             time: (t * setting.tau) as f64 * setting.dt,
             state: truth.clone(),
@@ -60,7 +61,12 @@ fn run(truth: Truth, obs: Observation, out_dir: PathBuf, setting: da::Setting) {
         };
         let out_fn = format!("data{:05}.msg", t);
         io::save_msg(&output, out_dir.join(out_fn).to_str().unwrap());
+        rmse_ts.push(rmse);
     }
+    println!(
+        "mean RMSE = {}",
+        rmse_ts.iter().sum::<f64>() / truth.len() as f64
+    );
 }
 
 fn main() {
