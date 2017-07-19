@@ -14,11 +14,11 @@ pub fn init() {
     ::env_logger::init().unwrap();
 }
 
-/// generate output directory from current timestamp and $DATADIR env value
+/// generate output directory from current timestamp and $DATA_DIR env value
 pub fn ready_out_dir(prefix: &str) -> PathBuf {
     let out_dir = PathBuf::from(format!(
         "{}/{}/{}",
-        ::std::env::var("DATADIR").unwrap_or(".".to_string()),
+        ::std::env::var("DATA_DIR").unwrap_or(".".to_string()),
         prefix,
         ::time::now().strftime("%F-%T").unwrap()
     ));
