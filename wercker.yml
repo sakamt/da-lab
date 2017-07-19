@@ -9,5 +9,7 @@ test:
 run:
   steps:
     - script:
-      name: run ETKF with sample setting
-      code: cargo run --release --bin run -- -c sample_setting.json
+      name: run executables with sample setting
+      code: |
+        cargo run --release --bin run -- -c sample_setting.json
+        cargo run --release --bin replica_mean -- -c sample_setting.json
