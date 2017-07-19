@@ -61,11 +61,13 @@ fn replica_mean(truth: Truth, out_dir: PathBuf, setting: da::Setting) {
             .fold((Array::zeros(truth.dim()), 0.0), |(a, b), (c, d)| {
                 (a + c, b + d)
             });
+        let vme = res.0 / replica as f64 - &truth;
+        let rmse = res.1 / replica as f64;
         let output = Output {
             time: (t * setting.tau) as f64 * setting.dt,
             state: truth,
-            vme: res.0 / replica as f64,
-            rmse: res.1 / replica as f64,
+            vme: vme,
+            rmse: rmse,
         };
         let out_fn = format!("rm{:05}.msg", t);
         io::save_msg(&output, out_dir.join(out_fn).to_str().unwrap());
