@@ -6,7 +6,7 @@
 //! - setting.json
 //! - truth.msg : sequence of true state
 //! - obs.msg   : sequence of observations
-//! - rm00001.msg ... : msgpack of `Output`
+//! - out.msg   : msgpack of `Output` time series
 
 #[macro_use]
 extern crate clap;
@@ -47,31 +47,34 @@ fn replica_mean(truth: Truth, out_dir: PathBuf, setting: da::Setting) {
             (xs, obs)
         })
         .collect();
-    for (t, truth) in truth.into_iter().enumerate() {
-        let res = xss.iter_mut()
-            .map(|item| {
-                let xs = &mut item.0;
-                let obs = &item.1[t];
-                a.analysis_mut(xs, obs);
-                let xa = stat::mean(xs);
-                f.forecast_mut(xs);
-                let rmse = (&xa - &truth).norm() / (xa.len() as f64).sqrt();
-                (xa, rmse)
-            })
-            .fold((Array::zeros(truth.dim()), 0.0), |(a, b), (c, d)| {
-                (a + c, b + d)
-            });
-        let vme = res.0 / replica as f64 - &truth;
-        let rmse = res.1 / replica as f64;
-        let output = Output {
-            time: (t * setting.tau) as f64 * setting.dt,
-            state: truth,
-            vme: vme,
-            rmse: rmse,
-        };
-        let out_fn = format!("rm{:05}.msg", t);
-        io::save_msg(&output, out_dir.join(out_fn).to_str().unwrap());
-    }
+    let tl: Vec<Output> = truth
+        .into_iter()
+        .enumerate()
+        .map(|(t, truth)| {
+            let res = xss.iter_mut()
+                .map(|item| {
+                    let xs = &mut item.0;
+                    let obs = &item.1[t];
+                    a.analysis_mut(xs, obs);
+                    let xa = stat::mean(xs);
+                    f.forecast_mut(xs);
+                    let rmse = (&xa - &truth).norm() / (xa.len() as f64).sqrt();
+                    (xa, rmse)
+                })
+                .fold((Array::zeros(truth.dim()), 0.0), |(a, b), (c, d)| {
+                    (a + c, b + d)
+                });
+            let vme = res.0 / replica as f64 - &truth;
+            let rmse = res.1 / replica as f64;
+            Output {
+                time: (t * setting.tau) as f64 * setting.dt,
+                state: truth,
+                vme: vme,
+                rmse: rmse,
+            }
+        })
+        .collect();
+    io::save_msg(&tl, out_dir.join("out.msg").to_str().unwrap());
 }
 
 fn main() {
