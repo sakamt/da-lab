@@ -14,19 +14,6 @@ pub fn init() {
     ::env_logger::init().unwrap();
 }
 
-/// generate output directory from current timestamp and $DATA_DIR env value
-pub fn ready_out_dir(prefix: &str) -> PathBuf {
-    let out_dir = PathBuf::from(format!(
-        "{}/{}/{}",
-        ::std::env::var("DATA_DIR").unwrap_or(".".to_string()),
-        prefix,
-        ::time::now().strftime("%F-%T").unwrap()
-    ));
-    ::std::fs::create_dir_all(&out_dir).expect("Cannot create out_dir directory");
-    info!("out_dir directory = {:?}", &out_dir);
-    out_dir
-}
-
 /// read and copy setting JSON file
 pub fn ready_setting(setting_json: Option<&str>, out_dir: &Path) -> da::Setting {
     let setting_json = setting_json.unwrap_or(SETTING_JSON);

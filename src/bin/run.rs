@@ -24,7 +24,6 @@ extern crate aics_da;
 
 use clap::App;
 use ndarray_linalg::*;
-use std::path::PathBuf;
 
 use aics_da::*;
 use aics_da::types::*;
@@ -40,7 +39,7 @@ struct Output {
 }
 
 // run DA process
-fn run(truth: Truth, obs: Observation, out_dir: PathBuf, setting: da::Setting) {
+fn run(truth: Truth, obs: Observation, saver: io::MsgpackSaver, setting: da::Setting) {
     let f = model::select_model(&setting);
     let a = da::select_analyzer(&setting);
     let mut xs = da::replica(&truth[0], setting.r, setting.k);
@@ -60,7 +59,7 @@ fn run(truth: Truth, obs: Observation, out_dir: PathBuf, setting: da::Setting) {
             rmse: rmse,
         };
         let out_fn = format!("data{:05}.msg", t);
-        io::save_msg(&output, out_dir.join(out_fn).to_str().unwrap());
+        saver.save(&out_fn, &output);
         rmse_ts.push(rmse);
     }
     println!(
@@ -75,11 +74,16 @@ fn main() {
     let cli = load_yaml!("run.yml");
     let m = App::from_yaml(cli).get_matches();
 
-    let out_dir = exec::ready_out_dir("run");
-    let setting = exec::ready_setting(m.value_of("config"), &out_dir);
+    let saver = io::MsgpackSaver::new("run");
+    let setting = exec::ready_setting(m.value_of("config"), &saver.path);
 
-    let truth = exec::ready_truth(m.value_of("init"), m.value_of("truth"), &out_dir, &setting);
-    let obs = exec::ready_obs(m.value_of("obs"), &truth, &out_dir, &setting);
+    let truth = exec::ready_truth(
+        m.value_of("init"),
+        m.value_of("truth"),
+        &saver.path,
+        &setting,
+    );
+    let obs = exec::ready_obs(m.value_of("obs"), &truth, &saver.path, &setting);
 
-    run(truth, obs, out_dir, setting);
+    run(truth, obs, saver, setting);
 }

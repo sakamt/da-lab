@@ -20,7 +20,6 @@ extern crate aics_da;
 use clap::App;
 use ndarray::*;
 use ndarray_linalg::*;
-use std::path::PathBuf;
 
 use aics_da::*;
 use aics_da::types::*;
@@ -36,7 +35,7 @@ struct Output {
     rmse: f64,
 }
 
-fn replica_mean(truth: Truth, out_dir: PathBuf, setting: da::Setting) {
+fn replica_mean(truth: Truth, saver: io::MsgpackSaver, setting: da::Setting) {
     let replica = setting.replica.expect("setting.replica is needed");
     let f = model::select_model(&setting);
     let a = da::select_analyzer(&setting);
@@ -74,15 +73,20 @@ fn replica_mean(truth: Truth, out_dir: PathBuf, setting: da::Setting) {
             }
         })
         .collect();
-    io::save_msg(&tl, out_dir.join("out.msg").to_str().unwrap());
+    saver.save("out.msg", &tl);
 }
 
 fn main() {
     exec::init();
     let cli = load_yaml!("replica_mean.yml");
     let m = App::from_yaml(cli).get_matches();
-    let out_dir = exec::ready_out_dir("replica_mean");
-    let setting = exec::ready_setting(m.value_of("config"), &out_dir);
-    let truth = exec::ready_truth(m.value_of("init"), m.value_of("truth"), &out_dir, &setting);
-    replica_mean(truth, out_dir, setting);
+    let saver = io::MsgpackSaver::new("replica_mean");
+    let setting = exec::ready_setting(m.value_of("config"), &saver.path);
+    let truth = exec::ready_truth(
+        m.value_of("init"),
+        m.value_of("truth"),
+        &saver.path,
+        &setting,
+    );
+    replica_mean(truth, saver, setting);
 }
