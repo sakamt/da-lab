@@ -30,4 +30,5 @@ extern crate log;
 extern crate time;
 extern crate env_logger;
 extern crate dotenv;
+extern crate uuid;
 pub mod exec;
