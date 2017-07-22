@@ -14,6 +14,7 @@ pub struct Setting {
     pub count: usize,
     pub everyn: Option<usize>,
     pub merge: Option<usize>,
+    pub replica: Option<usize>,
     pub dt: f64,
     pub r: f64,
     pub rho: Option<f64>,
@@ -26,6 +27,14 @@ pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {
 
 pub trait EnsembleForecaster {
     fn forecast(&self, xs: Ensemble) -> Ensemble;
+
+    /// Deduce `&mut` style function using `std::mem::replace` trick
+    fn forecast_mut(&self, mut xs: &mut Ensemble) {
+        let dummy = Vec::new();
+        let xs_ = ::std::mem::replace(xs, dummy);
+        let xs_ = self.forecast(xs_);
+        ::std::mem::replace(xs, xs_);
+    }
 }
 
 impl<TEO> EnsembleForecaster for TEO
@@ -42,6 +51,14 @@ where
 
 pub trait EnsembleAnalyzer {
     fn analysis(&self, xs: Ensemble, obs: &V) -> Ensemble;
+
+    /// Deduce `&mut` style function using `std::mem::replace` trick
+    fn analysis_mut(&self, mut xs: &mut Ensemble, obs: &V) {
+        let dummy = Vec::new();
+        let xs_ = ::std::mem::replace(xs, dummy);
+        let xs_ = self.analysis(xs_, obs);
+        ::std::mem::replace(xs, xs_);
+    }
 }
 
 pub fn select_analyzer(setting: &Setting) -> Box<EnsembleAnalyzer> {

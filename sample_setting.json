@@ -5,8 +5,9 @@
   "init_count": 100,
   "r": 2.0,
   "count": 100,
-  "tau": 8,
-  "k": 10,
-  "rho": 1.2,
-  "save_count": 10
+  "tau": 25,
+  "k": 6,
+  "replica": 10,
+  "rho": 1.28,
+  "everyn": 10
 }
