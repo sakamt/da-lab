@@ -1,8 +1,6 @@
 //! misc utilities for executables
-//!
 
 use super::{da, io, model, observation, types};
-use std::path::*;
 
 pub const SETTING_JSON: &'static str = "setting.json";
 pub const INIT_MSG: &'static str = "init.msg";
@@ -14,15 +12,10 @@ pub fn init() {
     ::env_logger::init().unwrap();
 }
 
-/// read and copy setting JSON file
-pub fn ready_setting(setting_json: Option<&str>, out_dir: &Path) -> da::Setting {
+/// read setting JSON file
+pub fn ready_setting(setting_json: Option<&str>) -> da::Setting {
     let setting_json = setting_json.unwrap_or(SETTING_JSON);
     let setting_path = ::std::path::Path::new(setting_json);
-    if !setting_path.exists() {
-        println!("Setting file '{}' is not found", setting_json);
-        ::std::process::exit(1);
-    }
-    ::std::fs::copy(setting_json, out_dir.join(SETTING_JSON)).expect("Cannot copy setting file");
     io::read_json(setting_path.to_str().unwrap())
 }
 

@@ -75,13 +75,10 @@ fn main() {
     let m = App::from_yaml(cli).get_matches();
 
     let saver = io::MsgpackSaver::new("run");
-    let setting = exec::ready_setting(m.value_of("config"), &saver.path);
+    let setting = exec::ready_setting(m.value_of("config"));
+    saver.save_as_map("setting", &setting);
 
-    let truth = exec::ready_truth(
-        m.value_of("init"),
-        m.value_of("truth"),
-        &setting,
-    );
+    let truth = exec::ready_truth(m.value_of("init"), m.value_of("truth"), &setting);
     saver.save("truth", &truth);
     let obs = exec::ready_obs(m.value_of("obs"), &truth, &setting);
     saver.save("obs", &obs);

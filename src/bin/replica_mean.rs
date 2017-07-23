@@ -81,12 +81,9 @@ fn main() {
     let cli = load_yaml!("replica_mean.yml");
     let m = App::from_yaml(cli).get_matches();
     let saver = io::MsgpackSaver::new("replica_mean");
-    let setting = exec::ready_setting(m.value_of("config"), &saver.path);
-    let truth = exec::ready_truth(
-        m.value_of("init"),
-        m.value_of("truth"),
-        &setting,
-    );
+    let setting = exec::ready_setting(m.value_of("config"));
+    saver.save_as_map("setting", &setting);
+    let truth = exec::ready_truth(m.value_of("init"), m.value_of("truth"), &setting);
     saver.save("truth", &truth);
     replica_mean(truth, saver, setting);
 }
