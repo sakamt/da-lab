@@ -49,11 +49,7 @@ fn main() {
                 None => sleep(Duration::from_secs(interval)),
             }
         };
-        match setting.task.as_str() {
-            "run" => task::run(setting),
-            "replica_mean" => task::replica_mean(setting),
-            _ => warn!("Invalid task name: {}, Drop this setting", setting.task),
-        };
+        task::execute(setting);
         info!("Done, wait next task");
     }
 }

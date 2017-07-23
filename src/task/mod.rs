@@ -14,6 +14,15 @@ pub fn init() {
     ::env_logger::init().unwrap();
 }
 
+pub fn execute(setting: da::Setting) {
+    info!("Execute task: {}", setting.task);
+    match setting.task.as_str() {
+        "run" => run(setting),
+        "replica_mean" => replica_mean(setting),
+        _ => warn!("Invalid task name: {}, Drop this setting", setting.task),
+    };
+}
+
 /// read setting JSON file
 pub fn ready_setting(setting_json: Option<&str>) -> da::Setting {
     let setting_json = setting_json.unwrap_or(SETTING_JSON);
