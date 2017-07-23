@@ -1,28 +1,12 @@
-//! Calculate replica-mean
-//!
-//! Outputs
-//! -------
-//! Sequential data will be saved in "$DATADIR/replica_mean/YYYY-MM-DD-HH:MM:SS/"
-//! - setting.json
-//! - truth.msg : sequence of true state
-//! - obs.msg   : sequence of observations
-//! - out.msg   : msgpack of `Output` time series
+//! calc replica mean
 
-#[macro_use]
-extern crate clap;
-#[macro_use]
-extern crate serde_derive;
-
-extern crate ndarray;
-extern crate ndarray_linalg;
-extern crate aics_da;
-
-use clap::App;
 use ndarray::*;
 use ndarray_linalg::*;
 
-use aics_da::*;
-use aics_da::types::*;
+use super::ready_truth;
+use super::types::*;
+
+use {da, io, model, observation, stat};
 
 #[derive(Serialize)]
 struct Output {
@@ -35,7 +19,21 @@ struct Output {
     rmse: f64,
 }
 
-fn replica_mean(truth: Truth, saver: io::MsgpackSaver, setting: da::Setting) {
+/// Calculate replica-mean
+///
+/// Outputs
+/// -------
+/// Sequential data will be saved in "$DATADIR/replica_mean/YYYY-MM-DD-HH:MM:SS/"
+/// - setting.json
+/// - truth.msg : sequence of true state
+/// - obs.msg   : sequence of observations
+/// - out.msg   : msgpack of `Output` time series
+pub fn replica_mean(setting: da::Setting) {
+    let truth = ready_truth(&setting);
+    let saver = io::MsgpackSaver::new("replica_mean");
+    saver.save_as_map("setting", &setting);
+    saver.save("truth", &truth);
+
     let replica = setting.replica.expect("setting.replica is needed");
     let f = model::select_model(&setting);
     let a = da::select_analyzer(&setting);
@@ -74,22 +72,4 @@ fn replica_mean(truth: Truth, saver: io::MsgpackSaver, setting: da::Setting) {
         })
         .collect();
     saver.save("out", &tl);
-}
-
-fn main() {
-    exec::init();
-
-    let cli = load_yaml!("replica_mean.yml");
-    let m = App::from_yaml(cli).get_matches();
-    let mut setting = exec::ready_setting(m.value_of("config"));
-    setting.init = m.value_of("init").map(|s| s.to_string()).or(setting.init);
-    setting.truth = m.value_of("truth").map(|s| s.to_string()).or(setting.truth);
-
-    let truth = exec::ready_truth(&setting);
-
-    let saver = io::MsgpackSaver::new("replica_mean");
-    saver.save_as_map("setting", &setting);
-    saver.save("truth", &truth);
-
-    replica_mean(truth, saver, setting);
 }

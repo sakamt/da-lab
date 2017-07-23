@@ -23,6 +23,7 @@ pub mod weight;
 pub mod da;
 pub mod model;
 pub mod method;
+pub mod task;
 pub mod bias;
 
 // For executables

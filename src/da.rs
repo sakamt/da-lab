@@ -34,6 +34,8 @@ pub struct Setting {
     pub truth: Option<String>,
     /// filename of observation
     pub obs: Option<String>,
+    /// task done in worker
+    pub task: Option<String>,
 }
 
 pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {
