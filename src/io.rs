@@ -28,20 +28,6 @@ impl VariantWriter for StructMapWriter {
     }
 }
 
-pub fn save_msg<T: Serialize>(val: &T, filename: &str) {
-    let f = File::create(filename).ok().unwrap();
-    let mut buf = BufWriter::new(f);
-    let mut enc = ::rmp_serde::Serializer::new(&mut buf);
-    val.serialize(&mut enc).unwrap();
-}
-
-pub fn save_msg_as_map<T: Serialize>(val: &T, filename: &str) {
-    let f = File::create(filename).ok().unwrap();
-    let mut buf = BufWriter::new(f);
-    let mut enc = ::rmp_serde::Serializer::with(&mut buf, StructMapWriter);
-    val.serialize(&mut enc).unwrap();
-}
-
 pub fn load_msg<T: Deserialize>(filename: &str) -> T {
     let f = File::open(filename).unwrap();
     let mut buf = BufReader::new(f);

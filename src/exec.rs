@@ -3,9 +3,6 @@
 use super::{da, io, model, observation, types};
 
 pub const SETTING_JSON: &'static str = "setting.json";
-pub const INIT_MSG: &'static str = "init.msg";
-pub const TRUTH_MSG: &'static str = "truth.msg";
-pub const OBS_MSG: &'static str = "obs.msg";
 
 pub fn init() {
     ::dotenv::dotenv().ok();
@@ -32,13 +29,9 @@ pub fn ready_truth(init: Option<&str>, truth: Option<&str>, setting: &da::Settin
             io::load_msg(init.unwrap())
         } else {
             let init = model::generate_init(&setting);
-            io::save_msg(&init, INIT_MSG);
-            info!("init is generated: {}", INIT_MSG);
             init
         };
         let truth = model::generate_truth(&init, &setting);
-        io::save_msg(&truth, TRUTH_MSG);
-        info!("truth is generated: {}", TRUTH_MSG);
         truth
     }
 }
@@ -50,8 +43,6 @@ pub fn ready_obs(obs: Option<&str>, truth: &types::Truth, setting: &da::Setting)
         io::load_msg(obs)
     } else {
         let obs = observation::generate_obs(&truth, &setting);
-        io::save_msg(&obs, OBS_MSG);
-        info!("observation is generated: {}", OBS_MSG);
         obs
     }
 }

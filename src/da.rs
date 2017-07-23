@@ -5,19 +5,29 @@ use ndarray_odeint::*;
 use super::*;
 use super::types::*;
 
+/// Master setting struct of all DA process
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Setting {
+    /// DA method
     pub da: String,
+    /// dynamics model
     pub model: String,
-    pub k: usize,
-    pub tau: usize,
-    pub count: usize,
-    pub everyn: Option<usize>,
-    pub merge: Option<usize>,
-    pub replica: Option<usize>,
+    /// dt of dynamics
     pub dt: f64,
+    /// size of ensemble
+    pub k: usize,
+    /// time interval between observations
+    pub tau: usize,
+    /// count of assimilation to be executed
+    pub count: usize,
+    /// intensity of noise
     pub r: f64,
+    /// Inflation factor (default = 1.0)
     pub rho: Option<f64>,
+    /// Parameter for merge-resampling
+    pub merge: Option<usize>,
+    /// Number of replica
+    pub replica: Option<usize>,
 }
 
 pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {
