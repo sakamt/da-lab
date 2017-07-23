@@ -17,32 +17,32 @@ pub fn ready_setting(setting_json: Option<&str>) -> da::Setting {
 }
 
 /// read or generate truth
-pub fn ready_truth(init: Option<&str>, truth: Option<&str>, setting: &da::Setting) -> types::Truth {
-    if truth.is_some() {
-        let truth = truth.unwrap();
-        if init.is_some() {
-            info!("init file '{}' will be ignored", init.unwrap());
+pub fn ready_truth(setting: &da::Setting) -> types::Truth {
+    let truth = &setting.truth;
+    let init = &setting.init;
+    match *truth {
+        Some(ref truth) => {
+            match *init {
+                Some(ref init) => info!("init file '{}' is ignored", init),
+                None => {}
+            }
+            io::load_msg(&truth)
         }
-        io::load_msg(truth)
-    } else {
-        let init = if init.is_some() {
-            io::load_msg(init.unwrap())
-        } else {
-            let init = model::generate_init(&setting);
-            init
-        };
-        let truth = model::generate_truth(&init, &setting);
-        truth
+        None => {
+            let init = match *init {
+                Some(ref init) => io::load_msg(init),
+                None => model::generate_init(&setting),
+            };
+            model::generate_truth(&init, &setting)
+        }
     }
 }
 
 /// read or generate observation
-pub fn ready_obs(obs: Option<&str>, truth: &types::Truth, setting: &da::Setting) -> types::Observation {
-    if obs.is_some() {
-        let obs = obs.unwrap();
-        io::load_msg(obs)
-    } else {
-        let obs = observation::generate_obs(&truth, &setting);
-        obs
+pub fn ready_obs(truth: &types::Truth, setting: &da::Setting) -> types::Observation {
+    let obs = &setting.observation;
+    match *obs {
+        Some(ref obs) => io::load_msg(&obs),
+        None => observation::generate_obs(&truth, &setting),
     }
 }

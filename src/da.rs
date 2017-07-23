@@ -28,6 +28,12 @@ pub struct Setting {
     pub merge: Option<usize>,
     /// Number of replica
     pub replica: Option<usize>,
+    /// filename of initial state
+    pub init: Option<String>,
+    /// filename of truth
+    pub truth: Option<String>,
+    /// filename of observation
+    pub observation: Option<String>,
 }
 
 pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {

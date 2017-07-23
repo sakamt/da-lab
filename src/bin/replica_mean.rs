@@ -73,7 +73,7 @@ fn replica_mean(truth: Truth, saver: io::MsgpackSaver, setting: da::Setting) {
             }
         })
         .collect();
-    saver.save("out.msg", &tl);
+    saver.save("out", &tl);
 }
 
 fn main() {
@@ -82,8 +82,9 @@ fn main() {
     let m = App::from_yaml(cli).get_matches();
     let saver = io::MsgpackSaver::new("replica_mean");
     let setting = exec::ready_setting(m.value_of("config"));
+    // TODO overwrite setting from cli options
     saver.save_as_map("setting", &setting);
-    let truth = exec::ready_truth(m.value_of("init"), m.value_of("truth"), &setting);
+    let truth = exec::ready_truth(&setting);
     saver.save("truth", &truth);
     replica_mean(truth, saver, setting);
 }

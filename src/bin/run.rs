@@ -58,7 +58,7 @@ fn run(truth: Truth, obs: Observation, saver: io::MsgpackSaver, setting: da::Set
             analysis: xa,
             rmse: rmse,
         };
-        let out_fn = format!("data{:05}.msg", t);
+        let out_fn = format!("data{:05}", t);
         saver.save(&out_fn, &output);
         rmse_ts.push(rmse);
     }
@@ -70,18 +70,15 @@ fn run(truth: Truth, obs: Observation, saver: io::MsgpackSaver, setting: da::Set
 
 fn main() {
     exec::init();
-
     let cli = load_yaml!("run.yml");
     let m = App::from_yaml(cli).get_matches();
-
     let saver = io::MsgpackSaver::new("run");
     let setting = exec::ready_setting(m.value_of("config"));
+    // TODO overwrite setting using cli options
     saver.save_as_map("setting", &setting);
-
-    let truth = exec::ready_truth(m.value_of("init"), m.value_of("truth"), &setting);
+    let truth = exec::ready_truth(&setting);
     saver.save("truth", &truth);
-    let obs = exec::ready_obs(m.value_of("obs"), &truth, &setting);
+    let obs = exec::ready_obs(&truth, &setting);
     saver.save("obs", &obs);
-
     run(truth, obs, saver, setting);
 }
