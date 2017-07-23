@@ -19,12 +19,15 @@ fn get_setting<P: AsRef<Path>>(setting_dir: P) -> Option<da::Setting> {
     for s in read_dir(setting_dir).expect("Cannot open setting directory") {
         let path = s.unwrap().path();
         let setting: da::Setting = io::read_json(path.to_str().unwrap());
-        match remove_file(path) {
-            Ok(_) => return Some(setting),
+        match remove_file(path.clone()) {
+            Ok(_) => {
+                info!("Fetch setting file: {:?}", path);
+                return Some(setting);
+            }
             Err(_) => continue,
         }
     }
-    info!("No setting files");
+    debug!("No setting files");
     None
 }
 
@@ -38,7 +41,7 @@ fn main() {
         .map(|s| s.parse::<u64>().expect("cannot parse interval"))
         .unwrap_or(10);
 
-    info!("watch {}", setting_dir);
+    info!("Start watching: {}", setting_dir);
     loop {
         let setting = loop {
             match get_setting(setting_dir) {
@@ -46,6 +49,11 @@ fn main() {
                 None => sleep(Duration::from_secs(interval)),
             }
         };
-        println!("{:?}", setting);
+        match setting.task.as_str() {
+            "run" => task::run(setting),
+            "replica_mean" => task::replica_mean(setting),
+            _ => warn!("Invalid task name: {}, Drop this setting", setting.task),
+        };
+        info!("Done, wait next task");
     }
 }

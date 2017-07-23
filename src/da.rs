@@ -8,6 +8,8 @@ use super::types::*;
 /// Master setting struct of all DA process
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Setting {
+    /// task done in worker
+    pub task: String,
     /// DA method
     pub da: String,
     /// dynamics model
@@ -34,8 +36,6 @@ pub struct Setting {
     pub truth: Option<String>,
     /// filename of observation
     pub obs: Option<String>,
-    /// task done in worker
-    pub task: Option<String>,
 }
 
 pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {
