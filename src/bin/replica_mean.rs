@@ -85,8 +85,8 @@ fn main() {
     let truth = exec::ready_truth(
         m.value_of("init"),
         m.value_of("truth"),
-        &saver.path,
         &setting,
     );
+    saver.save("truth", &truth);
     replica_mean(truth, saver, setting);
 }

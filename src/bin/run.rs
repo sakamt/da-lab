@@ -80,10 +80,11 @@ fn main() {
     let truth = exec::ready_truth(
         m.value_of("init"),
         m.value_of("truth"),
-        &saver.path,
         &setting,
     );
-    let obs = exec::ready_obs(m.value_of("obs"), &truth, &saver.path, &setting);
+    saver.save("truth", &truth);
+    let obs = exec::ready_obs(m.value_of("obs"), &truth, &setting);
+    saver.save("obs", &obs);
 
     run(truth, obs, saver, setting);
 }

@@ -48,6 +48,11 @@ impl MsgpackSaver {
     }
 
     pub fn save<T: Serialize>(&self, name: &str, data: &T) {
+        let name = if name.ends_with(".msg") {
+            name.to_string()
+        } else {
+            format!("{}.msg", name)
+        };
         save_msg(data, self.path.join(name).to_str().unwrap());
     }
 }

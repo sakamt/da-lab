@@ -26,14 +26,13 @@ pub fn ready_setting(setting_json: Option<&str>, out_dir: &Path) -> da::Setting 
     io::read_json(setting_path.to_str().unwrap())
 }
 
-/// read or generate and save truth
-pub fn ready_truth(init: Option<&str>, truth: Option<&str>, out_dir: &Path, setting: &da::Setting) -> types::Truth {
+/// read or generate truth
+pub fn ready_truth(init: Option<&str>, truth: Option<&str>, setting: &da::Setting) -> types::Truth {
     if truth.is_some() {
         let truth = truth.unwrap();
         if init.is_some() {
             info!("init file '{}' will be ignored", init.unwrap());
         }
-        ::std::fs::copy(truth, out_dir.join(TRUTH_MSG)).expect("Cannot copy truth");
         io::load_msg(truth)
     } else {
         let init = if init.is_some() {
@@ -47,22 +46,19 @@ pub fn ready_truth(init: Option<&str>, truth: Option<&str>, out_dir: &Path, sett
         let truth = model::generate_truth(&init, &setting);
         io::save_msg(&truth, TRUTH_MSG);
         info!("truth is generated: {}", TRUTH_MSG);
-        ::std::fs::copy(TRUTH_MSG, out_dir.join(TRUTH_MSG)).expect("Cannot copy truth");
         truth
     }
 }
 
-/// read or generate and save observation
-pub fn ready_obs(obs: Option<&str>, truth: &types::Truth, out_dir: &Path, setting: &da::Setting) -> types::Observation {
+/// read or generate observation
+pub fn ready_obs(obs: Option<&str>, truth: &types::Truth, setting: &da::Setting) -> types::Observation {
     if obs.is_some() {
         let obs = obs.unwrap();
-        ::std::fs::copy(obs, out_dir.join(OBS_MSG)).expect("Cannot copy obs");
         io::load_msg(obs)
     } else {
         let obs = observation::generate_obs(&truth, &setting);
         io::save_msg(&obs, OBS_MSG);
         info!("observation is generated: {}", OBS_MSG);
-        ::std::fs::copy(OBS_MSG, out_dir.join(OBS_MSG)).expect("Cannot copy obs");
         obs
     }
 }
