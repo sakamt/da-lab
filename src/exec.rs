@@ -40,7 +40,7 @@ pub fn ready_truth(setting: &da::Setting) -> types::Truth {
 
 /// read or generate observation
 pub fn ready_obs(truth: &types::Truth, setting: &da::Setting) -> types::Observation {
-    let obs = &setting.observation;
+    let obs = &setting.obs;
     match *obs {
         Some(ref obs) => io::load_msg(&obs),
         None => observation::generate_obs(&truth, &setting),

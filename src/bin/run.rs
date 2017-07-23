@@ -70,15 +70,21 @@ fn run(truth: Truth, obs: Observation, saver: io::MsgpackSaver, setting: da::Set
 
 fn main() {
     exec::init();
+
     let cli = load_yaml!("run.yml");
     let m = App::from_yaml(cli).get_matches();
-    let saver = io::MsgpackSaver::new("run");
-    let setting = exec::ready_setting(m.value_of("config"));
-    // TODO overwrite setting using cli options
-    saver.save_as_map("setting", &setting);
+    let mut setting = exec::ready_setting(m.value_of("config"));
+    setting.init = m.value_of("init").map(|s| s.to_string()).or(setting.init);
+    setting.truth = m.value_of("truth").map(|s| s.to_string()).or(setting.truth);
+    setting.obs = m.value_of("obs").map(|s| s.to_string()).or(setting.obs);
+
     let truth = exec::ready_truth(&setting);
-    saver.save("truth", &truth);
     let obs = exec::ready_obs(&truth, &setting);
+
+    let saver = io::MsgpackSaver::new("run");
+    saver.save_as_map("setting", &setting);
+    saver.save("truth", &truth);
     saver.save("obs", &obs);
+
     run(truth, obs, saver, setting);
 }

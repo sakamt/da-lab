@@ -33,7 +33,7 @@ pub struct Setting {
     /// filename of truth
     pub truth: Option<String>,
     /// filename of observation
-    pub observation: Option<String>,
+    pub obs: Option<String>,
 }
 
 pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {

@@ -78,13 +78,18 @@ fn replica_mean(truth: Truth, saver: io::MsgpackSaver, setting: da::Setting) {
 
 fn main() {
     exec::init();
+
     let cli = load_yaml!("replica_mean.yml");
     let m = App::from_yaml(cli).get_matches();
-    let saver = io::MsgpackSaver::new("replica_mean");
-    let setting = exec::ready_setting(m.value_of("config"));
-    // TODO overwrite setting from cli options
-    saver.save_as_map("setting", &setting);
+    let mut setting = exec::ready_setting(m.value_of("config"));
+    setting.init = m.value_of("init").map(|s| s.to_string()).or(setting.init);
+    setting.truth = m.value_of("truth").map(|s| s.to_string()).or(setting.truth);
+
     let truth = exec::ready_truth(&setting);
+
+    let saver = io::MsgpackSaver::new("replica_mean");
+    saver.save_as_map("setting", &setting);
     saver.save("truth", &truth);
+
     replica_mean(truth, saver, setting);
 }
