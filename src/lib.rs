@@ -3,6 +3,7 @@ extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
+extern crate rmp;
 extern crate rmp_serde;
 
 extern crate rand;
@@ -30,4 +31,5 @@ extern crate log;
 extern crate time;
 extern crate env_logger;
 extern crate dotenv;
+extern crate uuid;
 pub mod exec;

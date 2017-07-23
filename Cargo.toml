@@ -24,3 +24,4 @@ time = "*"
 env_logger = "*"
 dotenv = "*"
 clap = { version = "2", features = ["yaml"] }
+uuid = { version = "0.4", features = ["v4"] }
