@@ -6,7 +6,7 @@ use super::*;
 use super::types::*;
 
 /// Master setting struct of all DA process
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Setting {
     /// DA method
     pub da: String,

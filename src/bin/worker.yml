@@ -1,0 +1,12 @@
+name: da-lab/worker
+version: "0.1"
+about: worker daemon for run data-assimilation process
+args:
+  - setting-dir:
+      short: d
+      long: setting-dir
+      takes_value: true
+  - interval:
+      short: i
+      long: interval
+      takes_value: true
