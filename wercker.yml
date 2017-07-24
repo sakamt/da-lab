@@ -9,7 +9,7 @@ test:
 run:
   steps:
     - script:
-      name: run executables with sample setting
+      name: Execute tasks
       code: |
-        cargo run --release --bin run -- -c sample_setting.json
-        cargo run --release --bin replica_mean -- -c sample_setting.json
+        cargo run --release --bin exec -- -s run_sample.json
+        cargo run --release --bin exec -- -s replica_mean_sample.json
