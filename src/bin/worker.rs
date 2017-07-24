@@ -32,7 +32,7 @@ fn get_setting<P: AsRef<Path>>(setting_dir: P) -> Option<da::Setting> {
 }
 
 fn main() {
-    exec::init();
+    task::init();
     let cli = load_yaml!("worker.yml");
     let m = App::from_yaml(cli).get_matches();
 

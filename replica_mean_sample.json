@@ -1,0 +1,12 @@
+{
+  "task": "replica_mean",
+  "da": "etkf",
+  "model": "l63",
+  "dt": 0.01,
+  "r": 2.0,
+  "count": 1000,
+  "tau": 25,
+  "k": 6,
+  "replica": 10,
+  "rho": 1.28
+}
