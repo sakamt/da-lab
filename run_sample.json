@@ -1,13 +1,11 @@
 {
+  "task": "run",
   "da": "etkf",
   "model": "l63",
   "dt": 0.01,
-  "init_count": 100,
   "r": 2.0,
-  "count": 100,
+  "count": 1000,
   "tau": 25,
   "k": 6,
-  "replica": 10,
-  "rho": 1.28,
-  "everyn": 10
+  "rho": 1.28
 }

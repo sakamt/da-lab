@@ -1,0 +1,8 @@
+name: da-lab/exec
+version: "0.1"
+about: execute data-assimilation process
+args:
+  - setting:
+      short: s
+      long: setting
+      takes_value: true
