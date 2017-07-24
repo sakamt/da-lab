@@ -1,11 +1,11 @@
 
 #[macro_use]
 extern crate ndarray_linalg;
-extern crate aics_da;
+extern crate da_lab;
 
-use aics_da::method::mpf::*;
-use aics_da::stat::*;
-use aics_da::weight::*;
+use da_lab::method::mpf::*;
+use da_lab::stat::*;
+use da_lab::weight::*;
 
 use ndarray_linalg::*;
 

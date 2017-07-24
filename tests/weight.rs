@@ -3,14 +3,14 @@ extern crate rand;
 extern crate ndarray;
 #[macro_use]
 extern crate ndarray_linalg;
-extern crate aics_da;
+extern crate da_lab;
 
 use ndarray::Array;
 use ndarray_linalg::*;
 use rand::distributions::IndependentSample;
 use std::f64::consts::E;
 
-use aics_da::weight::*;
+use da_lab::weight::*;
 
 fn close_max(a: &Vec<f64>, b: &Vec<f64>, atol: f64) {
     let a = Array::from_vec(a.clone());

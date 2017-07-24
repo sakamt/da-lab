@@ -2,9 +2,9 @@
 #[macro_use]
 extern crate clap;
 
-extern crate aics_da;
+extern crate da_lab;
 
-use aics_da::*;
+use da_lab::*;
 use clap::App;
 
 pub const SETTING_JSON: &'static str = "setting.json";

@@ -4,9 +4,9 @@ extern crate clap;
 #[macro_use]
 extern crate log;
 
-extern crate aics_da;
+extern crate da_lab;
 
-use aics_da::*;
+use da_lab::*;
 use clap::App;
 use std::fs::*;
 use std::path::*;

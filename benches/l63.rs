@@ -2,10 +2,10 @@
 
 extern crate test;
 extern crate ndarray;
-extern crate aics_da;
+extern crate da_lab;
 
-use aics_da::*;
-use aics_da::da::{EnsembleAnalyzer, EnsembleForecaster};
+use da_lab::*;
+use da_lab::da::{EnsembleAnalyzer, EnsembleForecaster};
 use ndarray::*;
 
 macro_rules! impl_bench {
