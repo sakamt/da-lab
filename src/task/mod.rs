@@ -23,13 +23,6 @@ pub fn execute(setting: da::Setting) {
     };
 }
 
-/// read setting JSON file
-pub fn ready_setting(setting_json: Option<&str>) -> da::Setting {
-    let setting_json = setting_json.unwrap_or(SETTING_JSON);
-    let setting_path = ::std::path::Path::new(setting_json);
-    io::read_json(setting_path.to_str().unwrap())
-}
-
 /// read or generate truth
 pub fn ready_truth(setting: &da::Setting) -> types::Truth {
     let truth = &setting.truth;

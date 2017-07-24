@@ -9,17 +9,12 @@ use clap::App;
 
 pub const SETTING_JSON: &'static str = "setting.json";
 
-/// read setting JSON file
-fn ready_setting(setting_json: Option<&str>) -> da::Setting {
-    let setting_json = setting_json.unwrap_or(SETTING_JSON);
-    let setting_path = ::std::path::Path::new(setting_json);
-    io::read_json(setting_path.to_str().unwrap())
-}
-
 fn main() {
     task::init();
     let cli = load_yaml!("exec.yml");
     let m = App::from_yaml(cli).get_matches();
-    let setting = ready_setting(m.value_of("setting"));
+    let setting_json = m.value_of("setting").unwrap_or(SETTING_JSON);
+    let setting_path = ::std::path::Path::new(setting_json);
+    let setting = io::read_json(&setting_path).expect("Invalid JSON");
     task::execute(setting);
 }

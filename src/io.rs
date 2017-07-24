@@ -35,10 +35,10 @@ pub fn load_msg<T: Deserialize>(filename: &str) -> T {
     Deserialize::deserialize(&mut dec).unwrap()
 }
 
-pub fn read_json<Contents: Deserialize>(filename: &str) -> Contents {
-    let f = File::open(filename).unwrap();
+pub fn read_json<T: Deserialize, P: AsRef<Path>>(filename: P) -> Result<T, Box<::std::error::Error>> {
+    let f = File::open(filename)?;
     let mut buf = BufReader::new(f);
-    ::serde_json::from_reader(&mut buf).unwrap()
+    Ok(::serde_json::from_reader(&mut buf)?)
 }
 
 pub struct MsgpackSaver {

@@ -18,13 +18,23 @@ const SETTING_DIR: &'static str = "settings";
 fn get_setting<P: AsRef<Path>>(setting_dir: P) -> Option<da::Setting> {
     for s in read_dir(setting_dir).expect("Cannot open setting directory") {
         let path = s.unwrap().path();
-        let setting: da::Setting = io::read_json(path.to_str().unwrap());
+        info!("Try fetch: {:?}", path);
+        let setting = match io::read_json(&path) {
+            Ok(setting) => setting,
+            Err(_) => {
+                warn!("Cannot read, skip (remove manually)");
+                continue;
+            }
+        };
         match remove_file(path.clone()) {
             Ok(_) => {
-                info!("Fetch setting file: {:?}", path);
+                info!("Fetched");
                 return Some(setting);
             }
-            Err(_) => continue,
+            Err(_) => {
+                info!("Cannot delete JSON file, Maybe fetched by another process");
+                continue;
+            }
         }
     }
     debug!("No setting files");
@@ -41,7 +51,7 @@ fn main() {
         .map(|s| s.parse::<u64>().expect("cannot parse interval"))
         .unwrap_or(10);
 
-    info!("Start watching: {}", setting_dir);
+    info!("Start watching (every {}sec): {}", interval, setting_dir);
     loop {
         let setting = loop {
             match get_setting(setting_dir) {
