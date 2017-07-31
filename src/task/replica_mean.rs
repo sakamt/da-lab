@@ -17,6 +17,10 @@ struct Output {
     vme: V,
     /// root-mean-square error
     rmse: f64,
+    /// spread of forecast
+    sb: f64,
+    /// spread of analysis
+    sa: f64,
 }
 
 /// Calculate replica-mean
@@ -33,6 +37,8 @@ pub fn replica_mean(setting: da::Setting) {
     let saver = io::MsgpackSaver::new("replica_mean");
     saver.save_as_map("setting", &setting);
     saver.save("truth", &truth);
+
+    let n = truth[0].len();
 
     let replica = setting.replica.expect("setting.replica is needed");
     let f = model::select_model(&setting);
@@ -51,23 +57,34 @@ pub fn replica_mean(setting: da::Setting) {
             let res = xss.iter_mut()
                 .map(|item| {
                     let xs = &mut item.0;
+                    let (_, pb) = stat::stat2(xs);
                     let obs = &item.1[t];
                     a.analysis_mut(xs, obs);
-                    let xa = stat::mean(xs);
+                    let (xa, pa) = stat::stat2(xs);
                     f.forecast_mut(xs);
                     let rmse = (&xa - &truth).norm() / (xa.len() as f64).sqrt();
-                    (xa, rmse)
+                    (xa, rmse, pb, pa)
                 })
-                .fold((Array::zeros(truth.dim()), 0.0), |(a, b), (c, d)| {
-                    (a + c, b + d)
-                });
+                .fold(
+                    (
+                        Array::zeros(n),
+                        0.0,
+                        Array::zeros((n, n)),
+                        Array::zeros((n, n)),
+                    ),
+                    |(x, r, pa, pb), (x_, r_, pa_, pb_)| (x + x_, r + r_, pa + pa_, pb + pb_),
+                );
             let vme = res.0 / replica as f64 - &truth;
             let rmse = res.1 / replica as f64;
+            let sb = (res.2.trace().unwrap() / replica as f64).sqrt();
+            let sa = (res.3.trace().unwrap() / replica as f64).sqrt();
             Output {
                 time: (t * setting.tau) as f64 * setting.dt,
                 state: truth,
                 vme: vme,
                 rmse: rmse,
+                sb: sb,
+                sa: sa,
             }
         })
         .collect();
