@@ -66,7 +66,7 @@ struct Output {
 pub fn model_bias(setting: Setting) {
     let truth = ready_truth(&setting);
     let obs = ready_obs(&truth, &setting);
-    let saver = io::MsgpackSaver::new("run");
+    let saver = io::MsgpackSaver::new("model_bias");
     saver.save_as_map("setting", &setting);
     saver.save("truth", &truth);
     saver.save("obs", &obs);
