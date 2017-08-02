@@ -22,7 +22,8 @@ pub fn execute(setting: da::Setting) {
         "run" => run(setting),
         "replica_mean" => replica_mean(setting),
         "model_bias" => model_bias(setting),
-        _ => warn!("Invalid task name: {}, Drop this setting", setting.task),
+        "model_bias_replica" => model_bias_replica(setting),
+        _ => warn!("Invalid task name: {}", setting.task),
     };
 }
 
