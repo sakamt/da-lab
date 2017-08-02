@@ -1,7 +1,9 @@
 
 mod run;
 mod replica_mean;
+mod model_bias;
 
+pub use self::model_bias::*;
 pub use self::replica_mean::*;
 pub use self::run::*;
 
@@ -19,6 +21,7 @@ pub fn execute(setting: da::Setting) {
     match setting.task.as_str() {
         "run" => run(setting),
         "replica_mean" => replica_mean(setting),
+        "model_bias" => model_bias(setting),
         _ => warn!("Invalid task name: {}, Drop this setting", setting.task),
     };
 }
