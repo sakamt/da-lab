@@ -1,4 +1,5 @@
 use ndarray::*;
+use ndarray_linalg::*;
 use ndarray_odeint::*;
 
 use super::{ready_obs, ready_truth};
@@ -75,15 +76,19 @@ pub fn model_bias(setting: Setting) {
     let a = select_analyzer(&setting);
     let mut xs = replica(&truth[0], setting.r, setting.k);
     let mut outs = Vec::new();
+    let mut rmse_total = 0.0;
     for (truth, y) in truth.iter().zip(obs.iter()) {
         let xb = stat::mean(&xs);
         xs = a.analysis(xs, &y);
         let xa = stat::mean(&xs);
+        rmse_total += (truth - &xa).norm() / (xa.len() as f64).sqrt();
         xs = f.forecast(xs);
+        let inc = xa - &xb;
         outs.push(Output {
-            state: truth.clone(),
-            increment: xa - xb,
+            state: xb,
+            increment: inc,
         });
     }
     saver.save("inc", &outs);
+    info!("mean RMSE = {}", rmse_total / truth.len() as f64);
 }
