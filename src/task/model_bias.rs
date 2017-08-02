@@ -82,3 +82,45 @@ pub fn model_bias(setting: Setting) {
     saver.save("model_bias", &outs);
     info!("mean RMSE = {}", rmse_total / setting.count as f64);
 }
+
+/// Generate an answer of model-bias learning
+pub fn model_bias_replica(setting: Setting) {
+    let truth = ready_truth(&setting);
+    let saver = io::MsgpackSaver::new("model_bias_replica");
+    saver.save_as_map("setting", &setting);
+    saver.save("truth", &truth);
+
+    let n = truth[0].len();
+
+    let replica = setting.replica.expect("setting.replica is needed");
+    let f = biased_l63(&setting);
+    let a = select_analyzer(&setting);
+    let mut xss: Vec<_> = (0..replica)
+        .map(|_| {
+            let xs = da::replica(&truth[0], setting.r, setting.k);
+            let obs = observation::generate_obs(&truth, &setting);
+            (xs, obs)
+        })
+        .collect();
+    let tl: Vec<_> = truth
+        .into_iter()
+        .enumerate()
+        .map(|(t, truth)| {
+            let res = xss.iter_mut()
+                .map(|item| {
+                    let xs = &mut item.0;
+                    let obs = &item.1[t];
+                    a.analysis_mut(xs, obs);
+                    let xa = stat::mean(xs);
+                    f.forecast_mut(xs);
+                    let rmse = (&xa - &truth).norm() / (xa.len() as f64).sqrt();
+                    (xa, rmse)
+                })
+                .fold((Array::zeros(n), 0.0), |(x, r), (x_, r_)| (x + x_, r + r_));
+            let vme = res.0 / replica as f64 - &truth;
+            let rmse = res.1 / replica as f64;
+            (truth, vme, rmse)
+        })
+        .collect();
+    saver.save("model_bias_replica", &tl);
+}
