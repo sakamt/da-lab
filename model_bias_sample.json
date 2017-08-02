@@ -1,0 +1,12 @@
+{
+  "task": "model_bias",
+  "da": "etkf",
+  "model": "l63",
+  "dt": 0.01,
+  "r": 2.0,
+  "count": 1000,
+  "tau": 25,
+  "k": 12,
+  "rho": 1.28,
+  "model_bias": 1.0
+}
