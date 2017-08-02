@@ -4,8 +4,7 @@ use ndarray_odeint::*;
 
 use super::{ready_obs, ready_truth};
 use super::da::*;
-use super::types::*;
-use {io, stat};
+use {da, io, observation, stat};
 
 #[derive(Clone, Copy, Debug)]
 struct BiasedLorenz63 {
@@ -58,12 +57,7 @@ fn biased_l63(setting: &Setting) -> NStep<explicit::RK4<BiasedLorenz63, f64>> {
     nstep(rk4, setting.tau)
 }
 
-#[derive(Serialize)]
-struct Output {
-    state: V,
-    increment: V,
-}
-
+/// Data for model-bias learning
 pub fn model_bias(setting: Setting) {
     let truth = ready_truth(&setting);
     let obs = ready_obs(&truth, &setting);
@@ -77,18 +71,14 @@ pub fn model_bias(setting: Setting) {
     let mut xs = replica(&truth[0], setting.r, setting.k);
     let mut outs = Vec::new();
     let mut rmse_total = 0.0;
-    for (truth, y) in truth.iter().zip(obs.iter()) {
+    for (truth, y) in truth.into_iter().zip(obs.iter()) {
         let xb = stat::mean(&xs);
         xs = a.analysis(xs, &y);
         let xa = stat::mean(&xs);
-        rmse_total += (truth - &xa).norm() / (xa.len() as f64).sqrt();
+        rmse_total += (&truth - &xa).norm() / (xa.len() as f64).sqrt();
         xs = f.forecast(xs);
-        let inc = xa - &xb;
-        outs.push(Output {
-            state: xb,
-            increment: inc,
-        });
+        outs.push((truth, xb, xa));
     }
-    saver.save("inc", &outs);
-    info!("mean RMSE = {}", rmse_total / truth.len() as f64);
+    saver.save("model_bias", &outs);
+    info!("mean RMSE = {}", rmse_total / setting.count as f64);
 }
