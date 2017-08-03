@@ -36,6 +36,8 @@ pub struct Setting {
     pub truth: Option<String>,
     /// filename of observation
     pub obs: Option<String>,
+    /// model bais
+    pub model_bias: Option<f64>,
 }
 
 pub fn replica(x: &V, r: f64, k: usize) -> Ensemble {
