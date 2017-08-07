@@ -21,7 +21,13 @@ use std::time::Duration;
 
 const SETTING_DIR: &'static str = "settings";
 
-fn get_exlocked_setting<P: AsRef<Path> + Debug>(path: P) -> Option<da::Setting> {
+struct LockedSetting {
+    _f: File,
+    path: PathBuf,
+    setting: da::Setting,
+}
+
+fn get_exlocked_setting(path: &Path) -> Option<LockedSetting> {
     let mut f = match File::open(&path) {
         Ok(f) => f,
         Err(_) => {
@@ -31,7 +37,9 @@ fn get_exlocked_setting<P: AsRef<Path> + Debug>(path: P) -> Option<da::Setting> 
     };
     let fd = f.as_raw_fd();
     match fcntl::flock(fd, fcntl::FlockArg::LockExclusiveNonblock) {
-        Ok(_) => {}
+        Ok(_) => {
+            info!("Get lock: {:?}", path);
+        }
         Err(_) => {
             info!("Cannot get lock: {:?}", path);
             return None;
@@ -44,18 +52,20 @@ fn get_exlocked_setting<P: AsRef<Path> + Debug>(path: P) -> Option<da::Setting> 
             return None;
         }
     };
-    Some(setting)
+    Some(LockedSetting {
+        _f: f,
+        path: PathBuf::from(path),
+        setting: setting,
+    })
 }
 
-fn fetch_setting<P: AsRef<Path> + Debug>(setting_dir: P, interval: u64) -> (PathBuf, da::Setting) {
+fn fetch_setting<P: AsRef<Path> + Debug>(setting_dir: P, interval: u64) -> LockedSetting {
     loop {
         for s in read_dir(&setting_dir).expect("Cannot open setting directory") {
             let path = s.unwrap().path();
-            match get_exlocked_setting(&path) {
-                Some(setting) => return (path, setting),
-                None => {
-                    continue;
-                }
+            let ls = get_exlocked_setting(&path);
+            if ls.is_some() {
+                return ls.unwrap();
             }
         }
         sleep(Duration::from_secs(interval));
@@ -80,9 +90,9 @@ fn main() {
     info!("Watch interval = {}", interval);
 
     loop {
-        let (path, setting) = fetch_setting(&setting_dir, interval);
-        task::execute(setting);
-        remove_file(path).expect("Cannot remove file");
+        let ls = fetch_setting(&setting_dir, interval);
+        task::execute(ls.setting);
+        remove_file(ls.path).expect("Cannot remove file");
         info!("Done, wait next task");
     }
 }
