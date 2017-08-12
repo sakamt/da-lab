@@ -9,6 +9,7 @@ rand = "*"
 ndarray = { version = "0.9", features = ["blas", "serde"] }
 ndarray-linalg = "0.5.4"
 ndarray-odeint = "0.6.1"
+openblas-src = { version = "*", features = ["static"] }
 float-cmp = "*"
 
 derive-new = "*"
