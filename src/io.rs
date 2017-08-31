@@ -28,14 +28,18 @@ impl VariantWriter for StructMapWriter {
     }
 }
 
-pub fn load_msg<T: Deserialize>(filename: &str) -> T {
+pub fn load_msg<'de, T: Deserialize<'de>>(filename: &str) -> T {
     let f = File::open(filename).unwrap();
     let mut buf = BufReader::new(f);
     let mut dec = ::rmp_serde::Deserializer::new(&mut buf);
     Deserialize::deserialize(&mut dec).unwrap()
 }
 
-pub fn read_json<T: Deserialize, P: AsRef<Path>>(filename: P) -> Result<T, Box<::std::error::Error>> {
+pub fn read_json<T, P>(filename: P) -> Result<T, Box<::std::error::Error>>
+where
+    T: for<'de> Deserialize<'de>,
+    P: AsRef<Path>,
+{
     let f = File::open(filename)?;
     let mut buf = BufReader::new(f);
     Ok(::serde_json::from_reader(&mut buf)?)
