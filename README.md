@@ -5,3 +5,8 @@ da-lab: Laboraty of Data-Assimilaton study
 
 This repository implements experimental, concept testing codes,
 which will be merged into [da.rs](https://github.com/termoshtt/da.rs) if usefull.
+
+License
+--------
+Copyright (c) RIKEN Advanced Institute for Computational Science
+This is an opensource software distributed under the MIT-License.
